@@ -5,13 +5,12 @@ using System.Linq;
 using System.Collections.Specialized;
 
 
-// Keep the dictionary that associates custom IDs of walls to wall GameObjects
+// Keep a dictionary that associates custom IDs of walls to wall GameObjects
 // Allow indexing this dictionary with the wall custom ID, and ordering this dictionary at Start
 public class IdentityManager : MonoBehaviour
 {
     private Dictionary<int, GameObject> wallDictionary = new Dictionary<int, GameObject>();
 
-    // Called to instantiate a wall in the dictionary with its custom ID
     public void AssignIdentifier(GameObject obj, int customID)
     {
         if (!wallDictionary.ContainsKey(customID))
@@ -20,7 +19,7 @@ public class IdentityManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Custom ID already exists:" + customID);
+            Debug.LogWarning("CustomID already assigned to a GameObject: " + customID);
         }
     }
 
@@ -33,7 +32,7 @@ public class IdentityManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Custom ID not found: " + customID);
+            Debug.LogWarning("No record of custom ID: " + customID);
             return null;
         }
     }
