@@ -1,9 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.XR;
+
 
 // Code to implement general x/y player movement, jumping, and detecting contact with the ground
 // Does NOT implement any camera control
@@ -16,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
 
     public Transform player;
     public CharacterController controller; 
+    public GameManager gameManager;
     public float speed = 200f;
     public Transform groundCheck;
     public float groundDistance = 0.4f;
@@ -24,8 +21,12 @@ public class PlayerMovement : MonoBehaviour
     bool isGrounded = true;
     float gravity = 9.81f;
     Vector3 yAxisVelocity;
-    bool isMovementEnabled = true;
     float gravityMultiplier = 2f; // scale gravity accel. based on feel
+
+    void Start()
+    {
+        gameManager = FindObjectOfType<GameManager>();
+    }
 
     void UpdateMovement()
     {   
@@ -69,13 +70,13 @@ public class PlayerMovement : MonoBehaviour
             yAxisVelocity.y += Mathf.Sqrt(-2f * jumpHeight * -gravity); 
 
         // Now apply resultant y-axis velocity, account for framerate
-        controller.Move(yAxisVelocity * Time.deltaTime);
+            controller.Move(yAxisVelocity * Time.deltaTime);
     }
 
     void Update()
     {   
         // flag to allow for GameController acess to movement control
-        if (isMovementEnabled)
+        if (gameManager.movementEnabled)
             UpdateMovement();
         
     }

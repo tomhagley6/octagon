@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,36 +5,28 @@ using UnityEngine;
 // Pass in the current ordered active triggers and the current trial type (controlled by GameController)
 // Then, use the trial type to decide how the trigger should respond to activation
 // Also consider which trigger instance has been activated on trigger entry
-
-// Logic to control the response to activating triggers attached to each Octagon wall
-// With one copy of this script per wall
-// Check this wall's ID against the current trial walls IDs
-// Depending on the wall identity, control the score output
-// Allow modularity for various trial types
 public class WallTrigger : MonoBehaviour
 {
     public GameManager gameManager; 
-    // public List<int> activeWalls;
-    public string trialType = "HighLowTrial";
-    public int highScore = 50;
-    public int lowScore = 25;
+    public string trialType = "HighLowTrial"; // replace with global?
+    public int highScore = 50; // globals
+    public int lowScore = 25; // globals
     IdentityAssignment identityAssignment;
     
     void Start() 
     {
-        // Making sure to use GetComponent here instead of just looking for 
-        // object of type IdentityAssignment. 
-        // I think doing it this way somehow avoids confusion between the 
-        // IdentityAssignment components of the different WallTrigger prefab
-        // instances
+        // GetComponent to return the IdentityAssignment instance for the current GameObject
+        // FindObjectOfType for GameManager as there is a single instance per scene
         identityAssignment = gameObject.GetComponent<IdentityAssignment>(); 
-        gameManager = FindAnyObjectByType<GameManager>();
+        gameManager = FindObjectOfType<GameManager>();
     }
+    
+    // Method that runs when a Trigger is entered
+    // No need to explicitly reference
     void OnTriggerEnter()
     {
-        // identityAssignment = gameObject.GetComponent<IdentityAssignment>();
         int triggerID = identityAssignment.customID;
-        Debug.Log($"Custom ID: {triggerID}");
+        // Debug.Log($"Custom ID: {triggerID}");
         // Debug.Log($"Active walls are: {gameManager.activeWalls[0]} and {gameManager.activeWalls[1]}");
 
         switch (trialType)
@@ -53,6 +44,9 @@ public class WallTrigger : MonoBehaviour
         }
     }
 
+    // Standard HighLow trial
+    // If this wall is designated High, add 50 points to score
+    // Else if it is Low, add 25 points to score
     void HighLowTrial(List<int> activeWalls, int triggerID)
     {
         int highWallTriggerID = activeWalls[0];

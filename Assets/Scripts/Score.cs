@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -11,6 +9,11 @@ public class Score : MonoBehaviour
     public GameManager gameManager;
     public int score = 0;
 
+
+    void Start() 
+    {
+        gameManager = FindObjectOfType<GameManager>();
+    }
     // Keep canvas text updated with the current value of score
     // as recorded in GameManager.cs
     void Update()

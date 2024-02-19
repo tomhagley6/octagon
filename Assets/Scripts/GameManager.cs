@@ -1,11 +1,7 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 
 // Central logic for Octagon Prototype
@@ -18,6 +14,8 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI scoreText;
     public int score;
     public List<int> activeWalls;
+    public bool movementEnabled = true; // flag to control whether character controller
+                                        // should take input
 
     List<int> walls;
     IdentityManager identityManager;
@@ -64,10 +62,13 @@ public class GameManager : MonoBehaviour
         highWall.GetComponent<Renderer>().material.color = defaultWallColor; 
         lowWall.GetComponent<Renderer>().material.color = defaultWallColor;   
     }
+
+    // Prevent player movement
     void RemoveAgency()
     {
-        Debug.Log("Trigger entered");
-        Player.GetComponent<CharacterController>().enabled = false;
+        // Debug.Log("Trigger entered");
+        movementEnabled = false;
+    
     }
 
     public void AdjustScore(int increment = 0)
@@ -79,10 +80,6 @@ public class GameManager : MonoBehaviour
     // Prepare for initiation of a new trial
     void ResetTrial(int highWallTriggerID, int lowWallTriggerID)
     {
-        // SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        //// Currently not using player position reset
-        // Player.transform.position = new Vector3(-80.65f, 2.76f, 44.17f);
-
         // clear the active walls list
         activeWalls.Clear(); 
         // reset wall colours
@@ -98,7 +95,7 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(0.3f);
 
             // Re-enable player movement after it was disabled in EndTrial()
-            Player.GetComponent<CharacterController>().enabled = true;
+            movementEnabled = true;
         }
 
         /// Run the above-defined coroutine
@@ -107,48 +104,12 @@ public class GameManager : MonoBehaviour
 
     }
     
-
-    // Unreferenced attempt to pause the game. Superceded by ResetTrial's coroutine
-    public void StartPause(float pauseTime)
-    {
-        // how many seconds to pause the game
-        StartCoroutine(PauseGame(pauseTime));
-    }
-   public IEnumerator PauseGame(float pauseTime)
-   {
-        Debug.Log ("Inside PauseGame()");
-        Time.timeScale = 0f;
-        float pauseEndTime = Time.realtimeSinceStartup + pauseTime;
-        while (Time.realtimeSinceStartup < pauseEndTime)
-        {
-            yield return 0;
-        }
-        Time.timeScale = 1f;
-        Debug.Log("Done with my pause");
-   }
-
-   void Test()
-   {
-    Debug.Log("Hello, world");
-   }
-
     // Define and run requirements for a new trial
-    // Triggered by GameManager on startup, and again by
+    // Triggered by GameManager on Start(), and again by ResetTrial()
     void StartTrial()
-    {
+    {    
 
-
-        /// Start ITI (range from 2 to 5 seconds randomly)
-        /// Pause movement control
-        // Generate a random float between 2 and 5 seconds
-        // float pauseTime = UnityEngine.Random.Range(2f, 5f);
-        // StartPause(pauseTime);
-
-        /// Start ITI (range from 2 to 5 seconds randomly)
-        // Pause code block execution (while allowing other scripts to continue) by running "Invoke"
-        // on an empty function, delayed by a random float between 2 and 5 seconds. 
-        Invoke("Test", UnityEngine.Random.Range(2f,5f));
-    
+        Debug.Log("NEW TRIAL");
 
         /// Generate wall trigger IDs for a new trial
         /// currently hard coded for testing
@@ -179,24 +140,11 @@ public class GameManager : MonoBehaviour
         Debug.Log("Number of walls: " + walls.Count);
         for (int i = 0; i < walls.Count; i++)
         {
-            Debug.Log("Wall number " + i + " has the ID: " + walls[i]);
+            // Debug.Log("Wall number " + i + " has the ID: " + walls[i]);
         }
 
 
-
-        // int highWallTriggerID = walls[0];
-        // int lowWallTriggerID = walls[1];
-
         Debug.Log("high wall is: " + highWallTriggerID);
-
-        // activeWalls.Add(highWallTriggerID);
-        // activeWalls.Add(lowWallTriggerID);
-
-        // GameObject[] wallTriggers = GameObject.FindGameObjectsWithTag("WallTrigger");
-        // foreach (GameObject wallTrigger in wallTriggers)
-        // {
-        //     activeWalls.Add(wallTrigger.GetInstanceID());
-        // }
 
         // Order in this list decides which is High and Low
         activeWalls.Add(highWallTriggerID);
@@ -219,11 +167,12 @@ public class GameManager : MonoBehaviour
         // reset position and walls
         ResetTrial(highWallTriggerID, lowWallTriggerID);
 
-        // PauseGame(UnityEngine.Random.Range(2f,5f));
-        Invoke("StartTrial", UnityEngine.Random.Range(2f,5f));
-
-        // create new walls
-        // StartTrial();
+        // Begin StartTrial again with a random ITI
+        // Pause code block execution (while allowing other scripts to continue) by running "Invoke"
+        // with a random delay duration between the first and second argument
+        float ITIvalue = Random.Range(2f,5f);
+        Invoke("StartTrial", ITIvalue);
+        Debug.Log($"ITI duration for this trial: {ITIvalue}");
 
     }
 
