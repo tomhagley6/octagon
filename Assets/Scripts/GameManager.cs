@@ -5,7 +5,7 @@ using UnityEngine;
 
 
 // Central logic for Octagon Prototype
-// Includes functions for starting trials and ending trials
+// Includes functions for starting and ending trials
 public class GameManager : MonoBehaviour
 {
 
