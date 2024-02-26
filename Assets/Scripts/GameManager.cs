@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Logging;
 using TMPro;
 using UnityEngine;
+using Random=UnityEngine.Random;
 
 
 // Central logic for Octagon Prototype
@@ -10,8 +13,8 @@ public class GameManager : MonoBehaviour
 {
 
 
-    public GameObject Player;
-    public TextMeshProUGUI scoreText;
+    public GameObject player;
+    public DiskLogger diskLogger;
     public int score;
     public List<int> activeWalls;
     public bool movementEnabled = true; // flag to control whether character controller
@@ -24,10 +27,30 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        // Get identity manager and order the (populated) dictionary
         identityManager = FindObjectOfType<IdentityManager>(); 
-        identityManager.OrderDictionary();  // Call to order dictionary after it has been populated
-        StartTrial();   // Begin sequential trial logic
+        identityManager.OrderDictionary();  
+        StartTrial();  // Begin trial logic sequence
 
+        // Start logging data
+        diskLogger = FindObjectOfType<DiskLogger>();
+        diskLogger.StartLogger();
+        StartCoroutine("LogPos");
+
+    }
+
+    IEnumerator LogPos()
+    {
+        while (true)
+        {
+            diskLogger.Log(String.Format(Globals.posFormat, Globals.posTag,
+                                                            Globals.player, 
+                                                            player.transform.position.x,
+                                                            player.transform.position.z));
+            
+            yield return new WaitForSeconds(0.2f);
+
+        }
     }
 
     void ColourWalls(int highWallTriggerID, int lowWallTriggerID)
@@ -155,10 +178,19 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void EndTrial(int increment, int highWallTriggerID, int lowWallTriggerID)
+    public void EndTrial(int increment, int highWallTriggerID, int lowWallTriggerID, int triggerID,
+                         string rewardType)
     {
         // Halt movement
         RemoveAgency();
+
+        // log wall trigger event
+        diskLogger.Log(String.Format(Globals.wallTriggerFormat, Globals.wallTriggerTag,
+                                                                Globals.trialNum,
+                                                                Globals.trialType,
+                                                                triggerID,
+                                                                rewardType,
+                                                                increment));
 
         // Adjust score
         // Score.cs accesses the score here to display to the Canvas

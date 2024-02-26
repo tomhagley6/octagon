@@ -6,10 +6,6 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
 
-    // disable controller.Move error caused by pausing character input in GameController
-    // do this until I find a better way to implement character control (see Sebastian Graves tutorials)
-    #pragma warning disable 0618
-
     public Transform player;
     public CharacterController controller; 
     public GameManager gameManager;
@@ -81,5 +77,4 @@ public class PlayerMovement : MonoBehaviour
         
     }
 
-    #pragma warning restore 0618
 }

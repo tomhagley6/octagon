@@ -12,6 +12,7 @@ public class WallTrigger : MonoBehaviour
     public int highScore = 50; // globals
     public int lowScore = 25; // globals
     IdentityAssignment identityAssignment;
+    public int triggerID; 
     
     void Start() 
     {
@@ -19,15 +20,15 @@ public class WallTrigger : MonoBehaviour
         // FindObjectOfType for GameManager as there is a single instance per scene
         identityAssignment = gameObject.GetComponent<IdentityAssignment>(); 
         gameManager = FindObjectOfType<GameManager>();
+
+        triggerID = identityAssignment.customID;
     }
     
     // Method that runs when a Trigger is entered
     // No need to explicitly reference
     void OnTriggerEnter()
     {
-        int triggerID = identityAssignment.customID;
         // Debug.Log($"Custom ID: {triggerID}");
-        // Debug.Log($"Active walls are: {gameManager.activeWalls[0]} and {gameManager.activeWalls[1]}");
 
         switch (trialType)
         {
@@ -51,15 +52,16 @@ public class WallTrigger : MonoBehaviour
     {
         int highWallTriggerID = activeWalls[0];
         int lowWallTriggerID = activeWalls[1];
+        string rewardType = triggerID == highWallTriggerID ? "High" : "Low";
 
         if (triggerID == highWallTriggerID)
         {
-            gameManager.EndTrial(highScore, highWallTriggerID, lowWallTriggerID);
+            gameManager.EndTrial(highScore, highWallTriggerID, lowWallTriggerID, triggerID, rewardType);
             Debug.Log("High score (50) triggered");
         }
         else if (triggerID == lowWallTriggerID)
         {
-            gameManager.EndTrial(lowScore, highWallTriggerID, lowWallTriggerID);
+            gameManager.EndTrial(lowScore, highWallTriggerID, lowWallTriggerID, triggerID, rewardType);
             Debug.Log("Low score (25) triggered");
         }
     }
