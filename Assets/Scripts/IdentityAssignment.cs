@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-// Attach this script to each Octagon wall, and each wall will take its manually-assigned ID
+// Each Octagon wall instantiates this class, and will take its manually-assigned ID
 // and add it to the IdentityManager dictionary, linked to its own GameObject handle
 public class IdentityAssignment : MonoBehaviour
 {
@@ -19,7 +19,7 @@ public class IdentityAssignment : MonoBehaviour
         identityManager = FindObjectOfType<IdentityManager>(); 
         if (identityManager != null)
         {
-            // Add this wall to the wallID, wall GameObject dictionary
+            // Add this wall to the [wallID : wall] GameObject dictionary
             identityManager.AssignIdentifier(gameObject, customID);
             // Debug.Log($"Key assigned in Identity Assignment is: {customID}");
         }

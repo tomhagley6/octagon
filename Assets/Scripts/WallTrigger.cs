@@ -8,11 +8,11 @@ using UnityEngine;
 public class WallTrigger : MonoBehaviour
 {
     public GameManager gameManager; 
-    public string trialType = "HighLowTrial"; // replace with global?
-    public int highScore = 50; // globals
-    public int lowScore = 25; // globals
+    private string trialType = "HighLowTrial"; // replace with global?
+    [SerializeField] private int highScore = 50; // globals
+    [SerializeField] private int lowScore = 25; // globals
     IdentityAssignment identityAssignment;
-    public int triggerID; 
+    private int triggerID; 
     
     void Start() 
     {
