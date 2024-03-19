@@ -1,6 +1,7 @@
+using Unity.Netcode;
 using UnityEngine;
 
-public class MouseLook : MonoBehaviour
+public class MouseLook : NetworkBehaviour
 {
 
     public float mouseSensitivity = 1000f;

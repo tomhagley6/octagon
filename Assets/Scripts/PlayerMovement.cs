@@ -1,9 +1,10 @@
+using Unity.Netcode;
 using UnityEngine;
 
 
 // Code to implement general x/y player movement, jumping, and detecting contact with the ground
 // Does NOT implement any camera control
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : NetworkBehaviour
 {
 
     public Transform player;
@@ -65,13 +66,21 @@ public class PlayerMovement : MonoBehaviour
             // Source: Brackeys - First Person Movement in Unity
             yAxisVelocity.y += Mathf.Sqrt(-2f * jumpHeight * -gravity); 
 
+        // Remove this for now to test networking
+        /*
         // Now apply resultant y-axis velocity, account for framerate
             controller.Move(yAxisVelocity * Time.deltaTime);
-    }
+        */
+
+    
+    }   
 
     void Update()
     {   
-        // flag to allow for GameController acess to movement control
+        // Only move a player object that you own as client
+        if (!IsOwner) return;
+
+        // flag to allow for GameController access to movement control
         if (gameManager.movementEnabled)
             UpdateMovement();
         
