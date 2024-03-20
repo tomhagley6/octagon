@@ -45,8 +45,8 @@ public class DiskLogger : Logger
             }
         }
 
-        Debug.Log("DiskLogger.Log() ran");
-        Debug.Log($"logEntries is: {logEntries[0]}");
+        // Debug.Log("DiskLogger.Log() ran");
+        // Debug.Log($"logEntries is: {logEntries[0]}");
     }
 
     // We don't care about emptying the entire log buffer in a single Update frame
@@ -68,7 +68,7 @@ public class DiskLogger : Logger
                 }
             }
             // Waits for the next fixed framerate Update() method
-            Debug.Log("LogToFile Coroutine yielded");
+            // Debug.Log("LogToFile Coroutine yielded");
             yield return new WaitForFixedUpdate();
         }
     }
@@ -83,14 +83,14 @@ public class DiskLogger : Logger
                 foreach (string item in logEntries)
                 {
                     tw.WriteLine(item);
-                    Debug.Log("TextWriter ran WriteLine for single logEntry");
+                    // Debug.Log("TextWriter ran WriteLine for single logEntry");
                 }
                 logEntries.Clear();
 
             }
         }
 
-        Debug.Log("EmptyBuffer() ran.");
+        // Debug.Log("EmptyBuffer() ran.");
     }
 
     private void OnDestroy()

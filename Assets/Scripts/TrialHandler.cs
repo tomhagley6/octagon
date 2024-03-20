@@ -1,0 +1,167 @@
+using System.Collections;
+using System.Collections.Generic;
+using Unity.Netcode;
+using UnityEngine;
+using static GameManager;
+
+// This class exists client-side and accesses the wall number NetworkVariables
+// that are set by the Singleton GameManager (server control only). 
+// It then implements all of the logic that can be kept client-side, s.a.
+// painting and washing walls, score adjust, etc.
+public class TrialHandler : NetworkBehaviour
+{
+   
+   
+   GameManager gameManager;
+   public int score;
+   List<NetworkVariable<int>> activeWalls;
+   IdentityManager identityManager;
+   Color defaultWallColor;
+   List<int> walls;
+   public NetworkVariable<int> activeWallsLowID;
+   public NetworkVariable<int> activeWallsHighID;
+
+
+    public override void OnNetworkSpawn()
+    {
+        gameManager = GameManager.Instance;
+
+        gameManager.activeWalls.OnValueChanged += OnWallChange;
+        gameManager.OnReadyStateChanged += GameManager_OnReadyStateChangedHandler;
+
+    }
+
+    public override void OnDestroy()
+    {
+        if (gameManager != null)
+        {
+            gameManager.activeWalls.OnValueChanged -= OnWallChange;
+            gameManager.OnReadyStateChanged -= GameManager_OnReadyStateChangedHandler;
+        }
+    }
+
+
+
+    private void OnWallChange(ActiveWalls previousValue, ActiveWalls newValue) {
+        WashWalls(previousValue.wall1, previousValue.wall2);
+        ColorWalls(newValue.wall1, newValue.wall2);
+        Debug.Log("Walls washed and changed");
+    }
+
+    public void GameManager_OnReadyStateChangedHandler(bool isReady) {
+        
+        do
+        {
+            if (isReady)
+            {
+                // Begin trials
+                StartTrial();
+            }
+        }
+        while (!isReady);
+    }
+
+  
+
+    void ColorWalls(int highWallTriggerID, int lowWallTriggerID)
+    {
+        // Access the actual game object through the ID:GameObject dict in IdentityManager
+        GameObject highWallTrigger = identityManager.GetObjectByIdentifier(highWallTriggerID); 
+        GameObject lowWallTrigger = identityManager.GetObjectByIdentifier(lowWallTriggerID);
+
+        // Get the (parent) octagon wall of each trigger
+        GameObject highWall = highWallTrigger.transform.parent.gameObject;
+        GameObject lowWall = lowWallTrigger.transform.parent.gameObject;
+
+        // Save the current colour of the wall before overwriting it 
+        defaultWallColor = highWall.GetComponent<Renderer>().material.color;
+
+        // Assign colours to the walls that fit their rewards
+        highWall.GetComponent<Renderer>().material.color = Color.red;
+        lowWall.GetComponent<Renderer>().material.color = Color.blue;
+    }
+   
+   void WashWalls(int highWallTriggerID, int lowWallTriggerID)
+    {
+        // Access the actual game object through the ID:GameObject dict in IdentityManager
+        GameObject highWallTrigger = identityManager.GetObjectByIdentifier(highWallTriggerID);
+        GameObject lowWallTrigger = identityManager.GetObjectByIdentifier(lowWallTriggerID);
+
+        // Get the (parent) octagon wall of each trigger
+        GameObject highWall = highWallTrigger.transform.parent.gameObject;
+        GameObject lowWall = lowWallTrigger.transform.parent.gameObject; 
+
+        // Reset wall colours back to their previously-saved defaults
+        highWall.GetComponent<Renderer>().material.color = defaultWallColor; 
+        lowWall.GetComponent<Renderer>().material.color = defaultWallColor;   
+    }
+
+        public void AdjustScore(int increment = 0)
+    {
+        score += increment;
+
+    }
+
+    // Prepare for initiation of a new trial
+    void ResetTrial(int highWallTriggerID, int lowWallTriggerID)
+    {
+        // clear the active walls list
+        // activeWalls.Clear(); 
+
+        // reset wall colours
+        WashWalls(highWallTriggerID, lowWallTriggerID);
+        
+        /* // Halt player movement very briefly while the trial resets (contributes to visual feedback
+        // of the trial ending)
+        // Asynchronous method which will run without interrupting the main thread of the program
+        // This is important, to allow waiting for 0.3 seconds without pausing other program functions
+        IEnumerator TrialResetImmobility()
+        {
+
+            yield return new WaitForSeconds(0.3f);
+
+            // Re-enable player movement after it was disabled in EndTrial()
+            movementEnabled = true;
+        }
+
+        /// Run the above-defined coroutine
+        StartCoroutine(TrialResetImmobility()); */
+
+
+    }
+    
+    // Define and run requirements for a new trial
+    void StartTrial()
+    {    
+
+        List<int> newWalls = gameManager.SelectNewWalls();
+        gameManager.UpdateNetworkVariables(newWalls);
+
+        // Add colour to the parent walls of each trigger
+        ColorWalls(gameManager.activeWalls.Value.wall1, gameManager.activeWalls.Value.wall2);
+
+    }
+
+    public void EndTrial(int increment, int highWallTriggerID, int lowWallTriggerID, int triggerID,
+                         string rewardType)
+    {
+
+        // Score.cs accesses the score here to display to the Canvas
+        AdjustScore(increment);
+
+        // reset position and walls
+        WashWalls(highWallTriggerID, lowWallTriggerID);
+
+        // Begin StartTrial again with a random ITI
+        // Pause code block execution (while allowing other scripts to continue) by running "Invoke"
+        // with a random delay duration between the first and second argument
+        float ITIvalue = Random.Range(2f,5f);
+        Invoke("StartTrial", ITIvalue);
+        Debug.Log($"ITI duration for this trial: {ITIvalue}");
+
+    }
+
+
+
+
+}

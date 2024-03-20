@@ -49,10 +49,11 @@ namespace Logging
         // log formatting
         public static string logEntryFormat = "[{0}]:{1}";  // [tag]:data
         public static string posFormat = "[{0}] {1} {2} {3}"; // tag, player, x, y
-        public static string wallTriggerFormat = "[{0}] {1} {2} {3} {4} {5}"; // tag, trial_num,
-                                                                        // trail_type, wall_num,
-                                                                        // reward_type,
-                                                                        // reward_val
+        public static string wallTriggerFormat = "[{0}] {1} {2} {3} {4} {5} {6}"; // tag, trial_num,
+                                                                                // trail_type, wall_num,
+                                                                                // reward_type,
+                                                                                // reward_val
+                                                                                // IsLocalPlayer
 
         // // Example logging method usage
         //MiceUILogger.Instance.AddLogEntry(string.Format(Globals.LOG_CONTENT_FORMAT, 

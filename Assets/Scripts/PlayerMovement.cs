@@ -80,9 +80,9 @@ public class PlayerMovement : NetworkBehaviour
         // Only move a player object that you own as client
         if (!IsOwner) return;
 
-        // flag to allow for GameController access to movement control
-        if (gameManager.movementEnabled)
-            UpdateMovement();
+        // // flag to allow for GameController access to movement control
+        // if (gameManager.movementEnabled)
+        UpdateMovement();
         
     }
 

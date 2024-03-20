@@ -14,11 +14,14 @@ public class MouseLook : NetworkBehaviour
 
     void Start()
     {
+        playerBody = transform.parent;
         Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()
     {
+        if (!IsOwner) return; 
+        
         // Mouse X and Mouse Y axes report the movement along these axes in the current frame
         // only (i.e., not the overall position of the mouse along an axis, just velocity)
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
