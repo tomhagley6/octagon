@@ -97,7 +97,10 @@ public class DiskLogger : Logger
     {
         loggerReady = false;
         StopAllCoroutines();
-        tw.Close();
+        if (tw != null)
+        {
+            tw.Close();
+        }
     }
 
     // Public API

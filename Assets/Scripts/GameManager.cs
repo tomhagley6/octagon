@@ -73,11 +73,28 @@ public class GameManager : SingletonNetwork<GameManager>
         // List<int> chosenWalls = SelectNewWalls();  // Begin trial logic sequence
         // UpdateNetworkVariables(chosenWalls);
 
+        Debug.Log("3 seconds have started");
+        // Pause script execution for 1 second to allow other scene NetworkObjects to spawn
+ 
+        StartCoroutine(WaitForSpawn());
+        Debug.Log("Waiting for coroutine to finish");
+
+
         // Here Invoking all subscribed methods of OnReadyStateChanged now that isReady is true
         // Invoke called as a method on an event will trigger all methods subscribed to the event
         // and passes them isReady as an input
         isReady = true;
         OnReadyStateChanged?.Invoke(isReady);
+    }
+
+
+    IEnumerator WaitForSpawn()
+    {
+
+        yield return new WaitForSeconds(3f);
+
+        Debug.Log("3 seconds have passed");        
+
     }
 
     void Start()
@@ -110,7 +127,7 @@ public class GameManager : SingletonNetwork<GameManager>
     } */
 
     
-    void ColourWalls(int highWallTriggerID, int lowWallTriggerID)
+/*     void ColourWalls(int highWallTriggerID, int lowWallTriggerID)
     {
         // Access the actual game object through the ID:GameObject dict in IdentityManager
         GameObject highWallTrigger = identityManager.GetObjectByIdentifier(highWallTriggerID); 
@@ -126,9 +143,9 @@ public class GameManager : SingletonNetwork<GameManager>
         // Assign colours to the walls that fit their rewards
         highWall.GetComponent<Renderer>().material.color = Color.red;
         lowWall.GetComponent<Renderer>().material.color = Color.blue;
-    }
+    } */
 
-    void WashWalls(int highWallTriggerID, int lowWallTriggerID)
+    /* void WashWalls(int highWallTriggerID, int lowWallTriggerID)
     {
         // Access the actual game object through the ID:GameObject dict in IdentityManager
         GameObject highWallTrigger = identityManager.GetObjectByIdentifier(highWallTriggerID);
@@ -141,7 +158,7 @@ public class GameManager : SingletonNetwork<GameManager>
         // Reset wall colours back to their previously-saved defaults
         highWall.GetComponent<Renderer>().material.color = defaultWallColor; 
         lowWall.GetComponent<Renderer>().material.color = defaultWallColor;   
-    }
+    } */
 
     // Prevent player movement
     // void RemoveAgency()
@@ -163,8 +180,8 @@ public class GameManager : SingletonNetwork<GameManager>
         // clear the active walls list
         // activeWalls.Clear(); 
 
-        // reset wall colours
-        WashWalls(highWallTriggerID, lowWallTriggerID);
+       /*  // reset wall colours
+        WashWalls(highWallTriggerID, lowWallTriggerID); */
         
         /* // Halt player movement very briefly while the trial resets (contributes to visual feedback
         // of the trial ending)
@@ -241,8 +258,8 @@ public class GameManager : SingletonNetwork<GameManager>
         // };
         
 
-        // Add colour to the parent walls of each trigger
-        ColourWalls(highWallTriggerID, lowWallTriggerID);
+  /*       // Add colour to the parent walls of each trigger
+        ColourWalls(highWallTriggerID, lowWallTriggerID); */
 
     }
 
@@ -319,9 +336,7 @@ public class GameManager : SingletonNetwork<GameManager>
             // Debug.Log("Wall number " + i + " has the ID: " + walls[i]);
         }
 
-
-        Debug.Log("high wall is: " + highWallTriggerID);
-
+       
         // Order in this list decides which is High and Low
         // activeWalls.Add(highWallTriggerID);
         // activeWalls.Add(lowWallTriggerID);
@@ -341,6 +356,8 @@ public class GameManager : SingletonNetwork<GameManager>
             wall1 = wallList[0],
             wall2 = wallList[1]
         };
+
+        Debug.Log($"activeWalls value is set with the values {wallList[0]} and {wallList[1]}");
     }
 
 }

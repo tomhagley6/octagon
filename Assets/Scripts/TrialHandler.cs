@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Unity.Netcode;
 using UnityEngine;
 using static GameManager;
+using Debug = UnityEngine.Debug;
 
 // This class exists client-side and accesses the wall number NetworkVariables
 // that are set by the Singleton GameManager (server control only). 
@@ -25,6 +27,7 @@ public class TrialHandler : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         gameManager = GameManager.Instance;
+        identityManager = FindObjectOfType<IdentityManager>();
 
         gameManager.activeWalls.OnValueChanged += OnWallChange;
         gameManager.OnReadyStateChanged += GameManager_OnReadyStateChangedHandler;
@@ -40,12 +43,15 @@ public class TrialHandler : NetworkBehaviour
         }
     }
 
-
-
     private void OnWallChange(ActiveWalls previousValue, ActiveWalls newValue) {
-        WashWalls(previousValue.wall1, previousValue.wall2);
-        ColorWalls(newValue.wall1, newValue.wall2);
-        Debug.Log("Walls washed and changed");
+        
+        // Don't wash walls if it is the first trial
+        if (previousValue.wall1 != 0)
+        {
+            // WashWalls(previousValue.wall1, previousValue.wall2);
+        }
+        // ColorWalls(newValue.wall1, newValue.wall2);
+        Debug.Log("New walls coloured");
     }
 
     public void GameManager_OnReadyStateChangedHandler(bool isReady) {
@@ -75,6 +81,8 @@ public class TrialHandler : NetworkBehaviour
 
         // Save the current colour of the wall before overwriting it 
         defaultWallColor = highWall.GetComponent<Renderer>().material.color;
+        Debug.Log($"Default wall colour is saved as {defaultWallColor}");
+        Debug.Log($"ColorWalls() uses {highWallTriggerID} and {lowWallTriggerID} as wall values");
 
         // Assign colours to the walls that fit their rewards
         highWall.GetComponent<Renderer>().material.color = Color.red;
@@ -83,6 +91,8 @@ public class TrialHandler : NetworkBehaviour
    
    void WashWalls(int highWallTriggerID, int lowWallTriggerID)
     {
+        Debug.Log($"WashWalls receives high and low wall trigger IDs as: {highWallTriggerID} and {lowWallTriggerID}");
+        
         // Access the actual game object through the ID:GameObject dict in IdentityManager
         GameObject highWallTrigger = identityManager.GetObjectByIdentifier(highWallTriggerID);
         GameObject lowWallTrigger = identityManager.GetObjectByIdentifier(lowWallTriggerID);
@@ -135,6 +145,7 @@ public class TrialHandler : NetworkBehaviour
     {    
 
         List<int> newWalls = gameManager.SelectNewWalls();
+        Debug.Log($"The list of ints that is received from GameManager in StartTrail() is {newWalls[0]} and {newWalls[1]}");
         gameManager.UpdateNetworkVariables(newWalls);
 
         // Add colour to the parent walls of each trigger
@@ -150,6 +161,8 @@ public class TrialHandler : NetworkBehaviour
         AdjustScore(increment);
 
         // reset position and walls
+        Debug.Log("WashWalls() is being triggered in TrialHandler.EndTrial by WallTrigger.cs");
+        Debug.Log($"WashWalls() uses {highWallTriggerID} and {lowWallTriggerID} for the walls");
         WashWalls(highWallTriggerID, lowWallTriggerID);
 
         // Begin StartTrial again with a random ITI
