@@ -31,7 +31,6 @@ public class TrialHandler : NetworkBehaviour
 
         gameManager.activeWalls.OnValueChanged += OnWallChange;
         gameManager.OnReadyStateChanged += GameManager_OnReadyStateChangedHandler;
-
     }
 
     public override void OnDestroy()
@@ -149,6 +148,7 @@ public class TrialHandler : NetworkBehaviour
         gameManager.UpdateNetworkVariables(newWalls);
 
         // Add colour to the parent walls of each trigger
+        // NB Walls are coloured immediately after the NetworkVariable for the new trial is updated
         ColorWalls(gameManager.activeWalls.Value.wall1, gameManager.activeWalls.Value.wall2);
 
     }
@@ -169,6 +169,7 @@ public class TrialHandler : NetworkBehaviour
         // Pause code block execution (while allowing other scripts to continue) by running "Invoke"
         // with a random delay duration between the first and second argument
         float ITIvalue = Random.Range(2f,5f);
+        // NB no trial logic for the next trial is run until an ITI has ocurred
         Invoke("StartTrial", ITIvalue);
         Debug.Log($"ITI duration for this trial: {ITIvalue}");
 

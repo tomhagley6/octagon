@@ -21,6 +21,8 @@ public class WallTrigger : NetworkBehaviour
 
     public DiskLogger diskLogger;
     public TrialHandler trialHandler;
+
+    public BoxCollider collider;
     
     
     public override void OnNetworkSpawn() 
@@ -55,18 +57,25 @@ public class WallTrigger : NetworkBehaviour
             Debug.Log("WallIDs have been corrected in WallTrigger");
         }
         
+    
+        collider = GetComponent<BoxCollider>(); 
     }
 
     private void OnWallChange(ActiveWalls previousValue, ActiveWalls newValue) {
         wallID1 = newValue.wall1;
         wallID2 = newValue.wall2;
         Debug.Log($"WallTrigger.cs has updated the values of local fields to match new wall values {wallID1} and {wallID2}");
+
+        // also make sure this wall is active as a trigger
+        collider.enabled = true;
     }
     
     // Method that runs when a Trigger is entered
     // No need to explicitly reference
     void OnTriggerEnter(Collider other)
     {
+        // Prevent repeat activation of the trigger
+        collider.enabled = false;
         // Check if the GameObject that entered the trigger was the local client player's
         bool isClient = false;
         if (other.GetComponent<NetworkObject>() != null && other.GetComponent<NetworkObject>().IsLocalPlayer) isClient = true;
