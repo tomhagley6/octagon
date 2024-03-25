@@ -31,7 +31,6 @@ public class TrialHandler : NetworkBehaviour
 
         gameManager.activeWalls.OnValueChanged += OnWallChange;
         gameManager.OnReadyStateChanged += GameManager_OnReadyStateChangedHandler;
-
     }
 
     public override void OnDestroy()
