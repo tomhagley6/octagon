@@ -32,6 +32,10 @@ public class GameManager : SingletonNetwork<GameManager>
     public event Action<bool> OnReadyStateChanged; 
     public bool isReady = false;
 
+
+    // trialNum int to act as a trigger for events to run on each trial start
+    // Cannot rely on change in value for activeWalls, as may have immediate repeats of selected walls
+    public NetworkVariable<int> trialNum = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     public NetworkVariable<int> activeWallsHighID = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     public NetworkVariable<int> activeWallsLowID = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
@@ -56,11 +60,13 @@ public class GameManager : SingletonNetwork<GameManager>
         // delegate by giving the correct signature (previous and new value), and in the body
         // we can put a Debug statement to ensure we only log the value when it changes
         activeWallsHighID.OnValueChanged += (int previousValue, int newValue) => {
+            if (newValue == 0) return;
             Debug.Log($"New High wall ID: {newValue}");
 
         }; 
 
         activeWallsLowID.OnValueChanged += (int previousValue, int newValue) => {
+            if (newValue == 0) return;
             Debug.Log($"New Low wall ID: {newValue}");
         };
 
@@ -235,6 +241,8 @@ public class GameManager : SingletonNetwork<GameManager>
         int highWallTriggerID = walls[anchorWallIndex];
         int lowWallTriggerID = walls[dependentWallIndex];
 
+        // first account 
+        
         // assign to the network variable
         activeWallsHighID.Value = highWallTriggerID;
         activeWallsLowID.Value = lowWallTriggerID;
@@ -325,9 +333,16 @@ public class GameManager : SingletonNetwork<GameManager>
         int highWallTriggerID = walls[anchorWallIndex];
         int lowWallTriggerID = walls[dependentWallIndex];
 
+        // first reset the NetworkVariable to account for new trial walls being identical to previous
+        activeWallsHighID.Value = 0;
+        activeWallsLowID.Value = 0;
+        
         // assign to the network variable
         activeWallsHighID.Value = highWallTriggerID;
         activeWallsLowID.Value = lowWallTriggerID;
+        
+        // also increment the trialNum NetworkVariable to trigger new trial event
+        trialNum.Value += 1;
 
 
         Debug.Log("Number of walls: " + walls.Count);
@@ -352,6 +367,15 @@ public class GameManager : SingletonNetwork<GameManager>
 
     public void UpdateNetworkVariables(List<int> wallList)
     {
+        // first reset activeWalls values to 0 to account for two consecutive 
+        // trials with the same wall values
+        // THIS MAYE CAUSE BUGS if you do not begin onValueChanged subscriber methods with
+        // if 0 return;
+        activeWalls.Value = new ActiveWalls {
+            wall1 = 0,
+            wall2 = 0
+        };
+        
         activeWalls.Value = new ActiveWalls {
             wall1 = wallList[0],
             wall2 = wallList[1]

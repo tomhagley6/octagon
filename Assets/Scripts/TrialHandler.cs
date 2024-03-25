@@ -44,13 +44,13 @@ public class TrialHandler : NetworkBehaviour
 
     private void OnWallChange(ActiveWalls previousValue, ActiveWalls newValue) {
         
-        // Don't wash walls if it is the first trial
+        /* // Don't wash walls if it is the first trial
         if (previousValue.wall1 != 0)
         {
             // WashWalls(previousValue.wall1, previousValue.wall2);
         }
         // ColorWalls(newValue.wall1, newValue.wall2);
-        Debug.Log("New walls coloured");
+        Debug.Log("New walls coloured"); */
     }
 
     public void GameManager_OnReadyStateChangedHandler(bool isReady) {

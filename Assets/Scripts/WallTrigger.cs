@@ -4,6 +4,7 @@ using Logging;
 using System;
 using Unity.Netcode;
 using static GameManager;
+using Unity.VisualScripting;
 
 // Pass in the current ordered active triggers and the current trial type (controlled by GameController)
 // Then, use the trial type to decide how the trigger should respond to activation
@@ -15,14 +16,19 @@ public class WallTrigger : NetworkBehaviour
     [SerializeField] private int highScore = 50; // globals
     [SerializeField] private int lowScore = 25; // globals
     IdentityAssignment identityAssignment;
-    private int triggerID; 
+    public int triggerID; 
+    public List<GameObject> triggers; // Keep a handle on all triggers
     public int wallID1;
     public int wallID2;
+    public List<int> wallIDs;
 
     public DiskLogger diskLogger;
     public TrialHandler trialHandler;
 
     public BoxCollider collider;
+    
+    // delegate to subscribe to when OnTriggerEnter is called
+    public event Action<int> OnTriggerEntered;
     
     
     public override void OnNetworkSpawn() 
@@ -59,23 +65,57 @@ public class WallTrigger : NetworkBehaviour
         
     
         collider = GetComponent<BoxCollider>(); 
+
+        // Subscribe OnTriggerEntered Action with a callback function that 
+        // deactivates the walls on this trial
+        OnTriggerEntered += DeactivateWall;
+
+
     }
 
     private void OnWallChange(ActiveWalls previousValue, ActiveWalls newValue) {
+        if (newValue.wall1 == 0) return;
+        
         wallID1 = newValue.wall1;
         wallID2 = newValue.wall2;
         Debug.Log($"WallTrigger.cs has updated the values of local fields to match new wall values {wallID1} and {wallID2}");
+        wallIDs = new List<int>(){wallID1, wallID2};
+        Debug.Log($"WallIDs list contains values: {String.Join(",", wallIDs)}");
 
-        // also make sure this wall is active as a trigger
-        collider.enabled = true;
+
+        // set all walls active as triggers at the beginning of a trial (change of walls)
+        // any triggers which are irrelevant for the current trial will not take any action
+        // within OnTriggerEnter
+        if (collider.enabled == false)
+        {
+            collider.enabled = true;
+            Debug.Log($"Collider for wall {triggerID} re-enabled");
+        }
+    }
+    
+    
+    void Start()
+    {
+        // Populate a list of all trigger GameObjects at Start time
+        foreach (GameObject trigger in GameObject.FindGameObjectsWithTag("WallTrigger"))
+        {
+            triggers.Add(trigger);
+        }
     }
     
     // Method that runs when a Trigger is entered
     // No need to explicitly reference
     void OnTriggerEnter(Collider other)
     {
-        // Prevent repeat activation of the trigger
-        collider.enabled = false;
+        
+        // Invoke the callback on OnTriggerEntered Action for each wall currently active
+        for (int i = 0; i < wallIDs.Count; i++)
+        {
+            OnTriggerEntered?.Invoke(wallIDs[i]);
+            Debug.Log($"Invoked OnTriggerEntered's subscribed method DeactivateWall for wall number {wallIDs[i]}");
+        }
+        /* // Prevent repeat activation of the trigger
+        collider.enabled = false; */
         // Check if the GameObject that entered the trigger was the local client player's
         bool isClient = false;
         if (other.GetComponent<NetworkObject>() != null && other.GetComponent<NetworkObject>().IsLocalPlayer) isClient = true;
@@ -95,6 +135,21 @@ public class WallTrigger : NetworkBehaviour
                 Debug.Log("Trial type not currently implemented");
                 break;
 
+        }
+    }
+
+    // Deactivate a trigger's collider
+    // To use after the first activation of a trigger per trial
+    void DeactivateWall(int wallID) 
+    {
+        // Look into each trigger and find the one with the matching wallID to deactivate
+        foreach(GameObject trigger in triggers)
+        {
+            WallTrigger wallTrigger = trigger.GetComponent<WallTrigger>();
+            if (wallTrigger != null && wallTrigger.triggerID == wallID)
+            { 
+                wallTrigger.collider.enabled = false;
+            }
         }
     }
 
