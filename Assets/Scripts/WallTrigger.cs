@@ -108,12 +108,6 @@ public class WallTrigger : NetworkBehaviour
     void OnTriggerEnter(Collider other)
     {
         
-        // Invoke the callback on OnTriggerEntered Action for each wall currently active
-        for (int i = 0; i < wallIDs.Count; i++)
-        {
-            OnTriggerEntered?.Invoke(wallIDs[i]);
-            Debug.Log($"Invoked OnTriggerEntered's subscribed method DeactivateWall for wall number {wallIDs[i]}");
-        }
         /* // Prevent repeat activation of the trigger
         collider.enabled = false; */
         // Check if the GameObject that entered the trigger was the local client player's
@@ -165,6 +159,17 @@ public class WallTrigger : NetworkBehaviour
         string rewardType = triggerID == highWallTriggerID ? "High" : "Low";
 
         Debug.Log($"Values HighLowTrial receives for high and low wall IDs are: {highWallTriggerID} and {lowWallTriggerID}");
+        
+        // Invoke the callback on OnTriggerEntered Action for each wall currently active
+        // but only if this is a relevant wall for the current trial
+        if (triggerID == highWallTriggerID || triggerID == lowWallTriggerID)
+        {
+            for (int i = 0; i < wallIDs.Count; i++)
+                {
+                    OnTriggerEntered?.Invoke(wallIDs[i]);
+                    Debug.Log($"Invoked OnTriggerEntered's subscribed method DeactivateWall for wall number {wallIDs[i]}");
+                }
+        }
 
         if (triggerID == highWallTriggerID)
         {
@@ -189,7 +194,7 @@ public class WallTrigger : NetworkBehaviour
         {
             Debug.Log($"EndTrial inputs: {lowScore}, {highWallTriggerID}, {lowWallTriggerID}, {triggerID}, {rewardType}, {IsLocalPlayer}");
             // if (isClient) {
-            trialHandler.EndTrial(highScore, highWallTriggerID, lowWallTriggerID, triggerID, rewardType);
+            trialHandler.EndTrial(lowScore, highWallTriggerID, lowWallTriggerID, triggerID, rewardType);
             // }
             diskLogger.Log(String.Format(Globals.wallTriggerFormat, Globals.wallTriggerTag,
                                                     Globals.trialNum,
