@@ -9,19 +9,28 @@ public class MouseLook : NetworkBehaviour
     public Transform playerBody;
 
     float xRotation = 0f;
+    public NetworkManager networkManager;
 
 
-
-    void Start()
+    public void Start()
     {
-        playerBody = transform.parent;
+        
+        networkManager = FindObjectOfType<NetworkManager>();
+        // playerBody = transform.parent;
+        playerBody = networkManager.LocalClient.PlayerObject.transform;
         Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()
-    {
+    {   
+        if (!IsOwner)
+        {
+            Debug.Log("Not owner. Skipping body.");
+        }
         if (!IsOwner) return; 
         
+
+        // Debug.Log("IsOwner so running camera update");
         // Mouse X and Mouse Y axes report the movement along these axes in the current frame
         // only (i.e., not the overall position of the mouse along an axis, just velocity)
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;

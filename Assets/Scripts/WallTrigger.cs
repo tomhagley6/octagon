@@ -113,8 +113,11 @@ public class WallTrigger : NetworkBehaviour
         // Check if the GameObject that entered the trigger was the local client player's
         bool isClient = false;
         if (other.GetComponent<NetworkObject>() != null && other.GetComponent<NetworkObject>().IsLocalPlayer) isClient = true;
-        
+        // Debug.Log($"other.GetComponent<NetworkObject>() != null is {other.GetComponent<NetworkObject>() != null}" + 
+        // $"and other.GetComponent<NetworkObject>().IsLocalPlayer is { other.GetComponent<NetworkObject>().IsLocalPlayer}");
+        // Debug.Log($"isClient = {isClient}");
         // Debug.Log($"Custom ID: {triggerID}");
+        
         Debug.Log("Wall triggers are being triggered.");
         
         switch (trialType)
@@ -175,7 +178,7 @@ public class WallTrigger : NetworkBehaviour
         {
             // Debug.Log("Active high wall is: " + gameManager.activeWalls[0]);
             Debug.Log("Active high wall is: " + highWallTriggerID);
-            Debug.Log($"EndTrial inputs: {highScore}, {highWallTriggerID}, {lowWallTriggerID}, {triggerID}, {rewardType}, {IsLocalPlayer}");
+            Debug.Log($"EndTrial inputs: {highScore}, {highWallTriggerID}, {lowWallTriggerID}, {triggerID}, {rewardType}, {isClient}");
             Debug.Log("High score (50) triggered");
             // if (isClient) {
             trialHandler.EndTrial(highScore, highWallTriggerID, lowWallTriggerID, triggerID, rewardType);
@@ -192,7 +195,7 @@ public class WallTrigger : NetworkBehaviour
         }
         else if (triggerID == lowWallTriggerID)
         {
-            Debug.Log($"EndTrial inputs: {lowScore}, {highWallTriggerID}, {lowWallTriggerID}, {triggerID}, {rewardType}, {IsLocalPlayer}");
+            Debug.Log($"EndTrial inputs: {lowScore}, {highWallTriggerID}, {lowWallTriggerID}, {triggerID}, {rewardType}, {isClient}");
             // if (isClient) {
             trialHandler.EndTrial(lowScore, highWallTriggerID, lowWallTriggerID, triggerID, rewardType);
             // }
