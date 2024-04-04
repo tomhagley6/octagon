@@ -10,8 +10,10 @@ using UnityEngine;
 using Random=UnityEngine.Random;
 
 
-// Central logic for Octagon Prototype
-// Includes functions for starting and ending trials
+// Class to control generation and updating of NetworkVariable
+// values for trials
+// NB: GameManager does not contain or trigger StartTrial or EndTrial
+// methods
 public class GameManager : SingletonNetwork<GameManager>
 {
 

@@ -5,6 +5,7 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 
+// Class to handle logging data to file on the local machine
 public class DiskLogger : Logger
 {   
     // paths

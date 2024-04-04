@@ -1,6 +1,8 @@
 using UnityEngine;
 
 
+// Logger that implements both a local DiskLogger and a NetworkLogger
+// Both classes run their Log functions when DoubleLogger.Log is called
 public class DoubleLogger : Logger
 {
     private DiskLogger diskLogger;

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Parent abstract class for logger classes
 public abstract class Logger : MonoBehaviour
 {
 

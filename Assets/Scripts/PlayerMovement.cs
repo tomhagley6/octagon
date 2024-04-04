@@ -2,11 +2,13 @@ using Unity.Netcode;
 using UnityEngine;
 
 
-// Code to implement general x/y player movement, jumping, and detecting contact with the ground
+// Class to implement general x/y player movement, jumping, and detecting contact with the ground
 // Does NOT implement any camera control
 public class PlayerMovement : NetworkBehaviour
 {
 
+    // No need to directly assign Transform and Controller as this script attaches to 
+    // each new FirstPersonPlayer Network Prefab
     public Transform player;
     public CharacterController controller; 
     public GameManager gameManager;

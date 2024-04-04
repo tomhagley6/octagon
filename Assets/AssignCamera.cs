@@ -7,6 +7,7 @@ using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 using Quaternion = UnityEngine.Quaternion;
 
+// 
 public class AssignCamera : NetworkBehaviour
 {
     public Transform player;
@@ -32,11 +33,12 @@ public class AssignCamera : NetworkBehaviour
         if (camera != null)
             {
                 camInstance = Instantiate(camera);
-                NetworkObject camInstanceNetworkObject = camInstance.GetComponent<NetworkObject>();
+                // NetworkObject camInstanceNetworkObject = camInstance.GetComponent<NetworkObject>();
 
-                // Make sure this belongs to the client
-                camInstanceNetworkObject.SpawnWithOwnership(clientId);
-                Debug.Log("Current client ID is " + clientId);
+                // // Make sure this belongs to the client
+                // // IS THIS NECESSARY? Can maybe make camera client-side only
+                // camInstanceNetworkObject.SpawnWithOwnership(clientId);
+                // Debug.Log("Current client ID is " + clientId);
                 
                 
             }

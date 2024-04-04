@@ -4,6 +4,9 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+// UI class to link NetworkManager Server/Host/Client
+// methods to canvas buttons
 public class NetworkManagerUI : MonoBehaviour
 {
     [SerializeField] private Button serverButton;

@@ -5,6 +5,7 @@ using UnityEngine;
 using Logging;
 using System;
 
+// Class to implement a DiskLogger, attached to each client's FirstPersonPlayer
 public class PlayerLogger : NetworkBehaviour
 {
 

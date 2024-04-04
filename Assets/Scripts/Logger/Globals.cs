@@ -1,5 +1,8 @@
 using UnityEngine;
 
+
+// Logging namespace for Global values associated with logging formats
+// and networking values
 namespace Logging
 {
     public static class Globals
