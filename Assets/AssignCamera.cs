@@ -16,15 +16,67 @@ public class AssignCamera : NetworkBehaviour
     public string prefabName = "prefabs/playercamera";
     public GameObject camInstance;
     public ulong clientId;
-
+    private bool playerLoaded = false;
 
     public override void OnNetworkSpawn()
     {   
         // Instantiate the camera prefab
         networkManager = FindObjectOfType<NetworkManager>();
-        player = networkManager.LocalClient.PlayerObject.transform;
+
+        // Coroutine will not execute body until the LocalPlayer returns true
+        // This avoids attempting to assign a value to the player transform before
+        // the player has spawned
+        StartCoroutine(CreateCamera());
+
+        /* camera = Resources.Load<GameObject>(prefabName);
+        // BUG
+        // player is being set as null
+        // Camera can instantiate, MouseLook.cs works fine, and even seems to assign itself
+        // the player correct from 'networkManager.LocalClient.PlayerObject.transform' in MouseLook.cs
+        // However, that same code will not run here and therefore camera is not assigned to player location
+
+        camInstance = Instantiate(camera);
+        Debug.Log("NetworkManager successfully assigned in AssignCamera");
+        
+        if (networkManager != null)
+        {
+            Debug.Log("NetworkManager is NOT null in AssignCamera.cs OnNetworkSpawn()");
+            
+            if (networkManager.LocalClient != null)
+            {
+                Debug.Log("And neither is networkManager.LocalClient");
+                if (networkManager.LocalClient.PlayerObject != null)
+                {
+                    Debug.Log("And neither is networkManager.LocalClient.PlayerObject");
+                    if (networkManager.LocalClient.PlayerObject.transform != null)
+                    {
+                        Debug.Log("And neither is networkManager.LocalClient.PlayerObject.transform");
+                        player = networkManager.LocalClient.PlayerObject.transform;
+                    }
+                    else
+                    {
+                        Debug.Log("However, player = networkManager.LocalClient.PlayerObject.transform IS null");
+                    }
+                }
+                else
+                {
+                    Debug.Log("However, networkManager.LocalClient.PlayerObject IS null");
+                }
+
+            }
+            else
+            {
+                Debug.Log("However, networkManager.LocalClient IS null");
+            }
+
+            
+        }       
+        else
+        {
+            Debug.Log("NetworkManager is null in AssignCamera.cs OnNetworkSpawn()");
+        }
         Debug.Log(player);
-        camera = Resources.Load<GameObject>(prefabName);
+
 
         // find clientID for this client
         clientId = NetworkManager.Singleton.LocalClientId;
@@ -33,6 +85,7 @@ public class AssignCamera : NetworkBehaviour
         if (camera != null)
             {
                 camInstance = Instantiate(camera);
+                Debug.Log("Camera has been instantiated");
                 // NetworkObject camInstanceNetworkObject = camInstance.GetComponent<NetworkObject>();
 
                 // // Make sure this belongs to the client
@@ -45,7 +98,29 @@ public class AssignCamera : NetworkBehaviour
         else 
             {
                 Debug.Log("Camera prefab was returned as null");
-            }
+            } */
+    }
+
+    IEnumerator CreateCamera()
+    {
+        Debug.Log("Start CreateCamera");
+
+        yield return new WaitUntil(() => networkManager.LocalClient.PlayerObject != null);
+        
+        Debug.Log("CreateCamera WaitUntil finished");
+
+        camera = Resources.Load<GameObject>(prefabName);
+        // Create client-side instance of PlayerCamera
+        if (camera != null) camInstance = Instantiate(camera);
+        else 
+        {
+            Debug.Log("Camera prefab was returned as null");
+        }
+        // Set the player for the camera to follow
+        player = networkManager.LocalClient.PlayerObject.transform;
+
+        Debug.Log("CreateCamera ran successfully");
+
     }
 
 
@@ -58,7 +133,7 @@ public class AssignCamera : NetworkBehaviour
         }
         else
         {
-            // Debug.Log("player returned as null in AssignCamera.cs");
+            Debug.Log("player returned as null in AssignCamera.cs");
         }
     }
 

@@ -181,7 +181,7 @@ public class WallTrigger : NetworkBehaviour
             Debug.Log($"EndTrial inputs: {highScore}, {highWallTriggerID}, {lowWallTriggerID}, {triggerID}, {rewardType}, {isClient}");
             Debug.Log("High score (50) triggered");
             // if (isClient) {
-            trialHandler.EndTrial(highScore, highWallTriggerID, lowWallTriggerID, triggerID, rewardType);
+            trialHandler.EndTrial(highScore, highWallTriggerID, lowWallTriggerID, triggerID, rewardType, isClient);
             // }
             diskLogger.Log(String.Format(Globals.wallTriggerFormat, Globals.wallTriggerTag,
                                                                 Globals.trialNum,
@@ -197,7 +197,7 @@ public class WallTrigger : NetworkBehaviour
         {
             Debug.Log($"EndTrial inputs: {lowScore}, {highWallTriggerID}, {lowWallTriggerID}, {triggerID}, {rewardType}, {isClient}");
             // if (isClient) {
-            trialHandler.EndTrial(lowScore, highWallTriggerID, lowWallTriggerID, triggerID, rewardType);
+            trialHandler.EndTrial(lowScore, highWallTriggerID, lowWallTriggerID, triggerID, rewardType, isClient);
             // }
             diskLogger.Log(String.Format(Globals.wallTriggerFormat, Globals.wallTriggerTag,
                                                     Globals.trialNum,

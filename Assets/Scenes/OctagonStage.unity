@@ -2782,7 +2782,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4845276930943762971, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000045776367
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4845637959249703711, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchorMax.y
@@ -3245,6 +3245,8 @@ MonoBehaviour:
   camera: {fileID: 0}
   networkManager: {fileID: 0}
   prefabName: PlayerCamera
+  camInstance: {fileID: 0}
+  clientId: 0
 --- !u!1001 &8050923106832289311
 PrefabInstance:
   m_ObjectHideFlags: 0

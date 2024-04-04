@@ -22,6 +22,8 @@ public class TrialHandler : NetworkBehaviour
    List<int> walls;
    public NetworkVariable<int> activeWallsLowID;
    public NetworkVariable<int> activeWallsHighID;
+   bool isClient = false; // flag to check if current trial was 
+                          // ended by this client
 
 
     public override void OnNetworkSpawn()
@@ -57,9 +59,11 @@ public class TrialHandler : NetworkBehaviour
         
         do
         {
-            if (isReady)
+            Debug.Log($"IsServer returns as: {IsServer}");
+            if (isReady && IsServer)
             {
                 // Begin trials
+                isClient = true;
                 StartTrial();
             }
         }
@@ -142,11 +146,14 @@ public class TrialHandler : NetworkBehaviour
     // Define and run requirements for a new trial
     void StartTrial()
     {    
-
-        List<int> newWalls = gameManager.SelectNewWalls();
-        Debug.Log($"The list of ints that is received from GameManager in StartTrail() is {newWalls[0]} and {newWalls[1]}");
-        gameManager.UpdateNetworkVariables(newWalls);
-
+        if (isClient)
+        {
+            Debug.Log("isClient is true, and StartTrial has been triggered");
+            List<int> newWalls = gameManager.SelectNewWalls();
+            Debug.Log($"The list of ints that is received from GameManager in StartTrail() is {newWalls[0]} and {newWalls[1]}");
+            gameManager.UpdateNetworkVariables(newWalls);
+            isClient = false;
+        }
         // Add colour to the parent walls of each trigger
         // NB Walls are coloured immediately after the NetworkVariable for the new trial is updated
         ColorWalls(gameManager.activeWalls.Value.wall1, gameManager.activeWalls.Value.wall2);
@@ -154,11 +161,15 @@ public class TrialHandler : NetworkBehaviour
     }
 
     public void EndTrial(int increment, int highWallTriggerID, int lowWallTriggerID, int triggerID,
-                         string rewardType)
+                         string rewardType, bool isClient)
     {
 
         // Score.cs accesses the score here to display to the Canvas
         AdjustScore(increment);
+
+        // Record whether it was this client that ended the current trial
+        this.isClient = isClient;
+
 
         // reset position and walls
         Debug.Log("WashWalls() is being triggered in TrialHandler.EndTrial by WallTrigger.cs");
