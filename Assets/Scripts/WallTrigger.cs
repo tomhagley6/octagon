@@ -48,7 +48,8 @@ public class WallTrigger : NetworkBehaviour
         // which will update our class variables for the current active wall1 and wall2
         if (gameManager !=  null) {
             gameManager.activeWalls.OnValueChanged += OnWallChange;
-            Debug.Log("WallTrigger.cs subscribed successfully to activeWalls.OnValueChanged with OnWallChange");
+            Debug.Log("WallTrigger.cs subscribed successfully to activeWalls.OnValueChanged"
+             + " with OnWallChange");
         }
     else
     {
@@ -105,16 +106,17 @@ public class WallTrigger : NetworkBehaviour
     
     // Method that runs when a Trigger is entered
     // No need to explicitly reference
-    void OnTriggerEnter(Collider other)
+    void OnTriggerEnter(Collider interactingObject)
     {
         
         /* // Prevent repeat activation of the trigger
         collider.enabled = false; */
         // Check if the GameObject that entered the trigger was the local client player's
         bool isClient = false;
-        if (other.GetComponent<NetworkObject>() != null && other.GetComponent<NetworkObject>().IsLocalPlayer) isClient = true;
-        // Debug.Log($"other.GetComponent<NetworkObject>() != null is {other.GetComponent<NetworkObject>() != null}" + 
-        // $"and other.GetComponent<NetworkObject>().IsLocalPlayer is { other.GetComponent<NetworkObject>().IsLocalPlayer}");
+        if (interactingObject.GetComponent<NetworkObject>() != null
+         && interactingObject.GetComponent<NetworkObject>().IsLocalPlayer) isClient = true;
+        // Debug.Log($"interactingObject.GetComponent<NetworkObject>() != null is {interactingObject.GetComponent<NetworkObject>() != null}" + 
+        // $"and interactingObject.GetComponent<NetworkObject>().IsLocalPlayer is { interactingObject.GetComponent<NetworkObject>().IsLocalPlayer}");
         // Debug.Log($"isClient = {isClient}");
         // Debug.Log($"Custom ID: {triggerID}");
         
@@ -150,64 +152,57 @@ public class WallTrigger : NetworkBehaviour
         }
     }
 
+    void WallTrialInteraction(int triggerID, int highWallTriggerID, int lowWallTriggerID, bool isClient)
+    {
+        // LVs
+        int score = triggerID == highWallTriggerID ? highScore : lowScore;
+        string rewardType = triggerID == highWallTriggerID ? "High" : "Low";
+        
+        // Only call EndTrial if this client is the one that ended the trial
+        // to prevent multiple calls in multiplayer
+        if (isClient) {
+            Debug.Log($"EndTrial inputs: {score}, {highWallTriggerID}, {lowWallTriggerID}, {triggerID}, {rewardType}, {isClient}");
+            trialHandler.EndTrial(score, highWallTriggerID, lowWallTriggerID, triggerID, rewardType, isClient);
+        }
+        
+        // all clients log their own event information
+        diskLogger.Log(String.Format(Globals.wallTriggerFormat, Globals.wallTriggerTag,
+                                                Globals.trialNum,
+                                                Globals.trialType,
+                                                triggerID,
+                                                rewardType,
+                                                score,
+                                                isClient));
+        Debug.Log($"{rewardType} score ({score}) triggered");
+    }
+
     // Standard HighLow trial
-    // If this wall is designated High, add 50 points to score
-    // Else if it is Low, add 25 points to score
     void HighLowTrial(int wallIDHigh, int wallIDLow, int triggerID, bool isClient)
     {
         // int highWallTriggerID = activeWalls[0];
         // int lowWallTriggerID = activeWalls[1];
         int highWallTriggerID = wallIDHigh;
         int lowWallTriggerID = wallIDLow;
-        string rewardType = triggerID == highWallTriggerID ? "High" : "Low";
 
         Debug.Log($"Values HighLowTrial receives for high and low wall IDs are: {highWallTriggerID} and {lowWallTriggerID}");
         
-        // Invoke the callback on OnTriggerEntered Action for each wall currently active
-        // but only if this is a relevant wall for the current trial
+        // If this is a relevant wall for the current trial
         if (triggerID == highWallTriggerID || triggerID == lowWallTriggerID)
         {
+            // Invoke the callback on OnTriggerEntered Action for each wall currently active
             for (int i = 0; i < wallIDs.Count; i++)
                 {
                     OnTriggerEntered?.Invoke(wallIDs[i]);
                     Debug.Log($"Invoked OnTriggerEntered's subscribed method DeactivateWall for wall number {wallIDs[i]}");
                 }
-        }
 
-        if (triggerID == highWallTriggerID)
-        {
-            // Debug.Log("Active high wall is: " + gameManager.activeWalls[0]);
-            Debug.Log("Active high wall is: " + highWallTriggerID);
-            Debug.Log($"EndTrial inputs: {highScore}, {highWallTriggerID}, {lowWallTriggerID}, {triggerID}, {rewardType}, {isClient}");
-            Debug.Log("High score (50) triggered");
-            // if (isClient) {
-            trialHandler.EndTrial(highScore, highWallTriggerID, lowWallTriggerID, triggerID, rewardType, isClient);
-            // }
-            diskLogger.Log(String.Format(Globals.wallTriggerFormat, Globals.wallTriggerTag,
-                                                                Globals.trialNum,
-                                                                Globals.trialType,
-                                                                triggerID,
-                                                                rewardType,
-                                                                highScore,
-                                                                isClient));
-
-
-        }
-        else if (triggerID == lowWallTriggerID)
-        {
-            Debug.Log($"EndTrial inputs: {lowScore}, {highWallTriggerID}, {lowWallTriggerID}, {triggerID}, {rewardType}, {isClient}");
-            // if (isClient) {
-            trialHandler.EndTrial(lowScore, highWallTriggerID, lowWallTriggerID, triggerID, rewardType, isClient);
-            // }
-            diskLogger.Log(String.Format(Globals.wallTriggerFormat, Globals.wallTriggerTag,
-                                                    Globals.trialNum,
-                                                    Globals.trialType,
-                                                    triggerID,
-                                                    rewardType,
-                                                    lowScore,
-                                                    isClient));
-            Debug.Log("Low score (25) triggered");
+            // Handle the wall interaction for this trial and trial type
+            WallTrialInteraction(triggerID, highWallTriggerID, lowWallTriggerID, isClient);
         }
         else Debug.Log("No conditions met for HighLowTrial");
+    
     }
+
 }
+
+

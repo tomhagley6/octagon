@@ -57,6 +57,10 @@ public class TrialHandler : NetworkBehaviour
 
     public void GameManager_OnReadyStateChangedHandler(bool isReady) {
         
+
+        // In theory this method should only be invoked when the ready condition
+        // is met, so should switch this to a single if-statement when cleaning
+        // up the code
         do
         {
             Debug.Log($"IsServer returns as: {IsServer}");
