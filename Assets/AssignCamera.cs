@@ -133,7 +133,7 @@ public class AssignCamera : NetworkBehaviour
         }
         else
         {
-            Debug.Log("player returned as null in AssignCamera.cs");
+            // Debug.Log("player returned as null in AssignCamera.cs");
         }
     }
 

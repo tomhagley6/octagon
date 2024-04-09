@@ -16,23 +16,91 @@ public class TrialHandler : NetworkBehaviour
    
    GameManager gameManager;
    public int score;
-   List<NetworkVariable<int>> activeWalls;
    IdentityManager identityManager;
    Color defaultWallColor;
    List<int> walls;
    public NetworkVariable<int> activeWallsLowID;
    public NetworkVariable<int> activeWallsHighID;
-   bool isClient = false; // flag to check if current trial was 
+   
+   // N.B. Difference betweeen isTrialEnderClient and isTrialEnderClient
+   bool isTrialEnderClient = false; // flag to check if current trial was 
                           // ended by this client
+    // WallTrigger wallTrigger;
 
+
+    IEnumerator PrintWalls()
+    {   
+        while (true)
+        {
+            yield return new WaitForSeconds(1.5f);
+
+            Debug.Log($"Activewalls values are {gameManager.activeWalls.Value.wall1} and {gameManager.activeWalls.Value.wall2}");
+        }
+    }
 
     public override void OnNetworkSpawn()
     {
         gameManager = GameManager.Instance;
         identityManager = FindObjectOfType<IdentityManager>();
+        // // N.B. This will return the first active loaded WallTrigger object
+        // wallTrigger = FindObjectOfType<WallTrigger>();
 
+        StartCoroutine(PrintWalls());
+        
         gameManager.activeWalls.OnValueChanged += OnWallChange;
         gameManager.OnReadyStateChanged += GameManager_OnReadyStateChangedHandler;
+
+
+        StartCoroutine(DelayedColorWalls());
+
+
+        // For case where OnNetworkSpawn occurs after the first trial starts
+        if (gameManager.activeWalls == null)
+        {
+            Debug.Log("activeWalls is null at this point, for some reason");
+        }
+        if (gameManager.activeWalls.Value.wall1 != 0 && IsClient)
+        {
+            Debug.Log("activeWalls has a non-zero value and am client");
+            // ColorWalls(gameManager.activeWalls.Value.wall1, gameManager.activeWalls.Value.wall2);
+        }
+        else 
+        {
+            Debug.Log("Either not IsClient or activeWalls has a 0 value now");
+            if (IsClient)
+            {
+                Debug.Log("Current player IS a client, though");
+                Debug.Log($"Active walls are currently {gameManager.activeWalls.Value.wall1}"
+                             + $"and {gameManager.activeWalls.Value.wall2}");
+            }
+            else
+            {
+                Debug.Log("Current player is NOT a client");
+            }
+        }
+    }
+
+    // Coroutine here is likely unnecessary because ColorWalls will only rely on
+    // the physical GameObjects being loaded, and not need OnNetworkSpawn to complete
+    // BUT IT WILL NEED THE FIRST TRIAL TO HAVE STARTED SO THAT ACTIVEWALLS IS UPDATED
+    IEnumerator DelayedColorWalls()
+    {   
+        
+        // Currently nothing to stop every client from running this coroutine even if they
+        // are the host. To avoid this, we can check whether the defaultWallColor is equal 
+        // to Color's default initialisation value. If it is, ColorWalls has never been run
+        // and therefore should now be run on this client
+        Color myColor = new Color(0,0,0,0);
+        Debug.Log($"Current value of default wall color is {defaultWallColor}");
+        Debug.Log($"Outcome of myColor == defaultWallColor is {myColor == defaultWallColor}");
+        Debug.Log($"DelayedColorWalls conditions are: {WallTrigger.setupComplete}"
+                    + $", {gameManager.activeWalls.Value.wall1 != 0}"
+                    + $", {defaultWallColor == myColor}");
+        yield return new WaitUntil( () => WallTrigger.setupComplete == true && gameManager.activeWalls.Value.wall1 != 0
+        && defaultWallColor == myColor);
+
+        ColorWalls(gameManager.activeWalls.Value.wall1, gameManager.activeWalls.Value.wall2);
+
     }
 
     public override void OnDestroy()
@@ -53,7 +121,15 @@ public class TrialHandler : NetworkBehaviour
         }
         // ColorWalls(newValue.wall1, newValue.wall2);
         Debug.Log("New walls coloured"); */
-    }
+
+
+        // We reset the value of activeWalls to 0 and 0 on each trial. Don't try and colour
+        // the walls if they are 0
+        if (gameManager.activeWalls.Value.wall1 != 0)
+        {
+            ColorWalls(gameManager.activeWalls.Value.wall1, gameManager.activeWalls.Value.wall2);
+        }
+    }   
 
     public void GameManager_OnReadyStateChangedHandler(bool isReady) {
         
@@ -67,7 +143,7 @@ public class TrialHandler : NetworkBehaviour
             if (isReady && IsServer)
             {
                 // Begin trials
-                isClient = true;
+                isTrialEnderClient = true;
                 StartTrial();
             }
         }
@@ -96,7 +172,7 @@ public class TrialHandler : NetworkBehaviour
         lowWall.GetComponent<Renderer>().material.color = Color.blue;
     }
    
-   void WashWalls(int highWallTriggerID, int lowWallTriggerID)
+   public void WashWalls(int highWallTriggerID, int lowWallTriggerID)
     {
         Debug.Log($"WashWalls receives high and low wall trigger IDs as: {highWallTriggerID} and {lowWallTriggerID}");
         
@@ -150,35 +226,38 @@ public class TrialHandler : NetworkBehaviour
     // Define and run requirements for a new trial
     void StartTrial()
     {    
-        if (isClient)
+        if (isTrialEnderClient)
         {
-            Debug.Log("isClient is true, and StartTrial has been triggered");
+            Debug.Log("isTrialEnderClient is true, and StartTrial has been triggered");
             List<int> newWalls = gameManager.SelectNewWalls();
             Debug.Log($"The list of ints that is received from GameManager in StartTrail() is {newWalls[0]} and {newWalls[1]}");
             gameManager.UpdateNetworkVariables(newWalls);
-            isClient = false;
+            isTrialEnderClient = false;
         }
         // Add colour to the parent walls of each trigger
         // NB Walls are coloured immediately after the NetworkVariable for the new trial is updated
-        ColorWalls(gameManager.activeWalls.Value.wall1, gameManager.activeWalls.Value.wall2);
+        // THIS SHOULD BE TRIGGERING WHENEVER START TRIAL IS RUN, BUT STARTTRIAL IS ONLY RUN BY ONE 
+        // CLIENT
+        // ColorWalls(gameManager.activeWalls.Value.wall1, gameManager.activeWalls.Value.wall2);
 
     }
 
     public void EndTrial(int increment, int highWallTriggerID, int lowWallTriggerID, int triggerID,
-                         string rewardType, bool isClient)
+                         string rewardType, bool isTrialEnderClient)
     {
 
         // Score.cs accesses the score here to display to the Canvas
         AdjustScore(increment);
 
         // Record whether it was this client that ended the current trial
-        this.isClient = isClient;
+        this.isTrialEnderClient = isTrialEnderClient;
 
-
-        // reset position and walls
+        // END TRIAL IS ONLY CALLED BY THE TRIAL-ENDING CLIENT, SO WASH WALLS ELSEWHERE
+        /* // reset position and walls
+        // Wash walls should be moved out of here and instead be triggered for all clients by a trial ending
         Debug.Log("WashWalls() is being triggered in TrialHandler.EndTrial by WallTrigger.cs");
         Debug.Log($"WashWalls() uses {highWallTriggerID} and {lowWallTriggerID} for the walls");
-        WashWalls(highWallTriggerID, lowWallTriggerID);
+        WashWalls(highWallTriggerID, lowWallTriggerID) */;
 
         // Begin StartTrial again with a random ITI
         // Pause code block execution (while allowing other scripts to continue) by running "Invoke"
