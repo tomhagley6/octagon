@@ -1,15 +1,14 @@
+using Unity.Netcode;
 using UnityEngine;
 
 
-// Code to implement general x/y player movement, jumping, and detecting contact with the ground
+// Class to implement general x/y player movement, jumping, and detecting contact with the ground
 // Does NOT implement any camera control
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : NetworkBehaviour
 {
 
-    // disable controller.Move error caused by pausing character input in GameController
-    // do this until I find a better way to implement character control (see Sebastian Graves tutorials)
-    #pragma warning disable 0618
-
+    // No need to directly assign Transform and Controller as this script attaches to 
+    // each new FirstPersonPlayer Network Prefab
     public Transform player;
     public CharacterController controller; 
     public GameManager gameManager;
@@ -69,17 +68,24 @@ public class PlayerMovement : MonoBehaviour
             // Source: Brackeys - First Person Movement in Unity
             yAxisVelocity.y += Mathf.Sqrt(-2f * jumpHeight * -gravity); 
 
+        // Remove this for now to test networking
+        /*
         // Now apply resultant y-axis velocity, account for framerate
             controller.Move(yAxisVelocity * Time.deltaTime);
-    }
+        */
+
+    
+    }   
 
     void Update()
     {   
-        // flag to allow for GameController acess to movement control
-        if (gameManager.movementEnabled)
-            UpdateMovement();
+        // Only move a player object that you own as client
+        if (!IsOwner) return;
+
+        // // flag to allow for GameController access to movement control
+        // if (gameManager.movementEnabled)
+        UpdateMovement();
         
     }
 
-    #pragma warning restore 0618
 }

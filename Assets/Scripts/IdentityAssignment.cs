@@ -1,30 +1,31 @@
 using UnityEngine;
 
 
-// Attach this script to each Octagon wall, and each wall will take its manually-assigned ID
+// Each Octagon wall instantiates this class, and will take its manually-assigned ID
 // and add it to the IdentityManager dictionary, linked to its own GameObject handle
 public class IdentityAssignment : MonoBehaviour
 {
-    // An ID for the WallTrigger, manually set for each wall, which has its own IdentityAssignment.cs
-    public int customID;
+    
+    public int customID; // An ID for the WallTrigger, 
+                         // manually set for each wall,
+                         // which has its own IdentityAssignment.cs
     IdentityManager identityManager;
 
-    // Could this be in Awake()? Doesn't require IdentityManager to run any code, just needs to 
-    // access the assignment function
-    // Then could use Start for GameManager
-    void Start()
+    // In Awake() as this can be the first code run
+    // to avoid race condition with GameManager
+    void Awake()
     {
         // Avoid requirement to manually set IdentityManager, when there is only one in the scene
         identityManager = FindObjectOfType<IdentityManager>(); 
         if (identityManager != null)
         {
-            // Add this wall to the wallID, wall GameObject dictionary
+            // Add this wall to the [wallID : wall] GameObject dictionary
             identityManager.AssignIdentifier(gameObject, customID);
             // Debug.Log($"Key assigned in Identity Assignment is: {customID}");
         }
         else
         {
-            Debug.LogWarning("IdentityManager not found in the scene");
+            Debug.LogWarning("IdentityManager not found in the scene"); 
         }
     }
 }
