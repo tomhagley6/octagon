@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2711583391846659022}
   - component: {fileID: 8321545092980515107}
   - component: {fileID: 2280361947992369445}
+  - component: {fileID: 4287384531685716419}
   m_Layer: 0
   m_Name: OctagonWall2Materials
   m_TagString: Untagged
@@ -61,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 8347576448117783026, guid: 70d1f762e6dcfe404b09ab0332776cdf, type: 3}
+  - {fileID: 2100000, guid: 328b4893031ac3145b8e59671fc5fd14, type: 2}
   - {fileID: 2100000, guid: 0e1a2d2fddbe07a4798dde6c061aeed2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -84,3 +85,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &4287384531685716419
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2667508208087144207}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}

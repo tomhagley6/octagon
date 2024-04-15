@@ -163,13 +163,14 @@ public class TrialHandler : NetworkBehaviour
         GameObject lowWall = lowWallTrigger.transform.parent.gameObject;
 
         // Save the current colour of the wall before overwriting it 
-        defaultWallColor = highWall.GetComponent<Renderer>().material.color;
+        // This should be the first material, the wall face
+        defaultWallColor = highWall.GetComponent<Renderer>().materials[0].color;
         Debug.Log($"Default wall colour is saved as {defaultWallColor}");
         Debug.Log($"ColorWalls() uses {highWallTriggerID} and {lowWallTriggerID} as wall values");
 
         // Assign colours to the walls that fit their rewards
-        highWall.GetComponent<Renderer>().material.color = Color.red;
-        lowWall.GetComponent<Renderer>().material.color = Color.blue;
+        highWall.GetComponent<Renderer>().materials[0].color = Color.red;
+        lowWall.GetComponent<Renderer>().materials[0].color = Color.blue;
     }
    
    public void WashWalls(int highWallTriggerID, int lowWallTriggerID)

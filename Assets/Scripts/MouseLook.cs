@@ -1,3 +1,4 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -14,6 +15,8 @@ public class MouseLook : NetworkBehaviour
 
     float xRotation = 0f;
     public NetworkManager networkManager;
+    public Action toggleMouseLock;
+    public bool unlockMouseTrigger = false;
 
 
     public void Start()
@@ -26,6 +29,19 @@ public class MouseLook : NetworkBehaviour
         playerBody = networkManager.LocalClient.PlayerObject.transform;
         Cursor.lockState = CursorLockMode.Locked;  // Lock cursor within game view
 
+        // subscribe to a key-triggered event with mouse lock toggle method
+        toggleMouseLock += ToggleMouseLockListener;
+
+    }
+
+    // Toggle mouse lock mode between locked and free
+    // to allow interaction with QuantumConsole
+    public void ToggleMouseLockListener()
+    {
+        
+        unlockMouseTrigger = !unlockMouseTrigger;
+        Cursor.lockState = unlockMouseTrigger ? CursorLockMode.None : CursorLockMode.Locked;
+        
     }
 
     void Update()
@@ -66,5 +82,11 @@ public class MouseLook : NetworkBehaviour
         // rotation value by the amount specified (applies a rotation).
         transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
+
+        // Allow manual toggle of mouse lock state
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            toggleMouseLock();
+        }
     }
 }
