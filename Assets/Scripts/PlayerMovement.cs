@@ -22,10 +22,16 @@ public class PlayerMovement : NetworkBehaviour
     Vector3 yAxisVelocity;
     float gravityMultiplier = 2f; // scale gravity accel. based on feel
 
+    public override void OnNetworkSpawn()
+    {
+        gameObject.transform.position = new Vector3(0,10,0);
+    }
+    
     void Start()
     {
         gameManager = FindObjectOfType<GameManager>();
     }
+
 
     void UpdateMovement()
     {   
@@ -69,10 +75,10 @@ public class PlayerMovement : NetworkBehaviour
             yAxisVelocity.y += Mathf.Sqrt(-2f * jumpHeight * -gravity); 
 
         // Remove this for now to test networking
-        /*
+        
         // Now apply resultant y-axis velocity, account for framerate
-            controller.Move(yAxisVelocity * Time.deltaTime);
-        */
+        controller.Move(yAxisVelocity * Time.deltaTime);
+       
 
     
     }   
