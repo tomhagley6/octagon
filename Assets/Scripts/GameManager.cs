@@ -178,6 +178,8 @@ public class GameManager : SingletonNetwork<GameManager>
     
     // }
 
+
+
     public void AdjustScore(int increment = 0)
     {
         score += increment;

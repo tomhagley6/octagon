@@ -9,10 +9,9 @@ public class PlayerMovement : NetworkBehaviour
 
     // No need to directly assign Transform and Controller as this script attaches to 
     // each new FirstPersonPlayer Network Prefab
-    public Transform player;
     public CharacterController controller; 
     public GameManager gameManager;
-    public float speed = 200f;
+    public float speed = 200f; // Changed based on hardware
     public Transform groundCheck;
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
@@ -24,6 +23,8 @@ public class PlayerMovement : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        // Can alternatively use networkManager.LocalClient.PlayerObject.transform;
+        // from elsewhere
         gameObject.transform.position = new Vector3(0,10,0);
     }
     
@@ -36,10 +37,10 @@ public class PlayerMovement : NetworkBehaviour
     void UpdateMovement()
     {   
         // Check if grounded
-        // This involves using a Transform-only component grouped into FirstPersonPlayer
-        // and comparing the transform vector to the Ground layer (with a distance of groundDistance), 
-        // using Physics.CheckSphere
-        // Now you have a bool that will tell you whether groundCheck is within a distance radius of the ground
+        /* This involves using a Transform-only child GO of FirstPersonPlayer
+        and comparing the transform vector to the Ground layer (with a distance of groundDistance), 
+        using Physics.CheckSphere
+        Now you have a bool that will tell you whether groundCheck is within a distance radius of the ground */
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
         
         // Reset yAxisVelocity when grounded
@@ -63,9 +64,9 @@ public class PlayerMovement : NetworkBehaviour
         controller.Move(planarMovement * speed * Time.deltaTime);
 
         // It's time to stop defying gravity (I think I'll try applying gravity)
-        // SUVAT equation for gravity: v = u + a*t
-        // n.b. that here Time.deltaTime is the 't' in the equation
-        // it is NOT the term used to account for framerate differences 
+        /* SUVAT equation for gravity: v = u + a*t
+        n.b. that here Time.deltaTime is the 't' in the equation
+        it is NOT the term used to account for framerate differences */ 
         yAxisVelocity.y += -gravity * Time.deltaTime * gravityMultiplier;
 
         // Jumping
@@ -74,12 +75,8 @@ public class PlayerMovement : NetworkBehaviour
             // Source: Brackeys - First Person Movement in Unity
             yAxisVelocity.y += Mathf.Sqrt(-2f * jumpHeight * -gravity); 
 
-        // Remove this for now to test networking
-        
         // Now apply resultant y-axis velocity, account for framerate
         controller.Move(yAxisVelocity * Time.deltaTime);
-       
-
     
     }   
 
@@ -87,9 +84,7 @@ public class PlayerMovement : NetworkBehaviour
     {   
         // Only move a player object that you own as client
         if (!IsOwner) return;
-
-        // // flag to allow for GameController access to movement control
-        // if (gameManager.movementEnabled)
+        
         UpdateMovement();
         
     }

@@ -14,6 +14,7 @@ public class Score : MonoBehaviour
     {
         trialHandler = FindObjectOfType<TrialHandler>();
     }
+    
     // Keep canvas text updated with the current value of score
     // as recorded in GameManager.cs
     void Update()

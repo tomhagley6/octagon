@@ -47,13 +47,13 @@ public class IdentityManager : MonoBehaviour
     public void OrderDictionary()
     {
         // Order by keys
-        // Both OrderBy and ToDictionary expect a lambda expression as their input
-        // and the compiler implicitly declares the variable 'pair' to represent each 
-        // collection element during the iteration.
-        // Therefore, we just need to specify either Key or Value in the lambda function
-        // output to order or create the dictionary
-        // OrderBy will just return an IEnumerable of keys, so we need to call ToDictionary
-        // to create a new ordered dictionary 
+        /* Both OrderBy and ToDictionary expect a lambda expression as their input
+        and the compiler implicitly declares the variable 'pair' to represent each 
+        collection element during the iteration.
+        Therefore, we just need to specify either Key or Value in the lambda function
+        output to order or create the dictionary
+        OrderBy will just return an IEnumerable of keys, so we need to call ToDictionary
+        to create a new ordered dictionary  */
         var orderedDictionary = wallDictionary.OrderBy(pair => pair.Key).ToDictionary(pair => pair.Key, pair => pair.Value);
         wallDictionary = orderedDictionary;
     }

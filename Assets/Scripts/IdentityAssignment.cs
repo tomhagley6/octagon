@@ -21,7 +21,6 @@ public class IdentityAssignment : MonoBehaviour
         {
             // Add this wall to the [wallID : wall] GameObject dictionary
             identityManager.AssignIdentifier(gameObject, customID);
-            // Debug.Log($"Key assigned in Identity Assignment is: {customID}");
         }
         else
         {
