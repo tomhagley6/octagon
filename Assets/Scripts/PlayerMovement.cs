@@ -11,6 +11,7 @@ public class PlayerMovement : NetworkBehaviour
     // each new FirstPersonPlayer Network Prefab
     public CharacterController controller; 
     public GameManager gameManager;
+    public NetworkManager networkManager;
     public float speed = 200f; // Changed based on hardware
     public Transform groundCheck;
     public float groundDistance = 0.4f;
@@ -25,12 +26,18 @@ public class PlayerMovement : NetworkBehaviour
     {
         // Can alternatively use networkManager.LocalClient.PlayerObject.transform;
         // from elsewhere
-        gameObject.transform.position = new Vector3(0,10,0);
+        // probably best not to do this here when refactoring
+        // Can then get rid of networkManager reference
+        // gameObject.transform.position = new Vector3(0,30,0);
+        // networkManager.LocalClient.PlayerObject.transform.position = new Vector3(0,200,0);
+    
     }
     
     void Start()
-    {
+    {   
+        networkManager = FindObjectOfType<NetworkManager>();
         gameManager = FindObjectOfType<GameManager>();
+        networkManager.LocalClient.PlayerObject.transform.position = new Vector3(0,10,0);
     }
 
 
