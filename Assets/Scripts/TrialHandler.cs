@@ -81,7 +81,7 @@ public class TrialHandler : NetworkBehaviour
 
 
     // Due to walls and wall colours not being networked, any late-joining clients will 
-    // run ColourWalls as they join
+    // need to run ColourWalls as they join
     IEnumerator DelayedColourWalls()
     {   
         
@@ -162,6 +162,8 @@ public class TrialHandler : NetworkBehaviour
         lowWall.GetComponent<Renderer>().materials[0].color = Color.blue;
     }
    
+
+   // Reset wall colour to default after a trial
    public void WashWalls(int highWallTriggerID, int lowWallTriggerID)
     {
         Debug.Log($"WashWalls receives high and low wall trigger IDs as: {highWallTriggerID} and {lowWallTriggerID}");
@@ -178,6 +180,7 @@ public class TrialHandler : NetworkBehaviour
         highWall.GetComponent<Renderer>().materials[0].color = defaultWallColour; 
         lowWall.GetComponent<Renderer>().materials[0].color = defaultWallColour;   
     }
+    
     
     // Change the score variable, which is accessed by Score.cs to update the UI 
         public void AdjustScore(int increment = 0)
@@ -216,6 +219,11 @@ public class TrialHandler : NetworkBehaviour
 
         // Begin StartTrial again with a random ITI
         float ITIvalue = Random.Range(2f,5f);
+        
+        // Reset the activeWall values to 0, as these walls should be inactive immediately
+        // as the trial ends
+        List<int> wallReset = new List<int>(){0,0};
+        gameManager.UpdateNetworkVariables(wallReset);
         
         // Pause code block execution (while allowing other scripts to continue) by running "Invoke"
         // NB no trial logic for the next trial is run until an ITI has ocurred

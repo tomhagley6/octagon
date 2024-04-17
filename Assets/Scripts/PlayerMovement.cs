@@ -35,8 +35,8 @@ public class PlayerMovement : NetworkBehaviour
     
     void Start()
     {   
-        networkManager = FindObjectOfType<NetworkManager>();
         gameManager = FindObjectOfType<GameManager>();
+        networkManager = FindObjectOfType<NetworkManager>();
         networkManager.LocalClient.PlayerObject.transform.position = new Vector3(0,10,0);
     }
 

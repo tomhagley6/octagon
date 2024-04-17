@@ -386,12 +386,13 @@ public class GameManager : SingletonNetwork<GameManager>
             wall1 = wallList[0],
             wall2 = wallList[1]
         }; */
-
-        // reset activeWalls values to 0 to account for two consecutive 
-        // trials with the same wall values
-        // THIS MAYE CAUSE BUGS if you do not begin onValueChanged subscriber methods with
-        // if 0 return;
-        UpdateWallsServerRpc(0, 0);
+        
+        // // JUST CALL THE METHOD TWICE, DON'T BLOAT
+        // // reset activeWalls values to 0 to account for two consecutive 
+        // // trials with the same wall values
+        // // THIS MAYE CAUSE BUGS if you do not begin onValueChanged subscriber methods with
+        // // if 0 return;
+        // UpdateWallsServerRpc(0, 0);
 
 
         // Update activeWalls with new wall values
