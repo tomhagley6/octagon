@@ -10,37 +10,26 @@ using UnityEngine;
 using Random=UnityEngine.Random;
 
 
-// Class to control generation and updating of NetworkVariable
-// values for trials
-// NB: GameManager does not contain or trigger StartTrial or EndTrial
-// methods
+/* Class to control generation and updating of NetworkVariable
+values for trials
+NB: GameManager does not contain or trigger StartTrial or EndTrial
+methods */
 public class GameManager : SingletonNetwork<GameManager>
 {
 
-
-    // public GameObject player;
-    public DiskLogger diskLogger;
     public int score;
-    // public List<int> activeWalls;
-    // public bool movementEnabled = true; // flag to control whether character controller
-    //                                     // should take input
-
-
     List<int> walls;
     public IdentityManager identityManager;
     Color defaultWallColor;
-
     // Setup an event to enable checking that GameManager has completed startup code
     public event Action<bool> OnReadyStateChanged; 
     public bool isReady = false;
 
-
-    // trialNum int to act as a trigger for events to run on each trial start
-    // Cannot rely on change in value for activeWalls, as may have immediate repeats of selected walls
-    
-    /* public NetworkVariable<int> trialNum = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    public NetworkVariable<int> activeWallsHighID = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    public NetworkVariable<int> activeWallsLowID = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); */
+    /* trialNum int to act as a trigger for events to run on each trial start
+    Instead of relying on activeWalls changing value for all of my logic, define logic based on epoch boundaries
+    Create events for e.g. trial start, slice onset (which could be activeWalls)
+    This will be initially useful for implementing my variable trial start to slice onset time
+     public NetworkVariable<int> trialNum = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); */
 
     public NetworkVariable<ActiveWalls> activeWalls = new NetworkVariable<ActiveWalls>(
         new ActiveWalls {
@@ -59,53 +48,16 @@ public class GameManager : SingletonNetwork<GameManager>
     }
 
     public override void OnNetworkSpawn() {
-        // Subscribe to the OnValueChanged delegate with a lambda expression that fulfills the
-        // delegate by giving the correct signature (previous and new value), and in the body
-        // we can put a Debug statement to ensure we only log the value when it changes
+        /* Subscribe to the OnValueChanged delegate with a lambda expression that fulfills the
+        delegate by giving the correct signature (previous and new value), and in the body
+        we can put a Debug statement to ensure we only log the value when it changes */
         
-        /* activeWallsHighID.OnValueChanged += (int previousValue, int newValue) => {
+        /* trialNum.OnValueChanged += (int previousValue, int newValue) => {
             if (newValue == 0) return;
-            Debug.Log($"New High wall ID: {newValue}");
+            Debug.Log($"Trial number: {newValue}");
 
         }; 
 
-        activeWallsLowID.OnValueChanged += (int previousValue, int newValue) => {
-            if (newValue == 0) return;
-            Debug.Log($"New Low wall ID: {newValue}");
-        }; */
-
-
-        // Get identity manager and order the (populated) dictionary
-        identityManager = FindObjectOfType<IdentityManager>(); 
-        Debug.Log($"identityManager exists and its reference is {identityManager}");
-        identityManager.OrderDictionary();  
-        Debug.Log("identityManager.OrderDictionary ran without errors");
-        // List<int> chosenWalls = SelectNewWalls();  // Begin trial logic sequence
-        // UpdateNetworkVariables(chosenWalls);
-
-        Debug.Log("3 seconds have started");
-        // Pause script execution for 1 second to allow other scene NetworkObjects to spawn
- 
-        StartCoroutine(WaitForSpawn());
-        Debug.Log("Waiting for coroutine to finish");
-
-
-        // Here Invoking all subscribed methods of OnReadyStateChanged now that isReady is true
-        // Invoke called as a method on an event will trigger all methods subscribed to the event
-        // and passes them isReady as an input
-        isReady = true;
-        OnReadyStateChanged?.Invoke(isReady);
-    }
-
-
-    IEnumerator WaitForSpawn()
-    {
-
-        yield return new WaitForSeconds(3f);
-
-        Debug.Log("3 seconds have passed");        
-
-    }
 
     void Start()
     {

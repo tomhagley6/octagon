@@ -7,13 +7,12 @@ using UnityEngine;
 using static GameManager;
 using Debug = UnityEngine.Debug;
 
-// This class exists client-side and accesses the wall number NetworkVariables
-// that are set by the Singleton GameManager (server control only). 
-// It then implements all of the logic that can be kept client-side, s.a.
-// painting and washing walls, score adjust, etc.
+/* This class exists client-side and accesses the wall number NetworkVariables
+that are set by the Singleton GameManager (server control only). 
+It then implements all of the logic that can be kept client-side, s.a.
+painting and washing walls, score adjust, etc. */
 public class TrialHandler : NetworkBehaviour
 {
-   
    
    GameManager gameManager;
    public int score;
@@ -204,10 +203,10 @@ public class TrialHandler : NetworkBehaviour
     }
 
 
-    // Run trial wrap-up logic if this client ended the trial
-    // This can be moved to GameManager when refactoring game logic
-    // Also, alongside StartTrial, this method be run on the server
-    // when writing server-authoritative version
+    /* Run trial wrap-up logic if this client ended the trial
+    This can be moved to GameManager when refactoring game logic
+    Also, alongside StartTrial, this method be run on the server
+    when writing server-authoritative version */
     public void EndTrial(int increment, bool isTrialEnderClient)
     {
 
