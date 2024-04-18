@@ -20,10 +20,20 @@ public class GameManager : SingletonNetwork<GameManager>
     public int score;
     List<int> walls;
     public IdentityManager identityManager;
+    public List<GameObject> triggers; // Keep a handle on all triggers
+
     Color defaultWallColor;
     // Setup an event to enable checking that GameManager has completed startup code
     public event Action<bool> OnReadyStateChanged; 
     public bool isReady = false;
+
+    // winning player should update the server following trigger entry
+    public NetworkVariable<int> triggerActivation = new NetworkVariable<int>(0);
+    
+    public struct TriggerActivation : INetworkSerializable {
+        public int triggerID;
+        public ulong OwnerClientId;
+    }
 
     /* trialNum int to act as a trigger for events to run on each trial start
     Instead of relying on activeWalls changing value for all of my logic, define logic based on epoch boundaries
@@ -71,8 +81,46 @@ public class GameManager : SingletonNetwork<GameManager>
         and passes them isReady as an input */
         isReady = true;
         OnReadyStateChanged?.Invoke(isReady);
+
+        // // Subscribe to changes in the triggerID NetworkVariable value
+        // triggerID.OnValueChanged += TriggerIDHandler_DeactivateWalls;
+        // triggerID.OnValueChanged += TriggerIDHandler_TriggerEntry;
+
     }
 
+    void Start()
+    {
+        // Populate a list of all trigger GameObjects at Start time
+        foreach (GameObject trigger in GameObject.FindGameObjectsWithTag("WallTrigger"))
+        {
+            triggers.Add(trigger);
+        }
+    }
+
+    public void TriggerIDHandler_DeactivateWalls(int prevVal, int newVal)
+    {
+        DeactivateWall(activeWalls.Value.wall1);
+        DeactivateWall(activeWalls.Value.wall2);
+    }
+
+    public void TriggerIDHandler_TriggerEntry(int prevVal, int newVal)
+    {
+
+    }
+
+
+    void DeactivateWall(int wallID) 
+    {
+        // Look into each trigger and find the one with the matching wallID to deactivate
+        foreach(GameObject trigger in triggers)
+        {
+            WallTrigger wallTrigger = trigger.GetComponent<WallTrigger>();
+            if (wallTrigger != null && wallTrigger.triggerID == wallID)
+            { 
+                wallTrigger.collider.enabled = false;
+            }
+        }
+    }
     
     public List<int> SelectNewWalls() {
         Debug.Log("NEW TRIAL");

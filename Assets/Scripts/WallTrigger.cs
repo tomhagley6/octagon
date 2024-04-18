@@ -64,6 +64,10 @@ public class WallTrigger : NetworkBehaviour
             Debug.Log("WallTrigger's gameManager is null at delegate subscription");
         }
 
+        // Subscribe to value change of the winning client and execute end-trial logic 
+        // through the event
+        gameManager.triggerID.OnValueChanged += TriggerIDHandler_EndTrialLogic;
+
         // Account for subscribing to GameManager after the first trial has begun
         if (wallID1 == 0)
         {
@@ -116,7 +120,10 @@ public class WallTrigger : NetworkBehaviour
         }
     }
     
-    
+    private void TriggerIDHandler_EndTrialLogic(int prevVal, int newVal)
+    {
+        Debug.Log($"Client ID of the winning client is {OwnerClientId}" );
+    }
 
     
     /* Method that runs when a Trigger is entered
