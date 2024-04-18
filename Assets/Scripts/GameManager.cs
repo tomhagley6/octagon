@@ -29,7 +29,7 @@ public class GameManager : SingletonNetwork<GameManager>
     Instead of relying on activeWalls changing value for all of my logic, define logic based on epoch boundaries
     Create events for e.g. trial start, slice onset (which could be activeWalls)
     This will be initially useful for implementing my variable trial start to slice onset time
-     public NetworkVariable<int> trialNum = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); */
+    public NetworkVariable<int> trialNum = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); */
 
     public NetworkVariable<ActiveWalls> activeWalls = new NetworkVariable<ActiveWalls>(
         new ActiveWalls {
@@ -47,6 +47,7 @@ public class GameManager : SingletonNetwork<GameManager>
         }
     }
 
+
     public override void OnNetworkSpawn() {
         /* Subscribe to the OnValueChanged delegate with a lambda expression that fulfills the
         delegate by giving the correct signature (previous and new value), and in the body
@@ -56,227 +57,35 @@ public class GameManager : SingletonNetwork<GameManager>
             if (newValue == 0) return;
             Debug.Log($"Trial number: {newValue}");
 
-        }; 
+        }; */
 
 
-    void Start()
-    {
-        // // Get identity manager and order the (populated) dictionary
-        // identityManager = FindObjectOfType<IdentityManager>(); 
-        // identityManager.OrderDictionary();  
-        // StartTrial();  // Begin trial logic sequence
+        // Get identity manager and order the (populated) dictionary
+        identityManager = FindObjectOfType<IdentityManager>(); 
+        // Debug.Log($"identityManager exists and its reference is {identityManager}");
+        identityManager.OrderDictionary();  
+        // Debug.Log("identityManager.OrderDictionary ran without errors");
 
-        // // This is now done in a Networked script attached to the player prefab
-/*         // Start logging data
-        diskLogger = FindObjectOfType<DiskLogger>();
-        diskLogger.StartLogger();
-        StartCoroutine("LogPos");
- */
+        /* Here Invoking all subscribed methods of OnReadyStateChanged now that isReady is true
+        Invoke called as a method on an event will trigger all methods subscribed to the event
+        and passes them isReady as an input */
+        isReady = true;
+        OnReadyStateChanged?.Invoke(isReady);
     }
-
-/*     IEnumerator LogPos()
-    {
-        while (true)
-        {
-            diskLogger.Log(String.Format(Globals.posFormat, Globals.posTag,
-                                                            Globals.player, 
-                                                            player.transform.position.x,
-                                                            player.transform.position.z));
-            
-            yield return new WaitForSeconds(0.2f);
-
-        }
-    } */
 
     
-/*     void ColourWalls(int highWallTriggerID, int lowWallTriggerID)
-    {
-        // Access the actual game object through the ID:GameObject dict in IdentityManager
-        GameObject highWallTrigger = identityManager.GetObjectByIdentifier(highWallTriggerID); 
-        GameObject lowWallTrigger = identityManager.GetObjectByIdentifier(lowWallTriggerID);
-
-        // Get the (parent) octagon wall of each trigger
-        GameObject highWall = highWallTrigger.transform.parent.gameObject;
-        GameObject lowWall = lowWallTrigger.transform.parent.gameObject;
-
-        // Save the current colour of the wall before overwriting it 
-        defaultWallColor = highWall.GetComponent<Renderer>().material.color;
-
-        // Assign colours to the walls that fit their rewards
-        highWall.GetComponent<Renderer>().material.color = Color.red;
-        lowWall.GetComponent<Renderer>().material.color = Color.blue;
-    } */
-
-    /* void WashWalls(int highWallTriggerID, int lowWallTriggerID)
-    {
-        // Access the actual game object through the ID:GameObject dict in IdentityManager
-        GameObject highWallTrigger = identityManager.GetObjectByIdentifier(highWallTriggerID);
-        GameObject lowWallTrigger = identityManager.GetObjectByIdentifier(lowWallTriggerID);
-
-        // Get the (parent) octagon wall of each trigger
-        GameObject highWall = highWallTrigger.transform.parent.gameObject;
-        GameObject lowWall = lowWallTrigger.transform.parent.gameObject; 
-
-        // Reset wall colours back to their previously-saved defaults
-        highWall.GetComponent<Renderer>().material.color = defaultWallColor; 
-        lowWall.GetComponent<Renderer>().material.color = defaultWallColor;   
-    } */
-
-    // Prevent player movement
-    // void RemoveAgency()
-    // {
-    //     // Debug.Log("Trigger entered");
-    //     movementEnabled = false;
-    
-    // }
-
-
-
-    public void AdjustScore(int increment = 0)
-    {
-        score += increment;
-
-    }
-
-    // Prepare for initiation of a new trial
-    void ResetTrial(int highWallTriggerID, int lowWallTriggerID)
-    {
-        // clear the active walls list
-        // activeWalls.Clear(); 
-
-       /*  // reset wall colours
-        WashWalls(highWallTriggerID, lowWallTriggerID); */
-        
-        /* // Halt player movement very briefly while the trial resets (contributes to visual feedback
-        // of the trial ending)
-        // Asynchronous method which will run without interrupting the main thread of the program
-        // This is important, to allow waiting for 0.3 seconds without pausing other program functions
-        IEnumerator TrialResetImmobility()
-        {
-
-            yield return new WaitForSeconds(0.3f);
-
-            // Re-enable player movement after it was disabled in EndTrial()
-            movementEnabled = true;
-        }
-
-        /// Run the above-defined coroutine
-        StartCoroutine(TrialResetImmobility()); */
-
-
-    }
-    
-    // Define and run requirements for a new trial
-    // Triggered by GameManager on Start(), and again by ResetTrial()
-    void StartTrial()
-    {    
-
-        Debug.Log("NEW TRIAL");
-
-        /// Generate wall trigger IDs for a new trial
-        /// currently hard coded for testing
-        Debug.Log($"Identity manager exists and its reference is: {identityManager}");
-        walls = identityManager.ListCustomIDs();
-
-        // activeWalls.Clear();
-
-        // Choose a random wall to reference the trial to 
-        int anchorWallIndex = UnityEngine.Random.Range(0, walls.Count);
-        // choose a random second wall that is consistent with anchor wall for this trial type
-        int wallIndexDiff = new List<int>{-2, 2}[UnityEngine.Random.Range(0, 1)];
-        int dependentWallIndex = anchorWallIndex + wallIndexDiff;
-        // Account for circular octagon structure
-        if (dependentWallIndex < 0)
-        {
-            dependentWallIndex += walls.Count;
-        }
-        else if (dependentWallIndex >= walls.Count - 1)
-        {
-            dependentWallIndex -= walls.Count;
-        }
-        
-        // assign high and low walls with the generated indexes
-        int highWallTriggerID = walls[anchorWallIndex];
-        int lowWallTriggerID = walls[dependentWallIndex];
-
-        // first account 
-        
-        /* // assign to the network variable
-        activeWallsHighID.Value = highWallTriggerID;
-        activeWallsLowID.Value = lowWallTriggerID; */
-
-
-        Debug.Log("Number of walls: " + walls.Count);
-        for (int i = 0; i < walls.Count; i++)
-        {
-            // Debug.Log("Wall number " + i + " has the ID: " + walls[i]);
-        }
-
-
-        Debug.Log("high wall is: " + highWallTriggerID);
-
-        // Order in this list decides which is High and Low
-        // activeWalls.Add(highWallTriggerID);
-        // activeWalls.Add(lowWallTriggerID);
-        // activeWalls.Value = new ActiveWalls {
-        //     wall1 = highWallTriggerID,
-        //     wall2 = lowWallTriggerID
-        // };
-        
-
-  /*       // Add colour to the parent walls of each trigger
-        ColourWalls(highWallTriggerID, lowWallTriggerID); */
-
-    }
-
-    public void EndTrial(int increment, int highWallTriggerID, int lowWallTriggerID, int triggerID,
-                         string rewardType)
-    {
-        // // Halt movement
-        // RemoveAgency();
-
-       /*  // log wall trigger event
-        diskLogger.Log(String.Format(Globals.wallTriggerFormat, Globals.wallTriggerTag,
-                                                                Globals.trialNum,
-                                                                Globals.trialType,
-                                                                triggerID,
-                                                                rewardType,
-                                                                increment)); */
-
-        
-
-        // Adjust score
-        // Score.cs accesses the score here to display to the Canvas
-        AdjustScore(increment);
-
-        // reset position and walls
-        ResetTrial(highWallTriggerID, lowWallTriggerID);
-
-        // Begin StartTrial again with a random ITI
-        // Pause code block execution (while allowing other scripts to continue) by running "Invoke"
-        // with a random delay duration between the first and second argument
-        float ITIvalue = Random.Range(2f,5f);
-        Invoke("StartTrial", ITIvalue);
-        Debug.Log($"ITI duration for this trial: {ITIvalue}");
-
-    }
-
-
     public List<int> SelectNewWalls() {
         Debug.Log("NEW TRIAL");
 
-        /// Generate wall trigger IDs for a new trial
-        /// currently hard coded for testing
-        Debug.Log($"identityManager exists and its reference is {identityManager}");
+        // Generate wall trigger IDs for a new trial
         walls = identityManager.ListCustomIDs();
 
-        // activeWalls.Clear();
-
-        // Choose a random wall to reference the trial to 
+        // Choose a random anchor wall to reference the trial to 
         int anchorWallIndex = UnityEngine.Random.Range(0, walls.Count);
         // choose a random second wall that is consistent with anchor wall for this trial type
         int wallIndexDiff = new List<int>{-2, 2}[UnityEngine.Random.Range(0, 1)];
         int dependentWallIndex = anchorWallIndex + wallIndexDiff;
+        
         // Account for circular octagon structure
         if (dependentWallIndex < 0)
         {
@@ -289,79 +98,31 @@ public class GameManager : SingletonNetwork<GameManager>
         
         // assign high and low walls with the generated indexes
         int highWallTriggerID = walls[anchorWallIndex];
-        int lowWallTriggerID = walls[dependentWallIndex];
-
-        /* // first reset the NetworkVariable to account for new trial walls being identical to previous
-        activeWallsHighID.Value = 0;
-        activeWallsLowID.Value = 0; */
-        
-        /* // assign to the network variable
-        activeWallsHighID.Value = highWallTriggerID;
-        activeWallsLowID.Value = lowWallTriggerID; */
-        
-        /* // also increment the trialNum NetworkVariable to trigger new trial event
-        trialNum.Value += 1; */
-
-
-        Debug.Log("Number of walls: " + walls.Count);
-        for (int i = 0; i < walls.Count; i++)
-        {
-            // Debug.Log("Wall number " + i + " has the ID: " + walls[i]);
-        }
-
-       
-        // Order in this list decides which is High and Low
-        // activeWalls.Add(highWallTriggerID);
-        // activeWalls.Add(lowWallTriggerID);
-        // activeWalls.Value = new ActiveWalls {
-        //     wall1 = highWallTriggerID,
-        //     wall2 = lowWallTriggerID
-        // };
-        
+        int lowWallTriggerID = walls[dependentWallIndex];   
 
         return new List<int>(new int[] {highWallTriggerID, lowWallTriggerID});
-
     }
+    
 
     public void UpdateNetworkVariables(List<int> wallList)
     {
-        /* // first reset activeWalls values to 0 to account for two consecutive 
-        // trials with the same wall values
-        // THIS MAYE CAUSE BUGS if you do not begin onValueChanged subscriber methods with
-        // if 0 return;
-        activeWalls.Value = new ActiveWalls {
-            wall1 = 0,
-            wall2 = 0
-        };
         
-        activeWalls.Value = new ActiveWalls {
-            wall1 = wallList[0],
-            wall2 = wallList[1]
-        }; */
-        
-        // // JUST CALL THE METHOD TWICE, DON'T BLOAT
-        // // reset activeWalls values to 0 to account for two consecutive 
-        // // trials with the same wall values
-        // // THIS MAYE CAUSE BUGS if you do not begin onValueChanged subscriber methods with
-        // // if 0 return;
-        // UpdateWallsServerRpc(0, 0);
-
-
         // Update activeWalls with new wall values
         UpdateWallsServerRpc(wallList[0], wallList[1]);
 
         Debug.Log($"activeWalls value is set with the values {wallList[0]} and {wallList[1]}");
     }
 
+
+    // RPC to update activeWalls on the server and not the client
     [ServerRpc(RequireOwnership=false)]
-    public void UpdateWallsServerRpc(int wall1, int wall2)
+    public void UpdateWallsServerRpc(int _wall1, int _wall2)
     {
         // This will cause a change over the network
         // and ultimately invoke `OnValueChanged` on all receivers
-        // DOUBLE CHECK THAT MY VARIABLE NAMING DOESN'T CAUSE ISSUES
         activeWalls.Value = new ActiveWalls {
-            wall1 = wall1,
-            wall2 = wall2
+            wall1 = _wall1,
+            wall2 = _wall2
         };
     }
 

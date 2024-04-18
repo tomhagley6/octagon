@@ -34,9 +34,9 @@ public class WallTrigger : NetworkBehaviour
     // Setup to run immediately after joining the network
     public override void OnNetworkSpawn() 
     {
-        // GetComponent to return the IdentityAssignment instance for the current GameObject
-        // Instance for GameManager as there is a single instance per scene (Singleton class)
-        // (Consider checking if these are null or not before running)
+        /* GetComponent to return the IdentityAssignment instance for the current GameObject
+        Instance for GameManager as there is a single instance per scene (Singleton class)
+        (Consider checking if these are null or not before running) */
         identityAssignment = gameObject.GetComponent<IdentityAssignment>(); 
         gameManager = GameManager.Instance;
         diskLogger = FindObjectOfType<DiskLogger>();
@@ -73,9 +73,9 @@ public class WallTrigger : NetworkBehaviour
             Debug.Log("WallIDs have been corrected in WallTrigger");
         }
         
-        // Subscribe OnTriggerEntered Action with a callback function that 
-        // deactivates the walls on this trial
-        // To prevent re-entry of relevant walls within the same trial
+        /* Subscribe OnTriggerEntered Action with a callback function that 
+        deactivates the walls on this trial
+        To prevent re-entry of relevant walls within the same trial */
         OnTriggerEntered += DeactivateWall;
 
         setupComplete = true;
