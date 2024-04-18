@@ -6,13 +6,13 @@ using Unity.Netcode;
 using static GameManager;
 using Unity.VisualScripting;
 
-// Pass in the current ordered active triggers and the current trial type (controlled by GameController)
-// Then, use the trial type to decide how the trigger should respond to activation
-// Also consider which trigger instance has been activated on trigger entry
+/* Pass in the current ordered active triggers and the current trial type (controlled by GameController)
+Then, use the trial type to decide how the trigger should respond to activation
+Also consider which trigger instance has been activated on trigger entry */
 public class WallTrigger : NetworkBehaviour
 {
     public GameManager gameManager; 
-    private string trialType = "HighLowTrial"; // replace with global?
+    private string trialType = "HighLowTrial"; // replace with globals
     [SerializeField] private int highScore = 50; // globals
     [SerializeField] private int lowScore = 25; // globals
     IdentityAssignment identityAssignment;
@@ -31,22 +31,24 @@ public class WallTrigger : NetworkBehaviour
     public event Action<int> OnTriggerEntered;
     public static bool setupComplete = false;
     
-    
+    // Setup to run immediately after joining the network
     public override void OnNetworkSpawn() 
     {
-        // Debug.Log("Begin WallTrigger.cs OnNetworkSpawn");
-
-        // GetComponent to return the IdentityAssignment instance for the current GameObject
-        // FindObjectOfType for GameManager as there is a single instance per scene
+        /* GetComponent to return the IdentityAssignment instance for the current GameObject
+        Instance for GameManager as there is a single instance per scene (Singleton class)
+        (Consider checking if these are null or not before running) */
         identityAssignment = gameObject.GetComponent<IdentityAssignment>(); 
         gameManager = GameManager.Instance;
         diskLogger = FindObjectOfType<DiskLogger>();
         trialHandler = FindObjectOfType<TrialHandler>();
+        collider = GetComponent<BoxCollider>(); 
 
+
+        // This wallTrigger's associated wall number
         triggerID = identityAssignment.customID;
 
-        // Read the wallID, for case this OnNetworkSpawn runs after the first trial starts
-        if (gameManager.activeWalls.Value.wall1 != 0)
+        // Read the wallID, for the case that this OnNetworkSpawn runs after the first trial starts
+        if (gameManager != null && gameManager.activeWalls.Value.wall1 != 0)
         {
             wallID1 = gameManager.activeWalls.Value.wall1;
             wallID2 = gameManager.activeWalls.Value.wall2;
@@ -56,13 +58,12 @@ public class WallTrigger : NetworkBehaviour
         // which will update our class variables for the current active wall1 and wall2
         if (gameManager !=  null) {
             gameManager.activeWalls.OnValueChanged += OnWallChange;
-            /* Debug.Log("WallTrigger.cs subscribed successfully to activeWalls.OnValueChanged"
-             + " with OnWallChange"); */
         }
         else
         {
             Debug.Log("WallTrigger's gameManager is null at delegate subscription");
         }
+
         // Account for subscribing to GameManager after the first trial has begun
         if (wallID1 == 0)
         {
@@ -72,17 +73,28 @@ public class WallTrigger : NetworkBehaviour
             Debug.Log("WallIDs have been corrected in WallTrigger");
         }
         
-    
-        collider = GetComponent<BoxCollider>(); 
-
-        // Subscribe OnTriggerEntered Action with a callback function that 
-        // deactivates the walls on this trial
+        /* Subscribe OnTriggerEntered Action with a callback function that 
+        deactivates the walls on this trial
+        To prevent re-entry of relevant walls within the same trial */
         OnTriggerEntered += DeactivateWall;
 
         setupComplete = true;
 
     }
 
+
+    void Start()
+    {
+        // Populate a list of all trigger GameObjects at Start time
+        foreach (GameObject trigger in GameObject.FindGameObjectsWithTag("WallTrigger"))
+        {
+            triggers.Add(trigger);
+        }
+    }
+
+
+    // Subscriber method for activeWall NetworkVariable value change
+    // Update local class fields with new wall values and activate the colliders for these walls
     private void OnWallChange(ActiveWalls previousValue, ActiveWalls newValue) {
         if (newValue.wall1 == 0) return;
         
@@ -93,9 +105,10 @@ public class WallTrigger : NetworkBehaviour
         // Debug.Log($"WallIDs list contains values: {String.Join(",", wallIDs)}");
 
 
-        // set all walls active as triggers at the beginning of a trial (change of walls)
-        // any triggers which are irrelevant for the current trial will not take any action
-        // within OnTriggerEnter
+        /* Set all walls active as triggers at the beginning of a trial (change of walls)
+        (reactivate the triggers disabled in the last trial)
+        Any triggers which are irrelevant for the current trial will not take any action
+        within OnTriggerEnter */
         if (collider.enabled == false)
         {
             collider.enabled = true;
@@ -104,26 +117,23 @@ public class WallTrigger : NetworkBehaviour
     }
     
     
-    void Start()
-    {
-        // Populate a list of all trigger GameObjects at Start time
-        foreach (GameObject trigger in GameObject.FindGameObjectsWithTag("WallTrigger"))
-        {
-            triggers.Add(trigger);
-        }
-    }
+
     
-    // Method that runs when a Trigger is entered
-    // No need to explicitly reference
+    /* Method that runs when a Trigger is entered
+    This is a callback method following Unity trigger entry
+    This could be changed to invoke an event that methods
+    in GameManager subscribe to, if I want to centralise logic */
     void OnTriggerEnter(Collider interactingObject)
     {
         
-        /* // Prevent repeat activation of the trigger
-        collider.enabled = false; */
+        Debug.Log("Trigger is entered");
+    
         // Check if the GameObject that entered the trigger was the local client player's
         bool isTrialEnderClient = false;
         if (interactingObject.GetComponent<NetworkObject>() != null
          && interactingObject.GetComponent<NetworkObject>().IsLocalPlayer) isTrialEnderClient = true;
+        
+        // // Debug statements
         // Debug.Log($"interactingObject.GetComponent<NetworkObject>() != null is {interactingObject.GetComponent<NetworkObject>() != null}" + 
         // $"and interactingObject.GetComponent<NetworkObject>().IsLocalPlayer is { interactingObject.GetComponent<NetworkObject>().IsLocalPlayer}");
         // Debug.Log($"isTrialEnderClient = {isTrialEnderClient}");
@@ -135,7 +145,6 @@ public class WallTrigger : NetworkBehaviour
         {
             case "HighLowTrial":
                 Debug.Log($"List at HighLowTrial execution is: {string.Join(",", wallID1, wallID2)}");
-                // HighLowTrial(gameManager.activeWalls, triggerID, isTrialEnderClient);
                 HighLowTrial(wallID1, wallID2, triggerID, isTrialEnderClient);
                 break;
 
@@ -145,6 +154,7 @@ public class WallTrigger : NetworkBehaviour
 
         }
     }
+
 
     // Deactivate a trigger's collider
     // To use after the first activation of a trigger per trial
@@ -161,25 +171,28 @@ public class WallTrigger : NetworkBehaviour
         }
     }
 
+
     void WallTrialInteraction(int triggerID, int highWallTriggerID,
                                  int lowWallTriggerID, bool isTrialEnderClient)
     {
+        
+        Debug.Log("Entered WallTrialInteraction");
+
         // LVs
         int score = triggerID == highWallTriggerID ? highScore : lowScore;
         string rewardType = triggerID == highWallTriggerID ? "High" : "Low";
+
+        // All clients wash their own walls, making use of the wall number NetworkObject
+        // Bugs that prevent triggers triggering on other clients will prevent this code from running
+        trialHandler.WashWalls(highWallTriggerID, lowWallTriggerID);
         
         // Only call EndTrial if this client is the one that ended the trial
         // to prevent multiple calls in multiplayer
-        // THIS MEANS NO WASHING WALLS OR INCREMENTING SCORE FOR THE NON-TRIAL-ENDING CLIENT
         if (isTrialEnderClient) {
             Debug.Log($"EndTrial inputs: {score}, {highWallTriggerID}, {lowWallTriggerID}"
                         + $" {triggerID}, {rewardType}, {isTrialEnderClient}");
-            trialHandler.EndTrial(score, highWallTriggerID, lowWallTriggerID, 
-                                    triggerID, rewardType, isTrialEnderClient);
+            trialHandler.EndTrial(score, isTrialEnderClient);
         }
-        
-        // all clients was their own walls, making use of the wall number NetworkObjects
-        trialHandler.WashWalls(highWallTriggerID, lowWallTriggerID);
 
         // all clients log their own event information
         diskLogger.Log(String.Format(Globals.wallTriggerFormat, Globals.wallTriggerTag,
@@ -192,11 +205,12 @@ public class WallTrigger : NetworkBehaviour
         Debug.Log($"{rewardType} score ({score}) triggered");
     }
 
+
     // Standard HighLow trial
     void HighLowTrial(int wallIDHigh, int wallIDLow, int triggerID, bool isTrialEnderClient)
     {
-        // int highWallTriggerID = activeWalls[0];
-        // int lowWallTriggerID = activeWalls[1];
+        Debug.Log("HighLowTrial running");
+        
         int highWallTriggerID = wallIDHigh;
         int lowWallTriggerID = wallIDLow;
 
@@ -206,7 +220,7 @@ public class WallTrigger : NetworkBehaviour
         // If this is a relevant wall for the current trial
         if (triggerID == highWallTriggerID || triggerID == lowWallTriggerID)
         {
-            // Invoke the callback on OnTriggerEntered Action for each wall currently active
+            // Invoke the callbacks on OnTriggerEntered Action for each wall currently active
             for (int i = 0; i < wallIDs.Count; i++)
                 {
                     OnTriggerEntered?.Invoke(wallIDs[i]);
@@ -222,5 +236,3 @@ public class WallTrigger : NetworkBehaviour
     }
 
 }
-
-

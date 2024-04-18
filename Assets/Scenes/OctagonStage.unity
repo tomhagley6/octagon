@@ -693,10 +693,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   score: 0
-  activeWallsLowID:
-    m_InternalValue: 0
-  activeWallsHighID:
-    m_InternalValue: 0
 --- !u!4 &348163853
 Transform:
   m_ObjectHideFlags: 0
@@ -848,9 +844,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 605303244737396639, guid: 3d8093b4e1183b067b3bffef2cd1018b, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 2762891475
+      objectReference: {fileID: 0}
     - target: {fileID: 1926759784526545867, guid: 3d8093b4e1183b067b3bffef2cd1018b, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 2220375245
+      objectReference: {fileID: 0}
+    - target: {fileID: 2143759951103027158, guid: 3d8093b4e1183b067b3bffef2cd1018b, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 2033858665
       objectReference: {fileID: 0}
     - target: {fileID: 2430234535492518562, guid: 3d8093b4e1183b067b3bffef2cd1018b, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -863,6 +867,10 @@ PrefabInstance:
     - target: {fileID: 2779489705188036380, guid: 3d8093b4e1183b067b3bffef2cd1018b, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 1813767030
+      objectReference: {fileID: 0}
+    - target: {fileID: 2931737613932801431, guid: 3d8093b4e1183b067b3bffef2cd1018b, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 2623209662
       objectReference: {fileID: 0}
     - target: {fileID: 5715660237313324582, guid: 3d8093b4e1183b067b3bffef2cd1018b, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -919,6 +927,10 @@ PrefabInstance:
     - target: {fileID: 6538551835860600974, guid: 3d8093b4e1183b067b3bffef2cd1018b, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 1878012688
+      objectReference: {fileID: 0}
+    - target: {fileID: 7175754024105532862, guid: 3d8093b4e1183b067b3bffef2cd1018b, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 1078446726
       objectReference: {fileID: 0}
     - target: {fileID: 8006185435518440294, guid: 3d8093b4e1183b067b3bffef2cd1018b, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -2013,7 +2025,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4845276930943762971, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000015258789
+      value: 0.000030517578
       objectReference: {fileID: 0}
     - target: {fileID: 4845637959249703711, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchorMax.y

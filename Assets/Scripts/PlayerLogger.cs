@@ -12,12 +12,16 @@ public class PlayerLogger : NetworkBehaviour
 
 public DiskLogger diskLogger;
 public GameObject player;
+public Action<bool> playerSpawned;
 public override void OnNetworkSpawn() {
         // Get this player
         player = transform.parent.gameObject;
 
         
         // Start logging data only for the player in the current client
+        // This could be an event that triggers the logger initiation method in GameManager
+        // does not even need a player reference passed
+        // First line of OnNetworkSpawn can be to call a method in GameManager that subscribes to 
         if (IsLocalPlayer) {
             Debug.Log("Local player; beginning logging");
             diskLogger = FindObjectOfType<DiskLogger>();
