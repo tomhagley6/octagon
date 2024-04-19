@@ -64,9 +64,9 @@ public class WallTrigger : NetworkBehaviour
             Debug.Log("WallTrigger's gameManager is null at delegate subscription");
         }
 
-        // Subscribe to value change of the winning client and execute end-trial logic 
-        // through the event
-        gameManager.triggerID.OnValueChanged += TriggerIDHandler_EndTrialLogic;
+        // // Subscribe to value change of the winning client and execute end-trial logic 
+        // // through the event
+        // gameManager.triggerActivation.OnValueChanged += TriggerActivationHandler_EndTrialLogic;
 
         // Account for subscribing to GameManager after the first trial has begun
         if (wallID1 == 0)
@@ -114,15 +114,16 @@ public class WallTrigger : NetworkBehaviour
         Any triggers which are irrelevant for the current trial will not take any action
         within OnTriggerEnter */
         if (collider.enabled == false)
-        {
-            collider.enabled = true;
-            Debug.Log($"Collider for wall {triggerID} re-enabled");
+        {   
+            // // Commented out for now because this should be handled in GameManager
+            // collider.enabled = true;
+            // Debug.Log($"Collider for wall {triggerID} re-enabled");
         }
     }
     
-    private void TriggerIDHandler_EndTrialLogic(int prevVal, int newVal)
+    private void TriggerActivationHandler_EndTrialLogic(int prevVal, int newVal)
     {
-        Debug.Log($"Client ID of the winning client is {OwnerClientId}" );
+        Debug.Log($"LocalClientId of the winning client is {NetworkManager.Singleton.LocalClientId}" );
     }
 
     
@@ -133,33 +134,41 @@ public class WallTrigger : NetworkBehaviour
     void OnTriggerEnter(Collider interactingObject)
     {
         
-        Debug.Log("Trigger is entered");
-    
         // Check if the GameObject that entered the trigger was the local client player's
         bool isTrialEnderClient = false;
         if (interactingObject.GetComponent<NetworkObject>() != null
          && interactingObject.GetComponent<NetworkObject>().IsLocalPlayer) isTrialEnderClient = true;
+
         
-        // // Debug statements
-        // Debug.Log($"interactingObject.GetComponent<NetworkObject>() != null is {interactingObject.GetComponent<NetworkObject>() != null}" + 
-        // $"and interactingObject.GetComponent<NetworkObject>().IsLocalPlayer is { interactingObject.GetComponent<NetworkObject>().IsLocalPlayer}");
-        // Debug.Log($"isTrialEnderClient = {isTrialEnderClient}");
-        // Debug.Log($"Custom ID: {triggerID}");
-        
-        Debug.Log("Wall triggers are being triggered.");
-        
-        switch (trialType)
+        // NEW LOGIC TO UPDATE THE NETWORKVARIABLE AND TRIGGER GAMEMANAGER LOGIC
+        if (isTrialEnderClient == true)
         {
-            case "HighLowTrial":
-                Debug.Log($"List at HighLowTrial execution is: {string.Join(",", wallID1, wallID2)}");
-                HighLowTrial(wallID1, wallID2, triggerID, isTrialEnderClient);
-                break;
-
-            default:
-                Debug.Log("Trial type not currently implemented");
-                break;
-
+            Debug.Log("Trigger is entered on local client");
+            Debug.Log($"LocalClientId at time of update is {NetworkManager.Singleton.LocalClientId}");
+            gameManager.UpdateTriggerActivation(triggerID, NetworkManager.Singleton.LocalClientId);   
         }
+
+        
+        // // // Debug statements
+        // // Debug.Log($"interactingObject.GetComponent<NetworkObject>() != null is {interactingObject.GetComponent<NetworkObject>() != null}" + 
+        // // $"and interactingObject.GetComponent<NetworkObject>().IsLocalPlayer is { interactingObject.GetComponent<NetworkObject>().IsLocalPlayer}");
+        // // Debug.Log($"isTrialEnderClient = {isTrialEnderClient}");
+        // // Debug.Log($"Custom ID: {triggerID}");
+        
+        // Debug.Log("Wall triggers are being triggered.");
+        
+        // switch (trialType)
+        // {
+        //     case "HighLowTrial":
+        //         Debug.Log($"List at HighLowTrial execution is: {string.Join(",", wallID1, wallID2)}");
+        //         HighLowTrial(wallID1, wallID2, triggerID, isTrialEnderClient);
+        //         break;
+
+        //     default:
+        //         Debug.Log("Trial type not currently implemented");
+        //         break;
+
+        // }
     }
 
 

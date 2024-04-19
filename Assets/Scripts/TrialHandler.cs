@@ -195,9 +195,20 @@ public class TrialHandler : NetworkBehaviour
         if (isTrialEnderClient)
         {
             Debug.Log("isTrialEnderClient is true, and StartTrial has been triggered");
+
+            /* reset triggerActivation values to 0, in case the values between two updates
+            are identical, and therefore do not trigger OnValueChanged
+            Currently placed in StartTrial, because on a networked client, EndTrial seems
+            to run too quickly, and the local client never sees the first update of
+            TriggerActivation, only the reset to 0. 
+            This is presumably a race condition, and I would need to lock the NetworkVariable
+            until both clients had finished with WallTrialInteraction
+            For now, this is an easier fix */
+            gameManager.UpdateTriggerActivation(0,0);
+
             List<int> newWalls = gameManager.SelectNewWalls();
             Debug.Log($"The list of ints that is received from GameManager in StartTrail() is {newWalls[0]} and {newWalls[1]}");
-            gameManager.UpdateNetworkVariables(newWalls);
+            gameManager.UpdateActiveWalls(newWalls);
             isTrialEnderClient = false;
         }
     }
@@ -219,10 +230,14 @@ public class TrialHandler : NetworkBehaviour
         // Begin StartTrial again with a random ITI
         float ITIvalue = Random.Range(2f,5f);
         
-        // Reset the activeWall values to 0, as these walls should be inactive immediately
-        // as the trial ends
+        // Reset the activeWalls values to 0, to ensure that activeWalls *always*
+        // changes on a new trial
         List<int> wallReset = new List<int>(){0,0};
-        gameManager.UpdateNetworkVariables(wallReset);
+        gameManager.UpdateActiveWalls(wallReset);
+        Debug.Log("Walls now reset to 0 for this trial");
+        
+        // // reset triggerActivation values to 0, for the same reason
+        // gameManager.UpdateTriggerActivation(0,0);
         
         // Pause code block execution (while allowing other scripts to continue) by running "Invoke"
         // NB no trial logic for the next trial is run until an ITI has ocurred
