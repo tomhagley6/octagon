@@ -434,9 +434,9 @@ MonoBehaviour:
   m_MaxConnectAttempts: 60
   m_DisconnectTimeoutMS: 30000
   ConnectionData:
-    Address: 127.0.0.1
-    Port: 7777
-    ServerListenAddress: 127.0.0.1
+    Address: 
+    Port: 0
+    ServerListenAddress: 0.0.0.0
   DebugSimulator:
     PacketDelayMS: 0
     PacketJitterMS: 0
@@ -1728,6 +1728,10 @@ MonoBehaviour:
   serverButton: {fileID: 1114040582}
   hostButton: {fileID: 40919616}
   clientButton: {fileID: 223974228}
+  ipAddressText: {fileID: 0}
+  ip: {fileID: 0}
+  ipAddress: 
+  transport: {fileID: 0}
 --- !u!1001 &1637624913
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2038,7 +2042,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4845276930943762971, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000030517578
+      value: 0.000076293945
       objectReference: {fileID: 0}
     - target: {fileID: 4845637959249703711, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchorMax.y
