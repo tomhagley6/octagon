@@ -143,9 +143,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89810b55e7bffa39fbacbf7ef522ad3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 4489723424049516791}
   controller: {fileID: 1446049556634991711}
   gameManager: {fileID: 0}
+  networkManager: {fileID: 0}
   speed: 10
   groundCheck: {fileID: 3364148102811497149}
   groundDistance: 0.4
@@ -321,6 +321,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mouseSensitivity: 1000
   playerBody: {fileID: 4489723424049516791}
+  networkManager: {fileID: 0}
+  unlockMouseTrigger: 0
 --- !u!1 &7546571807383691244
 GameObject:
   m_ObjectHideFlags: 0
@@ -382,7 +384,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8b2e26fc3c79c0c578064b79a412c9d9, type: 2}
+  - {fileID: 2100000, guid: b5ae5a55851296746adb115a1756997f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
