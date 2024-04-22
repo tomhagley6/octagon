@@ -30,7 +30,7 @@ public class TrialHandler : NetworkBehaviour
         {
             yield return new WaitForSeconds(1.5f);
 
-            Debug.Log($"Activewalls values are {gameManager.activeWalls.Value.wall1} and {gameManager.activeWalls.Value.wall2}");
+            // Debug.Log($"Activewalls values are {gameManager.activeWalls.Value.wall1} and {gameManager.activeWalls.Value.wall2}");
         }
     }
 

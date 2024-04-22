@@ -121,8 +121,22 @@ public class AssignCamera : NetworkBehaviour
 
         Debug.Log("CreateCamera ran successfully");
 
+        ColourHostPlayer();
+
     }
 
+    public void ColourHostPlayer()
+    {
+        var localPlayer = networkManager.LocalClient.PlayerObject.transform;
+        if (NetworkManager.Singleton.LocalClientId == 0 || IsServer)
+        {
+           localPlayer.GetChild(1).GetComponent<Renderer>().material.color = Color.yellow;
+        }
+        else
+        {
+            Debug.Log($"Local client ID is not 0, it is {NetworkManager.Singleton.LocalClientId}");
+        }
+    }
 
     public void LateUpdate()
     {

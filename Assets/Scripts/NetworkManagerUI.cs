@@ -52,7 +52,7 @@ public class NetworkManagerUI : MonoBehaviour
 	{        
         NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(
             "86.159.151.28", // public IP address
-            (ushort)7777,   // port number as an unsigned short
+            (ushort)55598,   // port number as an unsigned short
             "0.0.0.0"        // Server listen address
         );
 
