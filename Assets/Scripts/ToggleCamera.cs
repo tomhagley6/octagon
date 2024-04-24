@@ -1,0 +1,74 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using Unity.Netcode;
+using UnityEngine;
+
+// Toggle the camera between first-person and top-down
+/* This allows for video recording of Octagon multiplayer 
+   sessions using only the .exes. Have 3 clients, with the
+   third using a top-down camera and invisible player */
+public class ToggleCamera : NetworkBehaviour
+{
+    public GameObject topDownCamGO; // assigned in Inspector
+    public Camera topDownCam; 
+    public Camera firstPersonCam; // accessed as the main camera
+    public NetworkManager networkManager;
+    public Action switchCamera;
+    public bool switchCameraTrigger = false;
+
+    public override void OnNetworkSpawn()
+    {
+        
+        networkManager = FindObjectOfType<NetworkManager>();
+        topDownCam = topDownCamGO.GetComponent<Camera>();
+
+        // subscribe to a key-triggered event with camera toggle method
+        switchCamera += SwitchCameraTriggerListener;
+
+        StartCoroutine(FindPlayerCam());
+
+    }
+
+
+    // Wait for the player and cam to spawn, then identify the player cam in the scene
+    IEnumerator FindPlayerCam()
+    {
+        yield return new WaitForSeconds(2f);
+        
+        firstPersonCam = Camera.main;
+
+    }
+
+
+    /* Toggle camera between first-person and top-down
+    Do this by switching depth, but maintain topDownCam
+    on a separate display when it is not the prioritsed camera */
+    public void SwitchCameraTriggerListener()
+    {
+        
+        switchCameraTrigger = !switchCameraTrigger;
+        if (switchCameraTrigger)
+        {
+            topDownCam.depth = Camera.main.depth - 1;
+            topDownCam.targetDisplay = 1;
+
+        }
+        else
+        {
+            topDownCam.depth = Camera.main.depth + 1;
+            topDownCam.targetDisplay = 2;
+        }   
+    }
+
+
+    void Update()
+    {
+        // Allow manual toggle of mouse lock state
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            switchCamera();
+        }
+    }
+
+}

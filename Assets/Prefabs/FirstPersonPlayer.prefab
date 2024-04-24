@@ -59,6 +59,7 @@ GameObject:
   - component: {fileID: 3615294352171547921}
   - component: {fileID: 5606643765571814122}
   - component: {fileID: 4216998957125197167}
+  - component: {fileID: 2209882205972884378}
   m_Layer: 0
   m_Name: FirstPersonPlayer
   m_TagString: Player
@@ -183,6 +184,18 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &2209882205972884378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1717201731386774889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 227cfb11400b68a36b8379324b494a35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3589750069483679266
 GameObject:
   m_ObjectHideFlags: 0
@@ -323,8 +336,6 @@ MonoBehaviour:
   playerBody: {fileID: 4489723424049516791}
   networkManager: {fileID: 0}
   unlockMouseTrigger: 0
-  playerInvisible: 0
-  canvas: {fileID: 0}
 --- !u!1 &7546571807383691244
 GameObject:
   m_ObjectHideFlags: 0

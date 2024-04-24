@@ -1,3 +1,4 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -21,6 +22,12 @@ public class PlayerMovement : NetworkBehaviour
     float gravity = 9.81f;
     Vector3 yAxisVelocity;
     float gravityMultiplier = 2f; // scale gravity accel. based on feel
+    
+    private bool playerInvisible = false;
+    private Transform playerBody;
+    private GameObject canvas;
+    public Action togglePlayerVisible;
+ 
 
     public override void OnNetworkSpawn()
     {
@@ -35,9 +42,14 @@ public class PlayerMovement : NetworkBehaviour
     
     void Start()
     {   
+        // variables
         gameManager = FindObjectOfType<GameManager>();
         networkManager = FindObjectOfType<NetworkManager>();
         networkManager.LocalClient.PlayerObject.transform.position = new Vector3(0,10,0);
+        playerBody = gameObject.transform;
+        canvas = GameObject.Find("Canvas");
+
+        togglePlayerVisible += TogglePlayerVisibleListener;
     }
 
 
@@ -93,7 +105,42 @@ public class PlayerMovement : NetworkBehaviour
         if (!IsOwner) return;
         
         UpdateMovement();
+
+        // Allow manual toggle of player visibility
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            togglePlayerVisible();
+        }
         
     }
+
+
+    /* When visibility is toggled off, disable the renderer of the player GameObject
+    Also, teleport it far away, because visibility is not a NetworkVariable but
+    player location is.
+    This ensures that other clients also do not see the player (for recording purposes) */
+        public void TogglePlayerVisibleListener()
+    {
+        
+        playerInvisible = !playerInvisible;
+        
+        if (playerInvisible)
+        {
+            playerBody.gameObject.GetComponentInChildren<Renderer>().enabled = false;
+            playerBody.position = new Vector3(10000,0,0);
+            canvas.SetActive(false); // also remove UI (for recording)
+        }
+        else
+        {
+            playerBody.gameObject.GetComponentInChildren<Renderer>().enabled = true;
+            playerBody.position = new Vector3(0,0,0);
+            canvas.SetActive(true);
+
+        }
+    }
+
+
+
+
 
 }

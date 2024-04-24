@@ -11,16 +11,11 @@ public class MouseLook : NetworkBehaviour
 {
 
     public float mouseSensitivity = 1000f;
-
     public Transform playerBody;
-
     float xRotation = 0f;
     public NetworkManager networkManager;
     public Action toggleMouseLock;
-    public Action togglePlayerVisible;
     public bool unlockMouseTrigger = false;
-    public bool playerInvisible = false;
-    public GameObject canvas;
 
 
     public void Start()
@@ -34,9 +29,7 @@ public class MouseLook : NetworkBehaviour
 
         // subscribe to a key-triggered event with mouse lock toggle method
         toggleMouseLock += ToggleMouseLockListener;
-        togglePlayerVisible += TogglePlayerVisibleListener;
         
-        canvas = GameObject.Find("Canvas");
 
     }
 
@@ -49,25 +42,7 @@ public class MouseLook : NetworkBehaviour
         Cursor.lockState = unlockMouseTrigger ? CursorLockMode.None : CursorLockMode.Locked;
         
     }
-        public void TogglePlayerVisibleListener()
-    {
-        
-        playerInvisible = !playerInvisible;
-        
-        if (playerInvisible)
-        {
-            playerBody.gameObject.GetComponentInChildren<Renderer>().enabled = false;
-            playerBody.position = new Vector3(10000,0,0);
-            canvas.SetActive(false);
-        }
-        else
-        {
-            playerBody.gameObject.GetComponentInChildren<Renderer>().enabled = true;
-            playerBody.position = new Vector3(0,0,0);
-            canvas.SetActive(true);
-
-        }
-    }
+    
 
     void Update()
     {   
@@ -107,10 +82,6 @@ public class MouseLook : NetworkBehaviour
         {
             toggleMouseLock();
         }
-        // Allow manual toggle of mouse lock state
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            togglePlayerVisible();
-        }
     }
+    
 }

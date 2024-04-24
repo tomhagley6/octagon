@@ -164,8 +164,9 @@ public class AssignCamera : NetworkBehaviour
         // New camera position per frame is the player's current position,
         // offset positively in y
         Vector3 currentPositionPlayer = player.position;
-        Vector3 newPositionCam = new Vector3(currentPositionPlayer.x, 3.75f, 
-                                            currentPositionPlayer.z);
+        Vector3 newPositionCam = new Vector3(currentPositionPlayer.x,
+                                             currentPositionPlayer.y + 1.75f, 
+                                             currentPositionPlayer.z);
         camInstance.transform.position = newPositionCam;
         
         // New camera rotation per frame is the camera's current rotation (around x-axis)
