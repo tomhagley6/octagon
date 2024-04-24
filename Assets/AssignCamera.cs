@@ -136,6 +136,14 @@ public class AssignCamera : NetworkBehaviour
         {
             Debug.Log($"Local client ID is not 0, it is {NetworkManager.Singleton.LocalClientId}");
         }
+
+        Color[] colors = new Color[]{Color.cyan, Color.yellow, Color.magenta};
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        // Random rnd = new Random();
+        foreach(GameObject p in players)
+        {
+            p.transform.GetChild(1).GetComponent<Renderer>().material.color = Random.ColorHSV();
+        }
     }
 
     public void LateUpdate()
