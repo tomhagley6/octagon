@@ -14,8 +14,8 @@ public class ToggleCamera : NetworkBehaviour
     public Camera topDownCam; 
     public Camera firstPersonCam; // accessed as the main camera
     public NetworkManager networkManager;
-    public Action switchCamera;
-    public bool switchCameraTrigger = false;
+    public Action toggleCamera;
+    public bool toggleCameraTrigger = false;
 
     public override void OnNetworkSpawn()
     {
@@ -24,7 +24,7 @@ public class ToggleCamera : NetworkBehaviour
         topDownCam = topDownCamGO.GetComponent<Camera>();
 
         // subscribe to a key-triggered event with camera toggle method
-        switchCamera += SwitchCameraTriggerListener;
+        toggleCamera += toggleCameraTriggerListener;
 
         StartCoroutine(FindPlayerCam());
 
@@ -44,11 +44,11 @@ public class ToggleCamera : NetworkBehaviour
     /* Toggle camera between first-person and top-down
     Do this by switching depth, but maintain topDownCam
     on a separate display when it is not the prioritsed camera */
-    public void SwitchCameraTriggerListener()
+    public void toggleCameraTriggerListener()
     {
         
-        switchCameraTrigger = !switchCameraTrigger;
-        if (switchCameraTrigger)
+        toggleCameraTrigger = !toggleCameraTrigger;
+        if (toggleCameraTrigger)
         {
             topDownCam.depth = Camera.main.depth - 1;
             topDownCam.targetDisplay = 0;
@@ -69,7 +69,7 @@ public class ToggleCamera : NetworkBehaviour
         // Allow manual toggle of mouse lock state
         if (Input.GetKeyDown(KeyCode.F))
         {
-            switchCamera();
+            toggleCamera();
         }
     }
 
