@@ -51,13 +51,15 @@ public class ToggleCamera : NetworkBehaviour
         if (switchCameraTrigger)
         {
             topDownCam.depth = Camera.main.depth - 1;
-            topDownCam.targetDisplay = 1;
+            topDownCam.targetDisplay = 0;
+            Camera.main.targetDisplay = 1;
 
         }
         else
         {
             topDownCam.depth = Camera.main.depth + 1;
-            topDownCam.targetDisplay = 2;
+            topDownCam.targetDisplay = 1;
+            Camera.main.targetDisplay = 0;
         }   
     }
 
