@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using Mono.CSharp;
 using TMPro;
 using Unity.Netcode;
@@ -21,6 +22,7 @@ public class NetworkManagerUI : NetworkBehaviour
 
     [SerializeField] TextMeshProUGUI ipAddressText;
 	[SerializeField] TMP_InputField enteredIp;
+    [SerializeField] TMP_InputField enteredPort;
 
 	
 	[SerializeField] UnityTransport transport;
@@ -33,54 +35,130 @@ public class NetworkManagerUI : NetworkBehaviour
     // SetConnectionData variables
     private string ipAddressDefault = "86.159.151.28";
     [SerializeField] private string ipAddress;
-    private ushort port = 55598;
+    [SerializeField] private ushort port;
+    private ushort portDefault = 55599;
     private string listenAddress = "0.0.0.0";
+    private bool? IpDefaultBool; // control logic for updating connection data
+    private bool? portDefaultBool; // control logic for updating connection data
 
-    private void Awake() {
-    serverButton.onClick.AddListener(() => {
-        NetworkManager.Singleton.StartServer();
+    private void Awake() 
+    {
+        // Add listeners to all buttons
+        serverButton.onClick.AddListener(() => 
+        {
+            NetworkManager.Singleton.StartServer();
         });
 
-    hostButton.onClick.AddListener(() => {
-		// transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-		// transport.ConnectionData.Address = ipAddress;
 
-        Debug.Log(ipAddress);
-        ipAddress = GetPublicIPAddress();
-        // Get public IP address from NetworkManager
-        ipAddress = GetPublicIPAddress();
-        Debug.Log(ipAddress);
-        ipAddressText.text = ipAddress;
-        Debug.Log("NetworkManagerUI IP is: " + ipAddress);
-        SetConnectionData(ipAddress, port, listenAddress);
-        PrintConnectionInfo();
-        DisableButtons();
-        gameObject.transform.Find("IpAddress").gameObject.SetActive(false);
-        NetworkManager.Singleton.StartHost();
-		// GetLocalIPAddress();
+        hostButton.onClick.AddListener(() => 
+        {
+            Debug.Log(ipAddress);
+            ipAddress = GetPublicIPAddress();
+            
+            // Get public IP address from NetworkManager
+            ipAddress = GetPublicIPAddress();
+            Debug.Log(ipAddress);
+            ipAddressText.text = ipAddress;
+            Debug.Log("NetworkManagerUI IP is: " + ipAddress);
+
+            
+            // Identify if using the default port, or if the end-user has entered one
+            if (string.IsNullOrEmpty(enteredPort.GetComponent<TMP_InputField>().text))
+            {
+                Debug.Log("String is null or empty. Using default port");
+                
+                // If client does not input the host port, resort to default
+                portDefaultBool = true;
+            }
+            else
+            {
+                // Else, use the input port
+                try 
+                {   
+                    Debug.Log(enteredPort.GetComponent<TMP_InputField>().text);
+                    var testPortInput = UInt16.Parse(enteredPort.GetComponent<TMP_InputField>().text);
+                    portDefaultBool = false;
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e);
+                    Debug.LogWarning("Port number must an integer between 0 and 65535");
+                    Debug.Log("Attempting to use default port value");
+                    portDefaultBool = true;
+                }  
+            }
+            
+            // Set the connection data, where ipAddress is irrelevant(?) for the host
+            if (portDefaultBool != null)
+            {
+                port = (bool)portDefaultBool ? portDefault : port = UInt16.Parse(enteredPort.GetComponent<TMP_InputField>().text);
+                SetConnectionData(ipAddress, port, listenAddress);
+            }
+            PrintConnectionInfo();
+            DisableButtons();
+            gameObject.transform.Find("IpAddress").gameObject.SetActive(false);
+            NetworkManager.Singleton.StartHost();
 
         });
-    clientButton.onClick.AddListener(() => {
-        // ipAddress = ip.text;
-		// SetIpAddress();
-        
-        if (string.IsNullOrEmpty(enteredIp.GetComponent<TMP_InputField>().text))
-        {
-            Debug.Log("String is null or empty. Using default IP address");
-            // If client does not input the host public IP, resort to default
-            SetConnectionData(ipAddressDefault, port, listenAddress);
-        }
-        else
-        {
-            // Else, use the input IP
-            ipAddress = enteredIp.GetComponent<TMP_InputField>().text;
-            SetConnectionData(ipAddress, port, listenAddress);
-        }
 
-        DisableButtons();
-        gameObject.transform.Find("IpAddress").gameObject.SetActive(false);
 
-        NetworkManager.Singleton.StartClient();
+        clientButton.onClick.AddListener(() => 
+        {   
+
+            // Identify if using the default IP, or if the end-user has entered one
+            if (string.IsNullOrEmpty(enteredIp.GetComponent<TMP_InputField>().text))
+            {
+                Debug.Log("String is null or empty. Using default IP address");
+                
+                // If client does not input the host public IP, resort to default
+                IpDefaultBool = true;
+            }
+            else
+            {
+                // Else, use the input IP
+                IpDefaultBool = false;
+            }
+
+            // Identify if using the default port, or if the end-user has entered one
+            if (string.IsNullOrEmpty(enteredPort.GetComponent<TMP_InputField>().text))
+            {
+                Debug.Log("String is null or empty. Using default port");
+                
+                // If client does not input the host port, resort to default
+                portDefaultBool = true;
+            }
+            else
+            {
+                // Else, use the input port
+                try 
+                {   
+                    Debug.Log(enteredPort.GetComponent<TMP_InputField>().text);
+                    var testPortInput = UInt16.Parse(enteredPort.GetComponent<TMP_InputField>().text);
+                    portDefaultBool = false;
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e);
+                    Debug.LogWarning("Port number must an integer between 0 and 65535");
+                    Debug.Log("Attempting to use default port value");
+                    portDefaultBool = true;
+                }  
+            }
+
+            // Collect logic and set connection data
+            if (IpDefaultBool != null && portDefaultBool != null)
+            {
+                ipAddress = (bool)IpDefaultBool ? ipAddressDefault : enteredIp.GetComponent<TMP_InputField>().text;
+                port = (bool)portDefaultBool ? portDefault : port = UInt16.Parse(enteredPort.GetComponent<TMP_InputField>().text);
+                SetConnectionData(ipAddress, port, listenAddress);
+                PrintConnectionInfo();
+            }
+
+
+            DisableButtons();
+            gameObject.transform.Find("IpAddress").gameObject.SetActive(false);
+
+            NetworkManager.Singleton.StartClient();
         }); 
 
     }
@@ -92,7 +170,7 @@ public class NetworkManagerUI : NetworkBehaviour
         networkManager = FindObjectOfType<NetworkManager>();
         
         // Set to hardcoded values at the beginning for testing
-        SetConnectionData(ipAddressDefault, port, listenAddress);
+        SetConnectionData(ipAddressDefault, portDefault, listenAddress);
 
         // Print network connection value defaults when application starts
         PrintConnectionInfo();
@@ -145,6 +223,7 @@ public class NetworkManagerUI : NetworkBehaviour
         gameObject.transform.Find("HostButton").gameObject.SetActive(false);
         gameObject.transform.Find("ClientButton").gameObject.SetActive(false);
         gameObject.transform.Find("IpAddressInput").gameObject.SetActive(false);
+        gameObject.transform.Find("PortInput").gameObject.SetActive(false);
     }
 
     // print IP address, port, and server listen address
@@ -156,42 +235,50 @@ public class NetworkManagerUI : NetworkBehaviour
         string currListen = currConnectionInfo.ServerListenAddress;
         Debug.Log($"Ip, port, and listen address are:\n{currIp}\n{currPort}\n{currListen}");
     }
-
-
-	/* Sets the Ip Address of the Connection Data in Unity Transport
-	to the Ip Address which was input in the Input Field */
-	// ONLY FOR CLIENT SIDE
-	public void SetIpAddress() {
-		transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-		transport.ConnectionData.Address = ipAddress;
-        Debug.Log(ipAddress);
-
-	}
-
-
-    /* Gets the Ip Address of your connected network and
-	shows on the screen in order to let other players join
-	by inputing that Ip in the input field */
-	// ONLY FOR HOST SIDE 
-	public string GetLocalIPAddress() {
-		var host = Dns.GetHostEntry(Dns.GetHostName());
-		foreach (var ip in host.AddressList) {
-			if (ip.AddressFamily == AddressFamily.InterNetwork) {
-				ipAddressText.text = ip.ToString();
-				ipAddress = ip.ToString();
-				return ip.ToString();
-			}
-		}
-		throw new System.Exception("No network adapters with an IPv4 address in the system!");
-	}
-
+    
     public string GetPublicIPAddress() {
         
+        try {
         // Get public IP address from NetworkManager
         ipAddress = networkManager.GetComponent<PublicIp>().GetPublicIp();
         ipAddressText.text = ipAddress;
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning(e);
+            Debug.LogWarning($"Public IP lookup failed. Using default IP {ipAddressDefault} instead");
+            ipAddress = ipAddressDefault;
+        }
         return ipAddress;
     }
+
+
+	// /* Sets the Ip Address of the Connection Data in Unity Transport
+	// to the Ip Address which was input in the Input Field */
+	// // ONLY FOR CLIENT SIDE
+	// public void SetIpAddress() {
+	// 	transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+	// 	transport.ConnectionData.Address = ipAddress;
+    //     Debug.Log(ipAddress);
+
+	// }
+
+
+    // /* Gets the Ip Address of your connected network and
+	// shows on the screen in order to let other players join
+	// by inputing that Ip in the input field */
+	// // ONLY FOR HOST SIDE 
+	// public string GetLocalIPAddress() {
+	// 	var host = Dns.GetHostEntry(Dns.GetHostName());
+	// 	foreach (var ip in host.AddressList) {
+	// 		if (ip.AddressFamily == AddressFamily.InterNetwork) {
+	// 			ipAddressText.text = ip.ToString();
+	// 			ipAddress = ip.ToString();
+	// 			return ip.ToString();
+	// 		}
+	// 	}
+	// 	throw new System.Exception("No network adapters with an IPv4 address in the system!");
+	// }
 
 }
 

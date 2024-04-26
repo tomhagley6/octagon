@@ -31,7 +31,8 @@ public class PublicIp : MonoBehaviour
 
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
-                Debug.LogError("Failed to get public IP: " + www.error);
+                Debug.LogWarning("Failed to get public IP: " + www.error);
+                Debug.LogWarning("You will have to manually enter the public IP of the host to continue connecting");
             }
             else
             {
@@ -39,7 +40,7 @@ public class PublicIp : MonoBehaviour
                 // Debug.Log("Web server return string: " + webTextReturn);
                 // Now you can display ipAddress on your screen or use it as needed.
 
-                string ipPattern = @"\d\d\.\d\d\d\.\d\d\d\.\d\d";
+                string ipPattern = @"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}";
                 Regex regex = new Regex(ipPattern);
 
                 // Check if an IP is present from the queried URL
