@@ -5,6 +5,7 @@ using System;
 using Unity.Netcode;
 using static GameManager;
 using Unity.VisualScripting;
+using System.Collections;
 
 /* Pass in the current ordered active triggers and the current trial type (controlled by GameController)
 Then, use the trial type to decide how the trigger should respond to activation
@@ -34,11 +35,12 @@ public class WallTrigger : NetworkBehaviour
     // Setup to run immediately after joining the network
     public override void OnNetworkSpawn() 
     {
+
         /* GetComponent to return the IdentityAssignment instance for the current GameObject
         Instance for GameManager as there is a single instance per scene (Singleton class)
         (Consider checking if these are null or not before running) */
         identityAssignment = gameObject.GetComponent<IdentityAssignment>(); 
-        gameManager = GameManager.Instance;
+        gameManager = FindObjectOfType<GameManager>();
         diskLogger = FindObjectOfType<DiskLogger>();
         trialHandler = FindObjectOfType<TrialHandler>();
         collider = GetComponent<BoxCollider>(); 
@@ -62,6 +64,18 @@ public class WallTrigger : NetworkBehaviour
         else
         {
             Debug.Log("WallTrigger's gameManager is null at delegate subscription");
+            try 
+            {
+                gameManager = GameManager.Instance;
+                if(gameManager == null)
+                {
+                    Debug.Log("Second time, gameManager is still null");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+            }
         }
 
         // // Subscribe to value change of the winning client and execute end-trial logic 
@@ -83,7 +97,6 @@ public class WallTrigger : NetworkBehaviour
         OnTriggerEntered += DeactivateWall;
 
         setupComplete = true;
-
     }
 
 

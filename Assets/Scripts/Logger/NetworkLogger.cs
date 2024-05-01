@@ -12,7 +12,7 @@ public class NetworkLogger : Logger
         this.port = port;
     }
 
-    public override void Log(Dictionary<string,object> data, string eventDescription)
+    public override void Log(string logEntry)
     {
         // TODO
 

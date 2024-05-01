@@ -16,10 +16,10 @@ public class DoubleLogger : Logger
         networkLogger = new NetworkLogger(ip, port);
     }
 
-    public override void Log(Dictionary<string,object> data, string eventDescription)
+    public override void Log(string logEntry)
     {
-        diskLogger.Log(data, eventDescription);
-        networkLogger.Log(data, eventDescription);
+        diskLogger.Log(logEntry);
+        networkLogger.Log(logEntry);
 
     }
 }

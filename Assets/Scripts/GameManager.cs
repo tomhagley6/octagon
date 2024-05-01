@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using JetBrains.Annotations;
 using Logging;
+using LoggingClasses;
+using Newtonsoft.Json;
 using TMPro;
 using Unity.Netcode;
 using Unity.VisualScripting;
@@ -87,6 +89,13 @@ public class GameManager : SingletonNetwork<GameManager>
         }
     }
 
+    public NetworkList<ulong> connectedClientIds;
+
+    public void Awake()
+    {
+        connectedClientIds = new NetworkList<ulong>(new List<ulong>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        Debug.Log("GameManager Awake finished running");
+    }
 
     public override void OnNetworkSpawn() {
         /* Subscribe to the OnValueChanged delegate with a lambda expression that fulfills the
@@ -98,6 +107,8 @@ public class GameManager : SingletonNetwork<GameManager>
             Debug.Log($"Trial number: {newValue}");
 
         }; */
+
+        Debug.Log("GameManager OnNetworkSpawn DOES start");
 
         // access other logic GameObjects in the scene 
         diskLogger = FindObjectOfType<DiskLogger>();
@@ -113,7 +124,9 @@ public class GameManager : SingletonNetwork<GameManager>
         Invoke called as a method on an event will trigger all methods subscribed to the event
         and passes them isReady as an input */
         isReady = true;
+        Debug.Log($"isReady is set to true: {isReady}");
         OnReadyStateChanged?.Invoke(isReady);
+        Debug.Log("OnReadyStateChanged?.Invoke(isReady); Ran");
 
         // // Subscribe to changes in the triggerID NetworkVariable value
         // triggerID.OnValueChanged += TriggerIDHandler_DeactivateWalls;
@@ -137,6 +150,9 @@ public class GameManager : SingletonNetwork<GameManager>
         /* Subscribe triggerActivation with a callback method that runs the trial
         logic for a wall interaction */
         triggerActivation.OnValueChanged += TriggerActivationHandler_TriggerEntry;
+
+        // Subscribe connectedClientIds with a callback ServerRPC that updates
+        // Actually we don't need to do this if we're checking the NetworkList when it's needed
 
         
 
@@ -225,6 +241,44 @@ public class GameManager : SingletonNetwork<GameManager>
             Debug.Log("Triggers array in GameManager is null at time of ActiveWallsHandler_OnWallChange. Therefore, cannot change collider status");
         }
     }
+
+    // // Method to log slice onset data only for the Server, when ActiveWalls value changes
+    // // Try to rewrite this to accept an arbitrary number of walls
+    // private void ActiveWallsHandler_LogSliceOnset(ActiveWalls previousValue, ActiveWalls newValue)
+    // {
+    //     if (!IsServer) { return; }
+
+    //     int wall1 = newValue.wall1;
+    //     int wall2 = newValue.wall2;
+    //     Dictionary<string,object> playerInfoDict = new Dictionary<string,object>();
+        
+    //     // For each connected client, create a player info class (defined in LoggingClasses)
+    //     // and add this class as the value for this clientId in a dictionary
+    //     // Then, log to JSON format the full slice onset information
+    //     // as defined in LoggingClasses.SliceOnsetLogEvent
+    //     var players = NetworkManager.ConnectedClientsList;
+    //     for (int i = 0; i < players.Count; i++)
+    //     {
+    //         int clientId = i;
+    //         NetworkClient networkClient = players[i];
+    //         Vector3 playerPosition = networkClient.PlayerObject.gameObject.transform.position;
+    //         Quaternion playerRotation = networkClient.PlayerObject.gameObject.transform.rotation;
+
+    //         PlayerInfo thisPlayerInfo = new PlayerInfo(networkClient.ClientId, playerPosition, playerRotation);
+
+    //         playerInfoDict.Add(networkClient.ClientId.ToString(), thisPlayerInfo);
+    //     }
+
+    //     // Create the final log class instance
+    //     SliceOnsetLogEvent sliceOnsetLogEvent = new SliceOnsetLogEvent(wall1, wall2, playerInfoDict);
+
+    //     // Serialize the class to JSON
+    //     string toLog = JsonConvert.SerializeObject(sliceOnsetLogEvent);
+
+    //     // Send this string to the active diskLogger to be logged to file
+        
+
+    // }
     
 
     
@@ -390,5 +444,41 @@ public class GameManager : SingletonNetwork<GameManager>
     }
 
     // RPC to access and update local-client IDs
+    [ServerRpc(RequireOwnership=false)]
+    public void UpdateClientIdsServerRPC()
+    {
+        var players = NetworkManager.ConnectedClientsList;
+        Debug.Log(NetworkManager.ConnectedClientsList);
+
+        for (int i = 0; i < players.Count; i++)
+        {
+            if ((ulong)i == NetworkManager.Singleton.LocalClientId)
+            {
+                Debug.Log($"Local player Id {NetworkManager.Singleton.LocalClientId} contained in client list");
+            }
+            else
+            {
+                Debug.Log($"client {i} is connected to the server but is not the local player");
+            }
+        }
+
+        
+    }
+
+    /* ServerRPC to log data for all clients at slice onset,
+    including clientId, gameObject.transform.position, and 
+    gameObject.transform.rotation
+    */
+    // Maybe first try just executing the logging only if this is the server? 
+    // in a callback method for activeWalls.OnValueChanged, with
+    // if (isServer)
+    [ServerRpc(RequireOwnership=false)]
+    public void LogClientDataServerRPC()
+    {
+        
+    }
+
 
 }
+
+

@@ -8,5 +8,5 @@ public abstract class Logger : MonoBehaviour
 
     // Abstract logging method
     // Implemented separately for local file vs network data logging
-    public abstract void Log(Dictionary<string, object> data, string eventDescription);
+    public abstract void Log(string logEntry);
 }

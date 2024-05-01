@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -71,6 +72,16 @@ namespace Logging
         public static string player = "player_1";
         public static string trialNum = "1";
         public static string trialType = "HighLow";
+
+
+        // Formats for log entry types
+        // Trial start
+        public static Dictionary<string,object> trialStartData = new Dictionary<string,object>()
+        {
+            {"trialNum", null}
+        };
+
+
     }
 
 }

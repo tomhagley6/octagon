@@ -40,31 +40,32 @@ public class DiskLogger : Logger
   
     }
 
-    public override void Log(Dictionary<string, object> data, string eventDescription)
+    public override void Log(string logEntry)
     {
         if (loggerReady)
         {   
             // string toLog = String.Format(Globals.logFormat, DateTime.Now.ToString(Globals.logTimeFormat),
             //                              UnityEngine.Time.time.ToString("f3"), data);
 
-            var logEntry = new
-            {
-                LocalTime = DateTime.Now.ToString(Globals.logTimeFormat),
-                /* Using realtimeSinceStartup to allow to me later create a pause function without 
-                affecting this time measurement, which is taken as real time from the start of the
-                application */
-                ApplicationTime = UnityEngine.Time.realtimeSinceStartupAsDouble.ToString("f3"),
-                Event = eventDescription,
-                data
-            };
+            // var logEntry = new
+            // {
+            //     LocalTime = DateTime.Now.ToString(Globals.logTimeFormat),
+            //     /* Using realtimeSinceStartup to allow to me later create a pause function without 
+            //     affecting this time measurement, which is taken as real time from the start of the
+            //     application */
+            //     ApplicationTime = UnityEngine.Time.realtimeSinceStartupAsDouble.ToString("f3"),
+            //     Event = eventDescription,
+            //     data
+            // };
 
-            string toLog = JsonConvert.SerializeObject(logEntry);
+            // string toLog = JsonConvert.SerializeObject(logEntry);
 
             lock (logEntries) // prevent multiple threads from reaching this block simultaneously
             {
-                logEntries.Add(toLog);
-                Debug.Log($"{logEntry.ApplicationTime} from Log()");
-                Debug.Log($"{toLog} from Log()");
+                logEntries.Add(logEntry);
+                // Debug.Log($"{logEntry.ApplicationTime} from Log()");
+                // Debug.Log($"{toLog} from Log()");
+                Debug.Log("Log entry added to logEntries");
             }
         }
         else
@@ -120,12 +121,12 @@ public class DiskLogger : Logger
                             sw.WriteLine(item);
                             Debug.Log(item);
 
-                            string item2 = JsonUtility.ToJson(
-                                new {
-                                    Time = "now"
-                                }
-                            );
-                            sw.WriteLine(item2);
+                            // string item2 = JsonUtility.ToJson(
+                            //     new {
+                            //         Time = "now"
+                            //     }
+                            // );
+                            // sw.WriteLine(item2);
 
                             
                         }
@@ -134,7 +135,7 @@ public class DiskLogger : Logger
                     {
                         Debug.Log(e.Message);
                     }
-                    Debug.Log($"item length after calling WriteAllText is {item.Length}");
+                    Debug.Log($"item length after writing is {item.Length}");
                     // Debug.Log("TextWriter ran WriteLine for single logEntry");
                     Debug.Log(item);
                 }
@@ -187,7 +188,8 @@ public class DiskLogger : Logger
         {
             { "Event", "Logging started (dict)" }
         };
-        Log(data, "Logging strated");
+        var toLog = JsonConvert.SerializeObject(data);
+        Log(toLog);
 
         StartLogEvent startLogEvent = new StartLogEvent("testdescription");
         string jsonData = JsonUtility.ToJson(startLogEvent);

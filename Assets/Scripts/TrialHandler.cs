@@ -37,8 +37,9 @@ public class TrialHandler : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        
         // variables
-        gameManager = GameManager.Instance;
+        gameManager = FindObjectOfType<GameManager>();
         identityManager = FindObjectOfType<IdentityManager>();
 
         // print current active walls
@@ -69,7 +70,7 @@ public class TrialHandler : NetworkBehaviour
             {
                 Debug.Log("Current player IS a client, though");
                 Debug.Log($"Active walls are currently {gameManager.activeWalls.Value.wall1}"
-                             + $"and {gameManager.activeWalls.Value.wall2}");
+                            + $"and {gameManager.activeWalls.Value.wall2}");
             }
             else
             {
@@ -78,6 +79,7 @@ public class TrialHandler : NetworkBehaviour
         }
     }
 
+   
 
     // Due to walls and wall colours not being networked, any late-joining clients will 
     // need to run ColourWalls as they join
