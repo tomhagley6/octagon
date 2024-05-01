@@ -1,9 +1,11 @@
 using UnityEngine;
 using Logging;
+using LoggingClasses;
 using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 // Class to handle logging data to file on the local machine
 public class DiskLogger : Logger
@@ -14,7 +16,11 @@ public class DiskLogger : Logger
     private string filePath;
     
     private bool loggerReady = false;
-    private TextWriter tw;
+    
+    // // TextWriter replaced with a StreamWriter
+    // private TextWriter tw;
+    private StreamWriter sw; 
+
     
     // Store log entries in a buffer before writing to file
     private readonly List<string> logEntries = new List<string>();
@@ -34,19 +40,39 @@ public class DiskLogger : Logger
   
     }
 
-    public override void Log(string data)
+    public override void Log(Dictionary<string, object> data, string eventDescription)
     {
         if (loggerReady)
         {   
-            string toLog = String.Format(Globals.logFormat, DateTime.Now.ToString(Globals.logTimeFormat),
-                                         UnityEngine.Time.time.ToString("f3"), data);
+            // string toLog = String.Format(Globals.logFormat, DateTime.Now.ToString(Globals.logTimeFormat),
+            //                              UnityEngine.Time.time.ToString("f3"), data);
+
+            var logEntry = new
+            {
+                LocalTime = DateTime.Now.ToString(Globals.logTimeFormat),
+                /* Using realtimeSinceStartup to allow to me later create a pause function without 
+                affecting this time measurement, which is taken as real time from the start of the
+                application */
+                ApplicationTime = UnityEngine.Time.realtimeSinceStartupAsDouble.ToString("f3"),
+                Event = eventDescription,
+                data
+            };
+
+            string toLog = JsonConvert.SerializeObject(logEntry);
+
             lock (logEntries) // prevent multiple threads from reaching this block simultaneously
             {
                 logEntries.Add(toLog);
+                Debug.Log($"{logEntry.ApplicationTime} from Log()");
+                Debug.Log($"{toLog} from Log()");
             }
         }
+        else
+        {
+            Debug.Log("Logger not ready");
+        }
 
-        // Debug.Log("DiskLogger.Log() ran");
+        Debug.Log("DiskLogger.Log() ran");
         // Debug.Log($"logEntries is: {logEntries[0]}");
     }
 
@@ -61,7 +87,10 @@ public class DiskLogger : Logger
             {
                 try
                 {
+                    Debug.Log($"{logEntries[0]} from LogToFile coroutine");
                     EmptyBuffer();
+                    
+
                 }
                 catch (Exception ex)
                 {
@@ -83,24 +112,47 @@ public class DiskLogger : Logger
             {
                 foreach (string item in logEntries)
                 {
-                    tw.WriteLine(item);
+                    // File.WriteAllText(item, filePath);
+                    try 
+                    {
+                        using (StreamWriter sw = new StreamWriter(filePath, true))
+                        {
+                            sw.WriteLine(item);
+                            Debug.Log(item);
+
+                            string item2 = JsonUtility.ToJson(
+                                new {
+                                    Time = "now"
+                                }
+                            );
+                            sw.WriteLine(item2);
+
+                            
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Log(e.Message);
+                    }
+                    Debug.Log($"item length after calling WriteAllText is {item.Length}");
                     // Debug.Log("TextWriter ran WriteLine for single logEntry");
+                    Debug.Log(item);
                 }
                 logEntries.Clear();
 
             }
         }
 
-        // Debug.Log("EmptyBuffer() ran.");
+        Debug.Log("EmptyBuffer() ran.");
     }
 
     private void OnDestroy()
     {
         loggerReady = false;
         StopAllCoroutines();
-        if (tw != null)
+        if (sw != null)
         {
-            tw.Close();
+            sw.Close();
         }
     }
 
@@ -109,27 +161,64 @@ public class DiskLogger : Logger
     {
         
         // Path
-        filename = String.Concat(DateTime.Now.ToString(Globals.fileTimeFormat), ".txt");
+        filename = String.Concat(DateTime.Now.ToString(Globals.fileTimeFormat), ".json");
         filePath = Path.Combine(dataFolder, filename);
         Debug.Log("Logger created. Filename: " + filename);
 
-        // Setup TextWriter with the current file
-        tw = File.AppendText(filePath);
+        // // Setup StreamWriter with the current file
+        // sw = File.AppendText(filePath);
 
         loggerReady = true;
 
         // Record beginning of logger process
-        Log("[octagon]:logging start");
+        var startEvent = new  
+        {
+            LocalTime = DateTime.Now.ToString(Globals.logTimeFormat),
+            /* Using realtimeSinceStartup to allow to me later create a pause function without 
+            affecting this time measurement, which is taken as real time from the start of the
+            application */
+            ApplicationTime = UnityEngine.Time.realtimeSinceStartupAsDouble.ToString("f3"),
+            Event = "Logging started"
+        };
+
+        string jsonString = JsonUtility.ToJson(startEvent);
+        
+        Dictionary<string,object> data = new Dictionary<string, object>
+        {
+            { "Event", "Logging started (dict)" }
+        };
+        Log(data, "Logging strated");
+
+        StartLogEvent startLogEvent = new StartLogEvent("testdescription");
+        string jsonData = JsonUtility.ToJson(startLogEvent);
+        Debug.Log("new attempt at json is "+ jsonData);
+        StartLogEvent deserialized = JsonUtility.FromJson<StartLogEvent>(jsonData);
+        Debug.Log("and deserialized is " + deserialized.Description);
+        if (deserialized.Description == null)
+        {
+            Debug.Log("deserialized.Description is null");
+        }
+        else if (deserialized.Description.Length == 0)
+        {
+            Debug.Log("deserialized.Description is length 0");
+        }
+
+        string jsonDataNewtonsoft = JsonConvert.SerializeObject(startLogEvent);
+        Debug.Log($"Now trying Newtonsoft: " + jsonDataNewtonsoft);
+
+        Debug.Log($"{startEvent.Event} - {startEvent.LocalTime} - {startEvent.ApplicationTime}");
+        
+
 
         StartCoroutine(LogToFile());
-        Debug.Log("Coroutines begun.");
+        Debug.Log("Logging coroutine begun.");
     }
 
     public void StopLogger()
     {
         Debug.Log("Closing current logger: " + filename);
 
-        Log("[octagon]:logging end");
+        // Log("[octagon]:logging end");
         EmptyBuffer();
 
         loggerReady = false;
@@ -137,7 +226,9 @@ public class DiskLogger : Logger
         StopCoroutine(LogToFile());
 
         // Closing TextWriter calls a flush operation
-        tw.Close();
+        sw.Close();
     }
+
 } 
 
+    

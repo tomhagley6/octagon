@@ -210,14 +210,14 @@ public class WallTrigger : NetworkBehaviour
             trialHandler.EndTrial(score, isTrialEnderClient);
         }
 
-        // all clients log their own event information
-        diskLogger.Log(String.Format(Globals.wallTriggerFormat, Globals.wallTriggerTag,
-                                                Globals.trialNum,
-                                                Globals.trialType,
-                                                triggerID,
-                                                rewardType,
-                                                score,
-                                                isTrialEnderClient));
+        // // all clients log their own event information
+        // diskLogger.Log(String.Format(Globals.wallTriggerFormat, Globals.wallTriggerTag,
+        //                                         Globals.trialNum,
+        //                                         Globals.trialType,
+        //                                         triggerID,
+        //                                         rewardType,
+        //                                         score,
+        //                                         isTrialEnderClient));
         Debug.Log($"{rewardType} score ({score}) triggered");
     }
 

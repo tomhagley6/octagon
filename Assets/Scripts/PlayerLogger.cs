@@ -38,10 +38,10 @@ public override void OnNetworkSpawn() {
     {
         while (true)
         {
-            diskLogger.Log(String.Format(Globals.posFormat, Globals.posTag,
-                                                            Globals.player, 
-                                                            player.transform.position.x,
-                                                            player.transform.position.z));
+            // diskLogger.Log(String.Format(Globals.posFormat, Globals.posTag,
+            //                                                 Globals.player, 
+            //                                                 player.transform.position.x,
+            //                                                 player.transform.position.z));
             
             yield return new WaitForSeconds(0.2f);
 
@@ -54,13 +54,13 @@ public override void OnNetworkSpawn() {
         bool thisPlayer;
         thisPlayer = IsLocalPlayer;
 
-        diskLogger.Log(String.Format(Globals.wallTriggerFormat, Globals.wallTriggerTag,
-                                                                Globals.trialNum,
-                                                                Globals.trialType,
-                                                                triggerID,
-                                                                rewardType,
-                                                                increment,
-                                                                thisPlayer)); 
+        // diskLogger.Log(String.Format(Globals.wallTriggerFormat, Globals.wallTriggerTag,
+        //                                                         Globals.trialNum,
+        //                                                         Globals.trialType,
+        //                                                         triggerID,
+        //                                                         rewardType,
+        //                                                         increment,
+        //                                                         thisPlayer)); 
     }
 
 }

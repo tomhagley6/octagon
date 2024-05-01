@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class NetworkLogger : Logger
@@ -11,7 +12,7 @@ public class NetworkLogger : Logger
         this.port = port;
     }
 
-    public override void Log(string data)
+    public override void Log(Dictionary<string,object> data, string eventDescription)
     {
         // TODO
 

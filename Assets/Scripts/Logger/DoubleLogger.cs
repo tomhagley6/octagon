@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using UnityEditor.SearchService;
 using UnityEngine;
 
 
@@ -14,10 +16,10 @@ public class DoubleLogger : Logger
         networkLogger = new NetworkLogger(ip, port);
     }
 
-    public override void Log(string data)
+    public override void Log(Dictionary<string,object> data, string eventDescription)
     {
-        diskLogger.Log(data);
-        networkLogger.Log(data);
+        diskLogger.Log(data, eventDescription);
+        networkLogger.Log(data, eventDescription);
 
     }
 }

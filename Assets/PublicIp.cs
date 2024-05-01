@@ -52,6 +52,10 @@ public class PublicIp : MonoBehaviour
                     publicIp = match.Groups[0].Value;
                     Debug.Log("Public IP Address: " + publicIp);
                 }
+                else
+                {
+                    Debug.Log("No match for IP regex found");
+                }
             }
         }
     }

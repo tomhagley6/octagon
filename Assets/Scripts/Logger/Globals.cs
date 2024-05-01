@@ -13,7 +13,7 @@ namespace Logging
         public static string ip = "ip_here";
 
         // formatting strings
-        public static string fileTimeFormat = "yyyy'-'MM'-'dd'__'HH'-'mm'-'ss";
+        public static string fileTimeFormat = "yyyy'-'MM'-'dd'_'HH'-'mm'-'ss";
         
         // // Example code for creating the txt file path
         // filename = String.Concat(DateTime.Now.ToString(fileTimeFormat), ".txt");
@@ -24,7 +24,7 @@ namespace Logging
 
 
 
-        public static string logTimeFormat = "HH'-'mm'-'ss";
+        public static string logTimeFormat = "HH:mm:ss:fff";
 
 
         public static string logFormat = "T{0}:UT {1} {2}"; // timestamp, unitytimestamp, 
