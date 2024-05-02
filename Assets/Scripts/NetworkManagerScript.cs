@@ -19,8 +19,8 @@ public class NetworkManagerScript : MonoBehaviour
 
     void Start()
     {
-        NetworkManager.Singleton.OnClientConnectedCallback += Connected;
-        NetworkManager.Singleton.OnClientDisconnectCallback += Disconnected;
+        NetworkManager.Singleton.OnClientConnectedCallback += AddConnectedClientServerRPC;
+        NetworkManager.Singleton.OnClientDisconnectCallback += RemoveDisconnectedClientServerRPC;
         try
         {
             gameManager = FindObjectOfType<GameManager>();
@@ -32,16 +32,32 @@ public class NetworkManagerScript : MonoBehaviour
         }
     }
 
-    void Connected(ulong clientId)
-    {
-        Debug.Log($"ClientId {clientId} connected. LocalClientId is {NetworkManager.Singleton.LocalClientId}");
-        gameManager.connectedClientIds.Add(clientId);
-    }
+    // // Think these just need to be ServerRPCs because clients cannot change a NetworkVariable/List
+    // void Connected(ulong clientId)
+    // {
+    //     Debug.Log($"ClientId {clientId} connected. LocalClientId is {NetworkManager.Singleton.LocalClientId}");
+    //     gameManager.connectedClientIds.Add(clientId);
+    // }
 
-    void Disconnected(ulong clientId)
-    {
-        Debug.Log($"ClientId {clientId} disconnected. LocalClientId is {NetworkManager.Singleton.LocalClientId}");
-        gameManager.connectedClientIds.Remove(clientId);
-    }
+    // void Disconnected(ulong clientId)
+    // {
+    //     Debug.Log($"ClientId {clientId} disconnected. LocalClientId is {NetworkManager.Singleton.LocalClientId}");
+    //     gameManager.connectedClientIds.Remove(clientId);
+    // }
+
+[ServerRpc(RequireOwnership=false)]
+public void AddConnectedClientServerRPC(ulong clientId)
+{
+    Debug.Log($"ClientId {clientId} connected. LocalClientId is {NetworkManager.Singleton.LocalClientId}");
+    gameManager.connectedClientIds.Add(clientId);
+}
+[ServerRpc(RequireOwnership=false)]
+public void RemoveDisconnectedClientServerRPC(ulong clientId)
+{
+    Debug.Log($"ClientId {clientId} disconnected. LocalClientId is {NetworkManager.Singleton.LocalClientId}");
+    gameManager.connectedClientIds.Remove(clientId);
+}
+
+
 
 }
