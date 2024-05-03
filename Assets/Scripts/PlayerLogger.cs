@@ -42,8 +42,8 @@ public override void OnNetworkSpawn() {
             Debug.Log("NOT local player");
         }
 
-        // Subscribe to change in active wall values on the network
-        gameManager.activeWalls.OnValueChanged += ActiveWallsHandler_LogSliceOnset;
+        // // Subscribe to change in active wall values on the network
+        // gameManager.activeWalls.OnValueChanged += ActiveWallsHandler_LogSliceOnset;
 
     }
 
@@ -62,54 +62,57 @@ public override void OnNetworkSpawn() {
     }
 
 
-    // Method to log slice onset data only for the Server, when ActiveWalls value changes
-    // Try to rewrite this to accept an arbitrary number of walls
-    private void ActiveWallsHandler_LogSliceOnset(ActiveWalls previousValue, ActiveWalls newValue)
-    {
-        if (!IsServer) { Debug.Log("Not server, not running ActiveWallsHandler_LogSliceOnset in PlayerLogger");
-        return; }
+    /* Seems to be leading to game logic errors probably related to using the activeWalls OnValueChanged
+       as a trigger. Change this and see if the bug is fixed */
+    // // Method to log slice onset data only for the Server, when ActiveWalls value changes
+    // // Try to rewrite this to accept an arbitrary number of walls
+    // private void ActiveWallsHandler_LogSliceOnset(ActiveWalls previousValue, ActiveWalls newValue)
+    // {
+    //     if (!IsServer) { Debug.Log("Not server, not running ActiveWallsHandler_LogSliceOnset in PlayerLogger");
+    //     return; }
 
-        Debug.Log("Is Server, so running ActiveWallsHandler_LogSliceOnset in PlayerLogger");
+    //     Debug.Log("Is Server, so running ActiveWallsHandler_LogSliceOnset in PlayerLogger");
 
-        int wall1 = newValue.wall1;
-        int wall2 = newValue.wall2;
-        Dictionary<string,object> playerInfoDict = new Dictionary<string,object>();
+    //     int wall1 = newValue.wall1;
+    //     int wall2 = newValue.wall2;
+    //     Dictionary<string,object> playerInfoDict = new Dictionary<string,object>();
         
-        // For each connected client, create a player info class (defined in LoggingClasses)
-        // and add this class as the value for this clientId in a dictionary
-        // Then, log to JSON format the full slice onset information
-        // as defined in LoggingClasses.SliceOnsetLogEvent
-        var players = NetworkManager.ConnectedClientsList;
-        Debug.Log($"ConnectedClientsList is {players.Count} items long");
-        for (int i = 0; i < players.Count; i++)
-        {
-            int clientId = i;
-            NetworkClient networkClient = players[i];
-            Vector3 playerPosition = networkClient.PlayerObject.gameObject.transform.position;
-            Quaternion playerRotation = networkClient.PlayerObject.gameObject.transform.rotation;
+    //     // For each connected client, create a player info class (defined in LoggingClasses)
+    //     // and add this class as the value for this clientId in a dictionary
+    //     // Then, log to JSON format the full slice onset information
+    //     // as defined in LoggingClasses.SliceOnsetLogEvent
+    //     var players = NetworkManager.ConnectedClientsList;
+    //     Debug.Log($"ConnectedClientsList is {players.Count} items long");
+    //     for (int i = 0; i < players.Count; i++)
+    //     {
+    //         int clientId = i;
+    //         NetworkClient networkClient = players[i];
+    //         Vector3 playerPosition = networkClient.PlayerObject.gameObject.transform.position;
+    //         Quaternion playerRotation = networkClient.PlayerObject.gameObject.transform.rotation;
 
-            PlayerInfo thisPlayerInfo = new PlayerInfo(networkClient.ClientId, playerPosition, playerRotation);
+    //         PlayerInfo thisPlayerInfo = new PlayerInfo(networkClient.ClientId, playerPosition, playerRotation);
 
-            playerInfoDict.Add(networkClient.ClientId.ToString(), thisPlayerInfo);
-            Debug.Log($"playerInfoDict is {playerInfoDict.Count} item long");
-        }
+    //         playerInfoDict.Add(networkClient.ClientId.ToString(), thisPlayerInfo);
+    //         Debug.Log($"playerInfoDict is {playerInfoDict.Count} item long");
+    //     }
 
-        // Create the final log class instance
-        SliceOnsetLogEvent sliceOnsetLogEvent = new SliceOnsetLogEvent(wall1, wall2, playerInfoDict);
-        Debug.Log("SliceOnsetLogEvent created");
+    //     // Create the final log class instance
+    //     SliceOnsetLogEvent sliceOnsetLogEvent = new SliceOnsetLogEvent(wall1, wall2, playerInfoDict);
+    //     Debug.Log("SliceOnsetLogEvent created");
 
-        // Serialize the class to JSON
-        string logEntry = JsonConvert.SerializeObject(sliceOnsetLogEvent, new JsonSerializerSettings
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-        });
-        Debug.Log("SliceOnsetLogEvent serialized to JSON string: " + logEntry);
+    //     // Serialize the class to JSON
+    //     string logEntry = JsonConvert.SerializeObject(sliceOnsetLogEvent, new JsonSerializerSettings
+    //     {            
+               // This ensures that Unity Quaternions can serialize correctly
+    //         ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+    //     });
+    //     Debug.Log("SliceOnsetLogEvent serialized to JSON string: " + logEntry);
 
-        // Send this string to the active diskLogger to be logged to file
-        diskLogger.Log(logEntry);
+    //     // Send this string to the active diskLogger to be logged to file
+    //     diskLogger.Log(logEntry);
         
 
-    }
+    // }
 
     void LogEvent(int increment, int triggerID, string rewardType) {
 

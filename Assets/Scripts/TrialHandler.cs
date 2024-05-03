@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,6 +7,7 @@ using Unity.Netcode;
 using UnityEngine;
 using static GameManager;
 using Debug = UnityEngine.Debug;
+using Random = UnityEngine.Random;
 
 /* This class exists client-side and accesses the wall number NetworkVariables
 that are set by the Singleton GameManager (server control only). 
@@ -19,7 +21,8 @@ public class TrialHandler : NetworkBehaviour
    IdentityManager identityManager;
    Color defaultWallColour;
    bool isTrialEnderClient = false; // flag to check if current trial was 
-                                    // ended by this client
+                                    // ended by this clientId
+   public event Action sliceOnset;  
 
 
 
@@ -161,6 +164,10 @@ public class TrialHandler : NetworkBehaviour
         // Assign colours to the walls that fit their rewards
         highWall.GetComponent<Renderer>().materials[0].color = Color.red;
         lowWall.GetComponent<Renderer>().materials[0].color = Color.blue;
+
+        // Invoke any callback functions associated with slice onset
+        // NB: Slice onset here is defined as when ColourWalls runs on the server
+        sliceOnset?.Invoke();
     }
    
 

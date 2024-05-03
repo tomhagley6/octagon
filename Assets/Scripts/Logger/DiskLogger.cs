@@ -20,6 +20,8 @@ public class DiskLogger : Logger
     // // TextWriter replaced with a StreamWriter
     // private TextWriter tw;
     private StreamWriter sw; 
+    private bool isFirstLine = true;
+    private string firstLine;
 
     
     // Store log entries in a buffer before writing to file
@@ -36,9 +38,9 @@ public class DiskLogger : Logger
         {
             Directory.CreateDirectory(dataFolder);
         }
-        Debug.Log("DiskLogger Start() ran");
-  
+        Debug.Log("DiskLogger Start() ran"); 
     }
+
 
     public override void Log(string logEntry)
     {
@@ -118,7 +120,10 @@ public class DiskLogger : Logger
                     {
                         using (StreamWriter sw = new StreamWriter(filePath, true))
                         {
-                            sw.WriteLine(item);
+                            // // Check whether this is the most efficient way of doing things,
+                            // // or whether this will hog resources
+                            // firstLine = isFirstLine == true ? "[" : "";
+                            sw.WriteLine(item + ",");
                             Debug.Log(item);
 
                             // string item2 = JsonUtility.ToJson(
@@ -151,6 +156,35 @@ public class DiskLogger : Logger
     {
         loggerReady = false;
         StopAllCoroutines();
+
+        if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
+        {
+            // Read the content of the JSON file
+            string jsonContent = File.ReadAllText(filePath);
+
+            if (!string.IsNullOrEmpty(jsonContent) && jsonContent.Length > 1)
+            {
+                // Remove the last character
+                jsonContent = jsonContent.Remove(jsonContent.Length - 1);
+
+                // Write the modified content back to the file
+                File.WriteAllText(filePath, jsonContent);
+            }
+            else
+            {
+                Debug.LogWarning("JSON file is empty or has only one character. No action taken.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("JSON file path is invalid or does not exist. No action taken.");
+        }
+        
+        // Finish the JSON file by writing a square bracket to the end 
+        using (StreamWriter sw = new StreamWriter(filePath, true))
+        {
+            sw.WriteLine("]");
+        }
         if (sw != null)
         {
             sw.Close();
@@ -165,6 +199,12 @@ public class DiskLogger : Logger
         filename = String.Concat(DateTime.Now.ToString(Globals.fileTimeFormat), ".json");
         filePath = Path.Combine(dataFolder, filename);
         Debug.Log("Logger created. Filename: " + filename);
+
+        // Begin the file with a square bracket to conform to JSON formatting        
+        using (StreamWriter sw = new StreamWriter(filePath, true))
+        {
+            sw.WriteLine("[");
+        }
 
         // // Setup StreamWriter with the current file
         // sw = File.AppendText(filePath);
