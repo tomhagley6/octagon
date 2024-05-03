@@ -18,9 +18,9 @@ public class NetworkManagerScript : MonoBehaviour
     public GameManager gameManager;
 
     void Start()
-    {
-        NetworkManager.Singleton.OnClientConnectedCallback += AddConnectedClientServerRPC;
-        NetworkManager.Singleton.OnClientDisconnectCallback += RemoveDisconnectedClientServerRPC;
+    {   
+        
+
         try
         {
             gameManager = FindObjectOfType<GameManager>();
@@ -30,6 +30,11 @@ public class NetworkManagerScript : MonoBehaviour
             Debug.Log("gameManager could not be assigned in NetworkManagerScript.cs");
             Debug.Log(e.Message);
         }
+        
+        if (gameManager.IsServer)
+            NetworkManager.Singleton.OnClientConnectedCallback += AddConnectedClientServerRPC;
+            NetworkManager.Singleton.OnClientDisconnectCallback += RemoveDisconnectedClientServerRPC;
+
     }
 
     // // Think these just need to be ServerRPCs because clients cannot change a NetworkVariable/List
