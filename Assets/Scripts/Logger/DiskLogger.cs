@@ -165,7 +165,9 @@ public class DiskLogger : Logger
             if (!string.IsNullOrEmpty(jsonContent) && jsonContent.Length > 1)
             {
                 // Remove the last character
-                jsonContent = jsonContent.Remove(jsonContent.Length - 1);
+                // jsonContent = jsonContent.Remove(jsonContent.Length - 1);
+                jsonContent = jsonContent.Remove(jsonContent.Length - 3, 1);
+                Debug.Log("Last character of the JSON string has been removed");
 
                 // Write the modified content back to the file
                 File.WriteAllText(filePath, jsonContent);
