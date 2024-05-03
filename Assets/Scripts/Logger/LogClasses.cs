@@ -9,33 +9,70 @@ namespace LoggingClasses
 {
 
     // helper data types
+
+    // Helper class for assembling general player info
     public class PlayerInfo
     {
         // player id
         // player transform.position
         // player transform.rotation
         public ulong clientId;
-        public Vector3 position;
-        public Quaternion rotation;
+        public PlayerPosition position;
+        public PlayerRotation rotation;
 
-        public PlayerInfo(ulong _clientId, Vector3 _position, Quaternion _rotation)
+        public PlayerInfo(ulong _clientId, PlayerPosition _position, PlayerRotation _rotation)
         {
             clientId = _clientId;
             position = _position;
             rotation = _rotation;
         }
     }
+
+    // Helper class to allow logging of only Transform.position x/y/z values
+    public class PlayerPosition 
+    {
+        public double x;
+        public double y;
+        public double z;
+
+        public PlayerPosition(double _x, double _y, double _z)
+        {
+            x = _x;
+            y = _y;
+            z = _z;
+        }
+        
+    }
+
+    // Helper class to allow logging of only Transform.rotation euler angles
+    public class PlayerRotation
+    {
+        public double x;
+        public double y;
+        public double z;
+
+        public PlayerRotation(double _x, double _y, double _z)
+        {
+            x = _x;
+            y = _y;
+            z = _z;
+        }
+    }
     
     // Create log classes
-    [Serializable]
-    public class StartLogEvent
+    public class StartLoggingLogEvent
     {
         // time
-        public string Description { get; set; }
+        // description string
+        public string timeLocal;
+        public string timeApplication;
+        public string eventDescription;
 
-        public StartLogEvent(string description)
+        public StartLoggingLogEvent()
         {
-            Description = description;
+            timeLocal = DateTime.Now.ToString(Globals.logTimeFormat);
+            timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
+            eventDescription = Globals.beginLogging;
         }
     }
 
@@ -47,12 +84,14 @@ namespace LoggingClasses
         // head angles
         public string timeLocal;
         public string timeApplication;
+        public string eventDescription;
         public Dictionary<string, object> data;
 
         public TrialStartLogEvent(ushort trialNum)
         {
             timeLocal = DateTime.Now.ToString(Globals.logTimeFormat);
             timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
+            eventDescription = Globals.trialStart;
             data = new Dictionary<string, object>()
             {
                 {"trialNum", trialNum}
@@ -84,7 +123,7 @@ namespace LoggingClasses
         {
             timeLocal = DateTime.Now.ToString(Globals.logTimeFormat);
             timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
-            eventDescription = "slice onset";
+            eventDescription = Globals.sliceOnset;
             data = new Dictionary<string, object>()
 
             {
@@ -106,7 +145,8 @@ namespace LoggingClasses
         // winner 
     }
 
-    public class ITIStartLogEvent
+    // or 'ITIStartLogEvent', which is better?
+    public class EndTrialLogEvent
     {
         // necessary? 
     }

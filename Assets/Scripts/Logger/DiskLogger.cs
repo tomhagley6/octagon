@@ -233,21 +233,21 @@ public class DiskLogger : Logger
         var toLog = JsonConvert.SerializeObject(data);
         Log(toLog);
 
-        StartLogEvent startLogEvent = new StartLogEvent("testdescription");
-        string jsonData = JsonUtility.ToJson(startLogEvent);
+        StartLoggingLogEvent startLoggingLogEvent = new StartLoggingLogEvent();
+        string jsonData = JsonUtility.ToJson(startLoggingLogEvent);
         Debug.Log("new attempt at json is "+ jsonData);
-        StartLogEvent deserialized = JsonUtility.FromJson<StartLogEvent>(jsonData);
-        Debug.Log("and deserialized is " + deserialized.Description);
-        if (deserialized.Description == null)
+        StartLoggingLogEvent deserialized = JsonUtility.FromJson<StartLoggingLogEvent>(jsonData);
+        Debug.Log("and deserialized is " + deserialized.eventDescription);
+        if (deserialized.eventDescription == null)
         {
             Debug.Log("deserialized.Description is null");
         }
-        else if (deserialized.Description.Length == 0)
+        else if (deserialized.eventDescription.Length == 0)
         {
             Debug.Log("deserialized.Description is length 0");
         }
 
-        string jsonDataNewtonsoft = JsonConvert.SerializeObject(startLogEvent);
+        string jsonDataNewtonsoft = JsonConvert.SerializeObject(startLoggingLogEvent);
         Debug.Log($"Now trying Newtonsoft: " + jsonDataNewtonsoft);
 
         Debug.Log($"{startEvent.Event} - {startEvent.LocalTime} - {startEvent.ApplicationTime}");

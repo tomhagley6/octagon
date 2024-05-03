@@ -566,6 +566,8 @@ GameObject:
   m_Component:
   - component: {fileID: 212803616}
   - component: {fileID: 212803617}
+  - component: {fileID: 212803618}
+  - component: {fileID: 212803619}
   m_Layer: 0
   m_Name: Logger
   m_TagString: Untagged
@@ -600,6 +602,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2215ee9fc9a3edf68baf6b12b7bddd05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &212803618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 212803615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 3447094760
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+--- !u!114 &212803619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 212803615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ef8749222f115f4dbc6055788fa6ded, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameManager: {fileID: 0}
+  diskLogger: {fileID: 0}
+  trialHandler: {fileID: 0}
 --- !u!1 &223974226
 GameObject:
   m_ObjectHideFlags: 0

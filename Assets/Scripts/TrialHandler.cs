@@ -137,12 +137,23 @@ public class TrialHandler : NetworkBehaviour
         Debug.Log($"IsServer returns as: {IsServer}");
         if (isReady && IsServer)
         {
-            // Begin trials
-            isTrialEnderClient = true;
-            StartTrial();
+            // // Begin trials
+            // isTrialEnderClient = true;
+            // StartTrial();
+            StartCoroutine(StartFirstTrial());
         }
     }
 
+    // Introduce a delay before starting the first trial to allow setup 
+    IEnumerator StartFirstTrial()
+    {
+        yield return new WaitForSeconds(0.75f);
+
+
+            // Begin trials
+            isTrialEnderClient = true;
+            StartTrial();
+    }
 
     // Set wall colour for the current trial
     void ColourWalls(int highWallTriggerID, int lowWallTriggerID)
@@ -217,8 +228,14 @@ public class TrialHandler : NetworkBehaviour
 
             List<int> newWalls = gameManager.SelectNewWalls();
             Debug.Log($"The list of ints that is received from GameManager in StartTrail() is {newWalls[0]} and {newWalls[1]}");
+
+            // Change trialActive to true
+
+            // Change wall colours to lighter variant
+
             gameManager.UpdateActiveWalls(newWalls);
             isTrialEnderClient = false;
+
         }
     }
 
@@ -230,28 +247,63 @@ public class TrialHandler : NetworkBehaviour
     public void EndTrial(int increment, bool isTrialEnderClient)
     {
 
+        // // Score.cs accesses the score here to display to the Canvas
+        // AdjustScore(increment);
+
+        // // Record whether it was this client that ended the current trial
+        // this.isTrialEnderClient = isTrialEnderClient;
+
+        // // Begin StartTrial again with a random ITI
+        // float ITIvalue = Random.Range(2f,5f);
+        
+        // // Reset the activeWalls values to 0, to ensure that activeWalls *always*
+        // // changes on a new trial
+        // List<int> wallReset = new List<int>(){0,0};
+        // gameManager.UpdateActiveWalls(wallReset);
+        // Debug.Log("Walls now reset to 0 for this trial");
+        
+        // // // reset triggerActivation values to 0, for the same reason
+        // // gameManager.UpdateTriggerActivation(0,0);
+        
+        // // Pause code block execution (while allowing other scripts to continue) by running "Invoke"
+        // // NB no trial logic for the next trial is run until an ITI has ocurred
+        // Invoke("StartTrial", ITIvalue);
+        // Debug.Log($"ITI duration for this trial: {ITIvalue}");
+
+        StartCoroutine(EndTrialCoroutine(increment, isTrialEnderClient));
+        
+    }
+
+    // Replacing EndTrial() contents with this coroutine, to allow a 2 second pause prior to starting
+    // the ITI
+    public IEnumerator EndTrialCoroutine(int increment, bool isTrialEnderClient)
+    {
         // Score.cs accesses the score here to display to the Canvas
         AdjustScore(increment);
 
         // Record whether it was this client that ended the current trial
         this.isTrialEnderClient = isTrialEnderClient;
 
-        // Begin StartTrial again with a random ITI
-        float ITIvalue = Random.Range(2f,5f);
-        
         // Reset the activeWalls values to 0, to ensure that activeWalls *always*
         // changes on a new trial
         List<int> wallReset = new List<int>(){0,0};
         gameManager.UpdateActiveWalls(wallReset);
         Debug.Log("Walls now reset to 0 for this trial");
+
+        // allow a short grace period before the trial ends 
+        // Then update the trial active NetworkVaraible
+        yield return new WaitForSeconds(2f); 
+        gameManager.ToggleTrialActiveServerRPC();
         
-        // // reset triggerActivation values to 0, for the same reason
-        // gameManager.UpdateTriggerActivation(0,0);
-        
-        // Pause code block execution (while allowing other scripts to continue) by running "Invoke"
+        // Change wall colour to darker variant
+
+        // Begin StartTrial again with a random ITI
+        float ITIvalue = Random.Range(2f,5f);
+        // Use Invoke to delay StartTrial until ITI has passed
         // NB no trial logic for the next trial is run until an ITI has ocurred
         Invoke("StartTrial", ITIvalue);
         Debug.Log($"ITI duration for this trial: {ITIvalue}");
+
     }
 
 

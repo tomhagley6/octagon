@@ -89,6 +89,8 @@ public class GameManager : SingletonNetwork<GameManager>
         }
     }
 
+    public NetworkVariable<bool> trialActive = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
     public NetworkList<ulong> connectedClientIds;
 
     public void Awake()
@@ -154,8 +156,8 @@ public class GameManager : SingletonNetwork<GameManager>
         // Subscribe connectedClientIds with a callback ServerRPC that updates
         // Actually we don't need to do this if we're checking the NetworkList when it's needed
 
-        // Subscribe to the slice onset event that is triggered by running ColourWalls 
-        trialHandler.sliceOnset += SliceOnsetHandler_SliceOnsetLogTrigger;
+        // // Subscribe to the slice onset event that is triggered by running ColourWalls 
+        // trialHandler.sliceOnset += SliceOnsetHandler_SliceOnsetLogTrigger;
         
 
     }
@@ -244,61 +246,61 @@ public class GameManager : SingletonNetwork<GameManager>
         }
     }
 
-    // Trigger a slice onset log event when ColourWalls is run on the server (host)
-    /* Be careful with timing of these logs. Slice onset should ideally be when the new walls 
-       become visible, and not when the activeWalls are changed. Must consider that when the
-       colourWalls is run on the server is not necessarily when it is run on all clients
-    */
-    /* Also, it may be that when I convert my code to using a dedicated fully-authoritative server
-       I will need to have my server run trial start logic and trigger ColourWalls on all clients.
-       In that case, I will still have to consider how much lag there is between the server command
-       and the client GameObject rendering change */
-    public void SliceOnsetHandler_SliceOnsetLogTrigger()
-    {
-        // TODO
-        if (!IsServer) { Debug.Log("Not server, not running SliceOnsetHandler_SliceOnsetLogTrigger in Gamemanager");
-         return; }
+    // // Trigger a slice onset log event when ColourWalls is run on the server (host)
+    // /* Be careful with timing of these logs. Slice onset should ideally be when the new walls 
+    //    become visible, and not when the activeWalls are changed. Must consider that when the
+    //    colourWalls is run on the server is not necessarily when it is run on all clients
+    // */
+    // /* Also, it may be that when I convert my code to using a dedicated fully-authoritative server
+    //    I will need to have my server run trial start logic and trigger ColourWalls on all clients.
+    //    In that case, I will still have to consider how much lag there is between the server command
+    //    and the client GameObject rendering change */
+    // public void SliceOnsetHandler_SliceOnsetLogTrigger()
+    // {
+    //     // TODO
+    //     if (!IsServer) { Debug.Log("Not server, not running SliceOnsetHandler_SliceOnsetLogTrigger in Gamemanager");
+    //      return; }
 
-        Debug.Log("Is Server, so running SliceOnsetHandler_SliceOnsetLogTrigger in GameManager");
+    //     Debug.Log("Is Server, so running SliceOnsetHandler_SliceOnsetLogTrigger in GameManager");
 
-        int wall1 = activeWalls.Value.wall1;
-        int wall2 = activeWalls.Value.wall2;
-        Dictionary<string,object> playerInfoDict = new Dictionary<string,object>();
+    //     int wall1 = activeWalls.Value.wall1;
+    //     int wall2 = activeWalls.Value.wall2;
+    //     Dictionary<string,object> playerInfoDict = new Dictionary<string,object>();
         
-        // For each connected client, create a player info class (defined in LoggingClasses)
-        // and add this class as the value for this clientId in a dictionary
-        // Then, log to JSON format the full slice onset information
-        // as defined in LoggingClasses.SliceOnsetLogEvent
-        var players = NetworkManager.ConnectedClientsList;
-        Debug.Log($"ConnectedClientsList is {players.Count} items long");
-        for (int i = 0; i < players.Count; i++)
-        {
-            int clientId = i;
-            NetworkClient networkClient = players[i];
-            Vector3 playerPosition = networkClient.PlayerObject.gameObject.transform.position;
-            Quaternion playerRotation = networkClient.PlayerObject.gameObject.transform.rotation;
+    //     // For each connected client, create a player info class (defined in LoggingClasses)
+    //     // and add this class as the value for this clientId in a dictionary
+    //     // Then, log to JSON format the full slice onset information
+    //     // as defined in LoggingClasses.SliceOnsetLogEvent
+    //     var players = NetworkManager.ConnectedClientsList;
+    //     Debug.Log($"ConnectedClientsList is {players.Count} items long");
+    //     for (int i = 0; i < players.Count; i++)
+    //     {
+    //         int clientId = i;
+    //         NetworkClient networkClient = players[i];
+    //         Vector3 playerPosition = networkClient.PlayerObject.gameObject.transform.position;
+    //         Quaternion playerRotation = networkClient.PlayerObject.gameObject.transform.rotation;
 
-            PlayerInfo thisPlayerInfo = new PlayerInfo(networkClient.ClientId, playerPosition, playerRotation);
+    //         PlayerInfo thisPlayerInfo = new PlayerInfo(networkClient.ClientId, playerPosition, playerRotation);
 
-            playerInfoDict.Add(networkClient.ClientId.ToString(), thisPlayerInfo);
-            Debug.Log($"playerInfoDict is {playerInfoDict.Count} item long");
-        }
+    //         playerInfoDict.Add(networkClient.ClientId.ToString(), thisPlayerInfo);
+    //         Debug.Log($"playerInfoDict is {playerInfoDict.Count} item long");
+    //     }
 
-        // Create the final log class instance
-        SliceOnsetLogEvent sliceOnsetLogEvent = new SliceOnsetLogEvent(wall1, wall2, playerInfoDict);
-        Debug.Log("SliceOnsetLogEvent created");
+    //     // Create the final log class instance
+    //     SliceOnsetLogEvent sliceOnsetLogEvent = new SliceOnsetLogEvent(wall1, wall2, playerInfoDict);
+    //     Debug.Log("SliceOnsetLogEvent created");
 
-        // Serialize the class to JSON
-        string logEntry = JsonConvert.SerializeObject(sliceOnsetLogEvent, new JsonSerializerSettings
-        {
-            // This ensures that Unity Quaternions can serialize correctly
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-        });
-        Debug.Log("SliceOnsetLogEvent serialized to JSON string: " + logEntry);
+    //     // Serialize the class to JSON
+    //     string logEntry = JsonConvert.SerializeObject(sliceOnsetLogEvent, new JsonSerializerSettings
+    //     {
+    //         // This ensures that Unity Quaternions can serialize correctly
+    //         ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+    //     });
+    //     Debug.Log("SliceOnsetLogEvent serialized to JSON string: " + logEntry);
 
-        // Send this string to the active diskLogger to be logged to file
-        diskLogger.Log(logEntry);
-    }
+    //     // Send this string to the active diskLogger to be logged to file
+    //     diskLogger.Log(logEntry);
+    // }
 
     // // Method to log slice onset data only for the Server, when ActiveWalls value changes
     // // Try to rewrite this to accept an arbitrary number of walls
@@ -501,6 +503,13 @@ public class GameManager : SingletonNetwork<GameManager>
     
     }
 
+    // RPC to update trialStart on the server and not the client
+    [ServerRpc(RequireOwnership = false)]
+    public void ToggleTrialActiveServerRPC()
+    {
+        trialActive.Value = !trialActive.Value;
+    }
+
     // RPC to access and update local-client IDs
     [ServerRpc(RequireOwnership=false)]
     public void UpdateClientIdsServerRPC()
@@ -535,6 +544,8 @@ public class GameManager : SingletonNetwork<GameManager>
     {
         
     }
+
+
 
 
 }

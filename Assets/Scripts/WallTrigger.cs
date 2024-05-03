@@ -211,8 +211,8 @@ public class WallTrigger : NetworkBehaviour
         int score = triggerID == highWallTriggerID ? highScore : lowScore;
         string rewardType = triggerID == highWallTriggerID ? "High" : "Low";
 
-        // All clients wash their own walls, making use of the wall number NetworkObject
-        // Bugs that prevent triggers triggering on other clients will prevent this code from running
+        // All clients wash their own walls, making use of the wall number NetworkVariable
+        // and TrialActivation NetworkVariable
         trialHandler.WashWalls(highWallTriggerID, lowWallTriggerID);
         
         // Only call EndTrial if this client is the one that ended the trial

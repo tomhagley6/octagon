@@ -64,9 +64,16 @@ namespace Logging
         // Globals.LOG_ID_YIN, String.Format("{0} {1} {2} {3} {4} {5} {6} {7}", "trialNum", 
         // "trialType", "Y_num", "Y_ID", "prev_Y", "orientation", "rewLocation", "rewPresent")));
 
+        
         // tags
         public static string posTag = "pos";
         public static string wallTriggerTag = "wall";
+        public static string beginLogging = "logging started";
+        public static string trialStart = "trial start";
+        public static string sliceOnset = "slice onset";
+        public static string triggerActivation = "trigger activation";
+        public static string endTrial = "end trial";
+
 
         // placeholders
         public static string player = "player_1";
