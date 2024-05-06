@@ -235,7 +235,7 @@ public class TrialHandler : NetworkBehaviour
         Debug.Log($"The list of ints that is received from GameManager in StartTrail() is {newWalls[0]} and {newWalls[1]}");
 
         // Change trialActive to true
-        gameManager.trialActive.Value = true;
+        gameManager.ToggleTrialActiveServerRPC();
 
         // Lights up
         GameObject.Find("DirectionalLight").GetComponent<Light>().intensity = 0.82f;
@@ -289,8 +289,11 @@ public class TrialHandler : NetworkBehaviour
     // the ITI
     public IEnumerator EndTrialCoroutine(int increment, bool isTrialEnderClient)
     {
+        
+        // Update score locally and to the NetworkList
         // Score.cs accesses the score here to display to the Canvas
         AdjustScore(increment);
+        gameManager.UpdateScoresServerRPC(increment);
 
         // Record whether it was this client that ended the current trial
         this.isTrialEnderClient = isTrialEnderClient;

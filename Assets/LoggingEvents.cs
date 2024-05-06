@@ -5,6 +5,8 @@ using UnityEngine;
 using LoggingClasses;
 using Newtonsoft.Json;
 using Unity.Collections;
+using TriggerActivation = GameManager.TriggerActivation;
+using System;
 
 public class LoggingEvents : NetworkBehaviour
 {
@@ -12,8 +14,12 @@ public class LoggingEvents : NetworkBehaviour
     public GameManager gameManager;
     public DiskLogger diskLogger;
     public TrialHandler trialHandler;
+    public event Action loggingEventsSubscribed;
 
-    public override void OnNetworkSpawn()
+    // Here subscribe to events that trigger each of the logging events
+    // The only exception are the 'start' and 'end' log events which are called directly
+    // when starting end ending the logger
+    public override void OnNetworkSpawn() // Could this be Start() instead of OnNetworkSpawn()?
     {
         gameManager = FindObjectOfType<GameManager>();
         diskLogger = FindObjectOfType<DiskLogger>();
@@ -21,6 +27,37 @@ public class LoggingEvents : NetworkBehaviour
 
         // Subscribe to the slice onset event that is triggered by running ColourWalls 
         trialHandler.sliceOnset += SliceOnsetHandler_SliceOnsetLog;
+
+        // Both StartTrial and EndTrial logging events are handled by a change in the
+        // value of the TrialActive NetworkVariable
+        gameManager.trialActive.OnValueChanged += TrialActiveHandler;
+
+        // Trigger activation log events are triggered by a change in the TriggerActivation 
+        // NetworkVariable
+        gameManager.triggerActivation.OnValueChanged += TriggerActivationHandler_TriggerActivationLog;
+
+        // Events triggered when the DiskLogger starts or ends for this session
+        diskLogger.loggingStarted += StartLogging;
+        diskLogger.loggingEnded += EndLogging;
+
+        // Start the logger once subscriptions are finished
+        loggingEventsSubscribed?.Invoke();
+
+    }
+
+
+    // Write a logging start log event when logging first begins
+    public void StartLogging()
+    {
+
+        // Create a StartLoggingLogEvent object
+        StartLoggingLogEvent startLoggingLogEvent = new StartLoggingLogEvent();
+
+        // Serialize log event object to JSON formatted string
+        string toLog = JsonConvert.SerializeObject(startLoggingLogEvent);
+
+        // Write string to file 
+        diskLogger.Log(toLog);
     }
 
 
@@ -29,6 +66,50 @@ public class LoggingEvents : NetworkBehaviour
     public void TrialActiveHandler_TrialStartLog()
     {
         // TODO
+        if (!IsServer) {Debug.Log("Not server, not running TrialActiveHandler_TrialStartLog()");
+         return; }
+
+        Debug.Log("Is Server, so running TrialActiveHandler_TrialStartLog in LoggingEvents");
+
+        // increment the trial number (this could be done in a better place than the logging method)
+        bool trialActive = gameManager.trialActive.Value;
+        if (trialActive == true)
+        {
+            gameManager.trialNum.Value++; 
+        }
+
+        Dictionary<string,object> playerPosDict = new Dictionary<string,object>();
+
+
+        // Assemble data to log from each network client
+        Debug.Log($"ConnectedClientsList is {NetworkManager.ConnectedClientsList.Count} items long");
+        foreach(var networkClient in NetworkManager.ConnectedClientsList)
+        {
+            PlayerLocation playerLocation = new PlayerLocation(
+                                                networkClient.PlayerObject.transform.position.x,
+                                                networkClient.PlayerObject.transform.position.y,
+                                                networkClient.PlayerObject.transform.position.z
+                                                );
+
+            PlayerRotation playerRotation = new PlayerRotation(
+                                                Camera.main.transform.rotation.eulerAngles.x,
+                                                networkClient.PlayerObject.transform.rotation.eulerAngles.y,
+                                                Camera.main.transform.rotation.eulerAngles.z
+                                                );
+
+            PlayerPosition thisPlayerPosition = new PlayerPosition(networkClient.ClientId, playerLocation, playerRotation);
+            playerPosDict.Add(networkClient.ClientId.ToString(), thisPlayerPosition);
+        }
+
+        // create the full log event
+        TrialStartLogEvent trialStartLogEvent = new TrialStartLogEvent(gameManager.trialNum.Value, playerPosDict);
+
+        // JSON serialize the log object to string
+        string logEntry = JsonConvert.SerializeObject(trialStartLogEvent);
+
+        // Send string to the active diskLogger to be logged to file
+        diskLogger.Log(logEntry);
+
     }
 
     // Write a slice onset log event when ColourWalls is run on the server (host)
@@ -42,14 +123,14 @@ public class LoggingEvents : NetworkBehaviour
        and the client GameObject rendering change */
     public void SliceOnsetHandler_SliceOnsetLog()
     {
-        if (!IsServer) { Debug.Log("Not server, not running SliceOnsetHandler_SliceOnsetLog in Gamemanager");
+        if (!IsServer) { Debug.Log("Not server, not running SliceOnsetHandler_SliceOnsetLog in LoggingEvents");
          return; }
 
-        Debug.Log("Is Server, so running SliceOnsetHandler_SliceOnsetLog in GameManager");
+        Debug.Log("Is Server, so running SliceOnsetHandler_SliceOnsetLog in LoggingEvents");
 
         int wall1 = gameManager.activeWalls.Value.wall1;
         int wall2 = gameManager.activeWalls.Value.wall2;
-        Dictionary<string,object> playerInfoDict = new Dictionary<string,object>();
+        Dictionary<string,object> playerPosDict = new Dictionary<string,object>();
         
         // For each connected client, create a player info class (defined in LoggingClasses)
         // and add this class as the value for this clientId in a dictionary
@@ -61,22 +142,22 @@ public class LoggingEvents : NetworkBehaviour
         {
             int clientId = i;
             NetworkClient networkClient = players[i];
-            Vector3 playerPosition = networkClient.PlayerObject.gameObject.transform.position;
-            PlayerPosition playerPosition2 = new PlayerPosition(playerPosition.x, playerPosition.y, playerPosition.z);
+            Vector3 playerLocation = networkClient.PlayerObject.gameObject.transform.position;
+            PlayerLocation playerLocation2 = new PlayerLocation(playerLocation.x, playerLocation.y, playerLocation.z);
 
             Quaternion playerRotation = networkClient.PlayerObject.gameObject.transform.rotation;
             float camXAxisRotation = Camera.main.transform.rotation.eulerAngles.x;
             float camZAxisRotation = Camera.main.transform.rotation.eulerAngles.z;
             PlayerRotation playerRotation2 = new PlayerRotation(camXAxisRotation, playerRotation.eulerAngles.y, camZAxisRotation);
 
-            PlayerInfo thisPlayerInfo = new PlayerInfo(networkClient.ClientId, playerPosition2, playerRotation2);
+            PlayerPosition thisPlayerPosition = new PlayerPosition(networkClient.ClientId, playerLocation2, playerRotation2);
 
-            playerInfoDict.Add(networkClient.ClientId.ToString(), thisPlayerInfo);
-            Debug.Log($"playerInfoDict is {playerInfoDict.Count} item long");
+            playerPosDict.Add(networkClient.ClientId.ToString(), thisPlayerPosition);
+            Debug.Log($"playerPosDict is {playerPosDict.Count} item long");
         }
 
         // Create the final log class instance
-        SliceOnsetLogEvent sliceOnsetLogEvent = new SliceOnsetLogEvent(wall1, wall2, playerInfoDict);
+        SliceOnsetLogEvent sliceOnsetLogEvent = new SliceOnsetLogEvent(wall1, wall2, playerPosDict);
         Debug.Log("SliceOnsetLogEvent created");
 
         // Serialize the class to JSON
@@ -91,11 +172,135 @@ public class LoggingEvents : NetworkBehaviour
         diskLogger.Log(logEntry);
     }
 
+    
+    // Write a trigger activation log event when the value of NetworkVariable TriggerActivation
+    // changes
+    public void TriggerActivationHandler_TriggerActivationLog(TriggerActivation prevVal, TriggerActivation newVal)
+    {
+        
+        if (newVal.triggerID == 0) {return; }
+        if (!IsServer) { Debug.Log("Not server, not running TriggerActivationHandler_TriggerActivationLog in LoggingEvents");
+         return; }
+
+        Debug.Log("Is Server, so running TriggerActivationHandler_TriggerActivationLog in LoggingEvents");
+
+        int wall1 = gameManager.activeWalls.Value.wall1;
+        int wall2 = gameManager.activeWalls.Value.wall2;
+        int wallTriggered = gameManager.triggerActivation.Value.triggerID;
+        ulong triggerClientId = gameManager.triggerActivation.Value.activatorClientId;
+        Dictionary<string,object> playerPosDict = new Dictionary<string,object>();
+
+        // Assemble data to log from each network client
+        Debug.Log($"ConnectedClientsList is {NetworkManager.ConnectedClientsList.Count} items long");
+        foreach(var networkClient in NetworkManager.ConnectedClientsList)
+        {
+            PlayerLocation playerLocation = new PlayerLocation(
+                                                networkClient.PlayerObject.transform.position.x,
+                                                networkClient.PlayerObject.transform.position.y,
+                                                networkClient.PlayerObject.transform.position.z
+                                                );
+
+            PlayerRotation playerRotation = new PlayerRotation(
+                                                Camera.main.transform.rotation.eulerAngles.x,
+                                                networkClient.PlayerObject.transform.rotation.eulerAngles.y,
+                                                Camera.main.transform.rotation.eulerAngles.z
+                                                );
+
+            PlayerPosition thisPlayerPosition = new PlayerPosition(networkClient.ClientId, playerLocation, playerRotation);
+            playerPosDict.Add(networkClient.ClientId.ToString(), thisPlayerPosition);
+        }
+
+        // Create the final log class instance
+        TriggerActivationLogEvent triggerActivationLogEvent = new TriggerActivationLogEvent(wall1, wall2, wallTriggered,
+                                                                                             triggerClientId, playerPosDict);
+        Debug.Log("triggerActivationLogEvent created");
+
+        // Serialize the class to JSON
+        string logEntry = JsonConvert.SerializeObject(triggerActivationLogEvent, new JsonSerializerSettings
+        {
+            // This ensures that Unity Quaternions can serialize correctly
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        });
+        Debug.Log("triggerActivationLogEvent serialized to JSON string: " + logEntry);
+
+        // Send this string to the active diskLogger to be logged to file
+        diskLogger.Log(logEntry);
+
+    }
+    
     // Write a trial end log event when the TrialActive NetworkVariable has it's value changed 
     // to false
     public void TrialActiveHandler_TrialEndLog()
     {
-        // TODO
+        if (!IsServer) { Debug.Log("Not server, not running TrialActiveHandler_TrialEndLog in LoggingEvents");
+         return; }
+
+        Debug.Log("Is Server, so running TrialActiveHandler_TrialEndLog in LoggingEvents");
+
+        Dictionary<string,object> playerPosDict = new Dictionary<string, object>();
+        Dictionary<string,object> playerScoresDict = new Dictionary<string, object>();
+
+        // Assemble data to log from each network client
+        Debug.Log($"ConnectedClientsList is {NetworkManager.ConnectedClientsList.Count} items long");
+        int i = 0;
+        foreach (var networkClient in NetworkManager.ConnectedClientsList)
+        {
+            
+            PlayerLocation playerLocation = new PlayerLocation(
+                                    networkClient.PlayerObject.transform.position.x,
+                                    networkClient.PlayerObject.transform.position.y,
+                                    networkClient.PlayerObject.transform.position.z
+                                    );
+
+            PlayerRotation playerRotation = new PlayerRotation(
+                                                Camera.main.transform.rotation.eulerAngles.x,
+                                                networkClient.PlayerObject.transform.rotation.eulerAngles.y,
+                                                Camera.main.transform.rotation.eulerAngles.z
+                                                );
+
+            PlayerPosition thisPlayerPosition = new PlayerPosition(networkClient.ClientId, playerLocation, playerRotation);
+            
+            // Add entry to dictionary for this networkClient
+            playerPosDict.Add(networkClient.ClientId.ToString(), thisPlayerPosition);
+            // Debug.LogWarning($"Logging Events sees gameManager.scores[0] as {gameManager.scores[0]}");
+            Debug.LogWarning($"Logging Events sees gameManager.connectecClientIds[0] as {gameManager.connectedClientIds[0]}");
+            playerScoresDict.Add(i.ToString(), gameManager.scores[i]);
+
+            i++;
+        }
+
+        // create the full log event
+        TrialEndLogEvent trialEndLogEvent = new TrialEndLogEvent(gameManager.trialNum.Value, playerPosDict, playerScoresDict);
+
+        // JSON serialize the log object to string
+        string logEntry = JsonConvert.SerializeObject(trialEndLogEvent);
+
+        // Send string to the active diskLogger to be logged to file
+        diskLogger.Log(logEntry);
     }
 
+public void EndLogging()
+{
+    // Create a StopLoggingLogEvent object
+    StopLoggingLogEvent stopLoggingLogEvent = new StopLoggingLogEvent();
+
+    // Serialize log event object to JSON formatted string
+    string toLog = JsonConvert.SerializeObject(stopLoggingLogEvent);
+
+    // Write string to file 
+    diskLogger.Log(toLog);
+}
+    public void TrialActiveHandler(bool prevVal, bool newVal)
+    {
+        // if trial start
+        if (newVal == true)
+        {
+            TrialActiveHandler_TrialStartLog();
+        }
+        // if trial end
+        else
+        {
+            TrialActiveHandler_TrialEndLog();
+        }
+    }
 }

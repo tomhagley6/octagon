@@ -69,7 +69,7 @@ public class GameManager : SingletonNetwork<GameManager>
     Instead of relying on activeWalls changing value for all of my logic, define logic based on epoch boundaries
     Create events for e.g. trial start, slice onset (which could be activeWalls)
     This will be initially useful for implementing my variable trial start to slice onset time
-    public NetworkVariable<int> trialNum = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); */
+    // public NetworkVariable<int> trialNum = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); */
 
     // Current trial walls must be synced across clients
     // Create new NetworkVariable activeWalls
@@ -90,12 +90,15 @@ public class GameManager : SingletonNetwork<GameManager>
     }
 
     public NetworkVariable<bool> trialActive = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    public NetworkVariable<ushort> trialNum = new NetworkVariable<ushort>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     public NetworkList<ulong> connectedClientIds;
+    public NetworkList<int> scores;
 
     public void Awake()
     {
         connectedClientIds = new NetworkList<ulong>(new List<ulong>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        scores = new NetworkList<int>(new List<int>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         Debug.Log("GameManager Awake finished running");
     }
 
@@ -127,6 +130,7 @@ public class GameManager : SingletonNetwork<GameManager>
         and passes them isReady as an input */
         isReady = true;
         Debug.Log($"isReady is set to true: {isReady}");
+        OnReadyStateChanged += NetworkManager.GetComponent<NetworkManagerScript>().ConnectionCallbackSubscriptions; // <-- this is messy
         OnReadyStateChanged?.Invoke(isReady);
         Debug.Log("OnReadyStateChanged?.Invoke(isReady); Ran");
 
@@ -159,6 +163,11 @@ public class GameManager : SingletonNetwork<GameManager>
         // // Subscribe to the slice onset event that is triggered by running ColourWalls 
         // trialHandler.sliceOnset += SliceOnsetHandler_SliceOnsetLogTrigger;
         
+        // Subscribe to a change in trial active state
+
+        // is GameManager recognising as host or server?
+        Debug.LogWarning($"gameManager.IsServer is {IsServer}, gameManager.IsHost is {IsHost}");
+
 
     }
 
@@ -245,6 +254,7 @@ public class GameManager : SingletonNetwork<GameManager>
             Debug.Log("Triggers array in GameManager is null at time of ActiveWallsHandler_OnWallChange. Therefore, cannot change collider status");
         }
     }
+
 
     // // Trigger a slice onset log event when ColourWalls is run on the server (host)
     // /* Be careful with timing of these logs. Slice onset should ideally be when the new walls 
@@ -508,6 +518,7 @@ public class GameManager : SingletonNetwork<GameManager>
     public void ToggleTrialActiveServerRPC()
     {
         trialActive.Value = !trialActive.Value;
+        Debug.LogError($"trialActive value is now {trialActive.Value}");
     }
 
     // RPC to access and update local-client IDs
@@ -528,9 +539,30 @@ public class GameManager : SingletonNetwork<GameManager>
                 Debug.Log($"client {i} is connected to the server but is not the local player");
             }
         }
-
-        
     }
+
+    // ServerRPC to update player scores
+    [ServerRpc(RequireOwnership=false)]
+    public void UpdateScoresServerRPC(int increment)
+    {
+        var players = NetworkManager.ConnectedClientsList;
+        Debug.Log(NetworkManager.ConnectedClientsList);
+
+        for (int i = 0; i < players.Count; i++)
+        {
+            if ((ulong)i == NetworkManager.Singleton.LocalClientId)
+            {
+                Debug.Log($"Local player Id {NetworkManager.Singleton.LocalClientId} contained in client list, updating score");
+                scores[i] += increment;
+            }
+            else
+            {
+                Debug.Log($"client {i} is connected to the server but is not the local player, not updating score");
+            }
+        } 
+    }
+
+    
 
     /* ServerRPC to log data for all clients at slice onset,
     including clientId, gameObject.transform.position, and 

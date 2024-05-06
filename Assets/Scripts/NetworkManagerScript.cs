@@ -17,10 +17,11 @@ public class NetworkManagerScript : MonoBehaviour
 
     public GameManager gameManager;
 
-    void Start()
-    {   
-        
 
+    // It feels messy that I can't use any NetworkBehaviour fields here
+    // Consider moving this script to somewhere else?
+    public void ConnectionCallbackSubscriptions(bool isReady)
+    {   
         try
         {
             gameManager = FindObjectOfType<GameManager>();
@@ -31,9 +32,16 @@ public class NetworkManagerScript : MonoBehaviour
             Debug.Log(e.Message);
         }
         
-        if (gameManager.IsServer)
+        Debug.LogWarning($"gameManager.IsServer is {gameManager.IsServer}, gameManager.IsHost is {gameManager.IsHost}");
+        if (gameManager.IsServer && isReady)
+        {
             NetworkManager.Singleton.OnClientConnectedCallback += AddConnectedClientServerRPC;
+            Debug.LogWarning("NetworkManager.Singleton.OnClientConnectedCallback += AddConnectedClientServerRPC; ran");
             NetworkManager.Singleton.OnClientDisconnectCallback += RemoveDisconnectedClientServerRPC;
+            Debug.LogWarning($"gameManager.IsServer is {gameManager.IsServer}, adding RPCs to callback");
+            Debug.LogWarning($"gameManager.IsHost is {gameManager.IsHost}, adding RPCs to callback");
+        }
+        
 
     }
 
@@ -50,17 +58,34 @@ public class NetworkManagerScript : MonoBehaviour
     //     gameManager.connectedClientIds.Remove(clientId);
     // }
 
+
 [ServerRpc(RequireOwnership=false)]
 public void AddConnectedClientServerRPC(ulong clientId)
 {
+    // Append client ID to list
     Debug.Log($"ClientId {clientId} connected. LocalClientId is {NetworkManager.Singleton.LocalClientId}");
     gameManager.connectedClientIds.Add(clientId);
+
+    // Also initialise a new client's score to 0
+    gameManager.scores.Add(0);
+    Debug.LogWarning($"gameManager.scores[0] = {gameManager.scores[0]}");
 }
+
+
 [ServerRpc(RequireOwnership=false)]
 public void RemoveDisconnectedClientServerRPC(ulong clientId)
-{
+{   
+    // Find index of the removed client
+    int idx = gameManager.connectedClientIds.IndexOf(clientId);
+
+    // Remove client based on ID
     Debug.Log($"ClientId {clientId} disconnected. LocalClientId is {NetworkManager.Singleton.LocalClientId}");
     gameManager.connectedClientIds.Remove(clientId);
+
+    // Remove the score of a client that has left, at the correct index
+    // Do not remove based on score to avoid bugs when duplicate scores exist
+    gameManager.scores.RemoveAt(idx);
+
 }
 
 

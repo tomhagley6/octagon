@@ -22,10 +22,14 @@ public class DiskLogger : Logger
     private StreamWriter sw; 
     private bool isFirstLine = true;
     private string firstLine;
+    public Logger logger;
 
     
     // Store log entries in a buffer before writing to file
     private readonly List<string> logEntries = new List<string>();
+
+    public event Action loggingStarted;
+    public event Action loggingEnded;
 
     public DiskLogger()
     {   // This is not needed if we have filename as a private variable
@@ -39,6 +43,9 @@ public class DiskLogger : Logger
             Directory.CreateDirectory(dataFolder);
         }
         Debug.Log("DiskLogger Start() ran"); 
+
+        logger = FindObjectOfType<Logger>();
+
     }
 
 
@@ -154,43 +161,7 @@ public class DiskLogger : Logger
 
     private void OnDestroy()
     {
-        loggerReady = false;
-        StopAllCoroutines();
-
-        if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
-        {
-            // Read the content of the JSON file
-            string jsonContent = File.ReadAllText(filePath);
-
-            if (!string.IsNullOrEmpty(jsonContent) && jsonContent.Length > 1)
-            {
-                // Remove the last character
-                // jsonContent = jsonContent.Remove(jsonContent.Length - 1);
-                jsonContent = jsonContent.Remove(jsonContent.Length - 3, 1);
-                Debug.Log("Last character of the JSON string has been removed");
-
-                // Write the modified content back to the file
-                File.WriteAllText(filePath, jsonContent);
-            }
-            else
-            {
-                Debug.LogWarning("JSON file is empty or has only one character. No action taken.");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("JSON file path is invalid or does not exist. No action taken.");
-        }
-        
-        // Finish the JSON file by writing a square bracket to the end 
-        using (StreamWriter sw = new StreamWriter(filePath, true))
-        {
-            sw.WriteLine("]");
-        }
-        if (sw != null)
-        {
-            sw.Close();
-        }
+        StopLogger();
     }
 
     // Public API
@@ -231,7 +202,14 @@ public class DiskLogger : Logger
             { "Event", "Logging started (dict)" }
         };
         var toLog = JsonConvert.SerializeObject(data);
-        Log(toLog);
+        // Log(toLog);
+
+        // FINAL VERSION
+        // Trigger the StartLogging log event in LoggingEvents.cs on the Logger GameObject
+        // var logger = FindObjectOfType<Logger>().GetComponent<LoggingEvents>();
+        // logger.StartLogging();
+        loggingStarted?.Invoke();
+
 
         StartLoggingLogEvent startLoggingLogEvent = new StartLoggingLogEvent();
         string jsonData = JsonUtility.ToJson(startLoggingLogEvent);
@@ -258,19 +236,57 @@ public class DiskLogger : Logger
         Debug.Log("Logging coroutine begun.");
     }
 
+
     public void StopLogger()
     {
         Debug.Log("Closing current logger: " + filename);
 
-        // Log("[octagon]:logging end");
+        // Write a logging ended event to file to show that logging finished successfully
+        loggingEnded?.Invoke();
+
         EmptyBuffer();
 
         loggerReady = false;
 
-        StopCoroutine(LogToFile());
+        StopAllCoroutines();
 
-        // Closing TextWriter calls a flush operation
-        sw.Close();
+ 
+
+        if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
+        {
+            // Read the content of the JSON file
+            string jsonContent = File.ReadAllText(filePath);
+
+            if (!string.IsNullOrEmpty(jsonContent) && jsonContent.Length > 1)
+            {
+                // Remove the last character
+                // jsonContent = jsonContent.Remove(jsonContent.Length - 1);
+                jsonContent = jsonContent.Remove(jsonContent.Length - 3, 1);
+                Debug.Log("Last character of the JSON string has been removed");
+
+                // Write the modified content back to the file
+                File.WriteAllText(filePath, jsonContent);
+            }
+            else
+            {
+                Debug.LogWarning("JSON file is empty or has only one character. No action taken.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("JSON file path is invalid or does not exist. No action taken.");
+        }
+        
+        // Finish the JSON file by writing a square bracket to the end 
+        using (StreamWriter sw = new StreamWriter(filePath, true))
+        {
+            sw.WriteLine("]");
+        }
+        if (sw != null)
+        {
+            sw.Close();
+            
+        }
     }
 
 } 

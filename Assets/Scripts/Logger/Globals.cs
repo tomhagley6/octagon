@@ -73,6 +73,7 @@ namespace Logging
         public static string sliceOnset = "slice onset";
         public static string triggerActivation = "trigger activation";
         public static string endTrial = "end trial";
+        public static string endLogging = "logging ended";
 
 
         // placeholders

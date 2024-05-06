@@ -17,23 +17,30 @@ public DiskLogger diskLogger;
 public GameObject player;
 public Action<bool> playerSpawned;
 public GameManager gameManager;
-public override void OnNetworkSpawn() {
-        
-        
-       gameManager = FindObjectOfType<GameManager>();
-       
-       
-        // Get this player
-        player = transform.parent.gameObject;
-        
+public LoggingEvents loggingEvents;
+    public override void OnNetworkSpawn() {
+            
+            
+        gameManager = FindObjectOfType<GameManager>();
+        player = transform.parent.gameObject;           // Get this player
+        diskLogger = FindObjectOfType<DiskLogger>();
+        loggingEvents = FindObjectOfType<LoggingEvents>();
+
+
+        loggingEvents.loggingEventsSubscribed += StartPlayerLogger;
+
+    }
+
+
+    public void StartPlayerLogger()
+    {
         /* Start logging data only for the player in the current client
         This could be an event that triggers the logger initiation method in GameManager
         does not even need a player reference passed
-        First line of OnNetworkSpawn can be to call a method in GameManager that subscribes to  */
+        First line of OnNetworkSpawn can be to call a method in GameManager or LoggingEvents that subscribes to  */
         // Actually should not be necessary, as logging will only happen on the host
         if (IsLocalPlayer) {
             Debug.Log("Local player; beginning logging");
-            diskLogger = FindObjectOfType<DiskLogger>();
             diskLogger.StartLogger();
             StartCoroutine("LogPos");
         }

@@ -15,7 +15,7 @@ public class WallTrigger : NetworkBehaviour
     public GameManager gameManager; 
     private string trialType = "HighLowTrial"; // replace with globals
     [SerializeField] private int highScore = 50; // globals
-    [SerializeField] private int lowScore = 25; // globals
+    [SerializeField] private int lowScore = 10; // globals
     IdentityAssignment identityAssignment;
     public int triggerID; 
     public List<GameObject> triggers; // Keep a handle on all triggers
