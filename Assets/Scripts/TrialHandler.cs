@@ -31,7 +31,7 @@ public class TrialHandler : NetworkBehaviour
     {   
         while (true)
         {
-            yield return new WaitForSeconds(1.5f);
+            yield return new WaitForSeconds(2f);
 
             // Debug.Log($"Activewalls values are {gameManager.activeWalls.Value.wall1} and {gameManager.activeWalls.Value.wall2}");
         }
@@ -212,31 +212,42 @@ public class TrialHandler : NetworkBehaviour
     // trial and update their NetworkVariable
     void StartTrial()
     {    
-        if (isTrialEnderClient)
-        {
-            Debug.Log("isTrialEnderClient is true, and StartTrial has been triggered");
+        StartCoroutine(StartTrialCoroutine());
+    }
 
-            /* reset triggerActivation values to 0, in case the values between two updates
-            are identical, and therefore do not trigger OnValueChanged
-            Currently placed in StartTrial, because on a networked client, EndTrial seems
-            to run too quickly, and the local client never sees the first update of
-            TriggerActivation, only the reset to 0. 
-            This is presumably a race condition, and I would need to lock the NetworkVariable
-            until both clients had finished with WallTrialInteraction
-            For now, this is an easier fix */
-            gameManager.UpdateTriggerActivation(0,0);
+    public IEnumerator StartTrialCoroutine()
+    {
+        if (!isTrialEnderClient) {yield return null;}
+        
+        Debug.Log("isTrialEnderClient is true, and StartTrial has been triggered");
 
-            List<int> newWalls = gameManager.SelectNewWalls();
-            Debug.Log($"The list of ints that is received from GameManager in StartTrail() is {newWalls[0]} and {newWalls[1]}");
+        /* reset triggerActivation values to 0, in case the values between two updates
+        are identical, and therefore do not trigger OnValueChanged
+        Currently placed in StartTrial, because on a networked client, EndTrial seems
+        to run too quickly, and the local client never sees the first update of
+        TriggerActivation, only the reset to 0. 
+        This is presumably a race condition, and I would need to lock the NetworkVariable
+        until both clients had finished with WallTrialInteraction
+        For now, this is an easier fix */
+        gameManager.UpdateTriggerActivation(0,0);
 
-            // Change trialActive to true
+        List<int> newWalls = gameManager.SelectNewWalls();
+        Debug.Log($"The list of ints that is received from GameManager in StartTrail() is {newWalls[0]} and {newWalls[1]}");
 
-            // Change wall colours to lighter variant
+        // Change trialActive to true
+        gameManager.trialActive.Value = true;
 
-            gameManager.UpdateActiveWalls(newWalls);
-            isTrialEnderClient = false;
+        // Lights up
+        GameObject.Find("DirectionalLight").GetComponent<Light>().intensity = 0.82f;
 
-        }
+        // Variable delay period before slice onset
+        var sliceOnsetDelay = Random.Range(0.5f, 1.5f);
+        yield return new WaitForSeconds(sliceOnsetDelay);
+
+        // Activate the chosen walls for this trial (callstack contains ColourWalls(), which is the slice onset trigger)
+        // Activate this only after the variable delay
+        gameManager.UpdateActiveWalls(newWalls);
+        isTrialEnderClient = false;
     }
 
 
@@ -292,10 +303,12 @@ public class TrialHandler : NetworkBehaviour
 
         // allow a short grace period before the trial ends 
         // Then update the trial active NetworkVaraible
-        yield return new WaitForSeconds(2f); 
+        yield return new WaitForSeconds(1.5f); 
         gameManager.ToggleTrialActiveServerRPC();
         
-        // Change wall colour to darker variant
+        // Decrease global illimation
+        var light = GameObject.Find("DirectionalLight").GetComponent<Light>();
+        light.intensity = 0.6f;
 
         // Begin StartTrial again with a random ITI
         float ITIvalue = Random.Range(2f,5f);

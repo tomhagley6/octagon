@@ -31,6 +31,7 @@ namespace LoggingClasses
     // Helper class to allow logging of only Transform.position x/y/z values
     public class PlayerPosition 
     {
+        // player.position.x/y/z
         public double x;
         public double y;
         public double z;
@@ -47,6 +48,7 @@ namespace LoggingClasses
     // Helper class to allow logging of only Transform.rotation euler angles
     public class PlayerRotation
     {
+        // player.rotation.eulerangles.x/y/z
         public double x;
         public double y;
         public double z;
@@ -59,7 +61,9 @@ namespace LoggingClasses
         }
     }
     
-    // Create log classes
+    //// Create log classes
+    
+    // Log event for the beginning of the log file
     public class StartLoggingLogEvent
     {
         // time
@@ -76,6 +80,8 @@ namespace LoggingClasses
         }
     }
 
+    // Log event for every trial start 
+    // immediately post-ITI, signalled by increased global illumination
     public class TrialStartLogEvent
     {
         // time
@@ -100,15 +106,18 @@ namespace LoggingClasses
 
     }
 
-    // For slice onset, 'data' dictionary includes all active wall numbers,
-    // and the player position and rotation for each player
-    // This is done by having data contain a dictionary of PlayerInfo dictionaries, 
-    // each associated with their respective clientIds, and containing position and rotation
-    // The dictionaries may not need a clientId field, if I'm adding them to the playerInfoDict
-    // with clientId as the key.
-    // Trigger the logging on slice onset information when ActiveWalls change, and only on the Server.
+
+    // Log event for every trial start, triggered by execution of ColourWalls on the server
     public class SliceOnsetLogEvent
     {
+
+        /* For slice onset, 'data' dictionary includes all active wall numbers,
+        and the player position and rotation for each player
+        This is done by having data contain a dictionary of PlayerInfo dictionaries, 
+        each associated with their respective clientIds, and containing position and rotation
+        The dictionaries may not need a clientId field, if I'm adding them to the playerInfoDict
+        with clientId as the key. */
+        
         // time
         // description string
         // wall numbers
@@ -134,6 +143,8 @@ namespace LoggingClasses
         }
     }
 
+    // Log event for activation of a trigger, as controlled by a change in the
+    // TriggerActivation NetworkVariable
     public class TriggerActivationLogEvent
     {
         // time 
