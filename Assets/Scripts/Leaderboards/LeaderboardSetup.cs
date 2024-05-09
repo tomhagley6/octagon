@@ -13,9 +13,8 @@ public class LeaderboardSetup : MonoBehaviour
         // Initialise the Leaderboards SDK and its dependencies
         await UnityServices.InitializeAsync();
 
-        // Anonyous authentication tocreate an anonymous account for the 
+        // Anonyous authentication to create an anonymous account for the 
         // player to persist their scores
-        
         AuthenticationService.Instance.SignedIn += () =>
         {
             Debug.Log("Signed in as: " + AuthenticationService.Instance.PlayerId);
@@ -25,9 +24,18 @@ public class LeaderboardSetup : MonoBehaviour
             Debug.Log("Sign in failed");
             Debug.Log(s);
         };
-
+        AuthenticationService.Instance.SignedOut += () => {
+            Debug.Log("Player signed out.");
+        };
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
+        await AuthenticationService.Instance.UpdatePlayerNameAsync("Curzon");
     }
+
+    private async void OnDestroy()
+    {
+        await AuthenticationService.Instance.DeleteAccountAsync();
+    }
+
 
 
 }
