@@ -37,6 +37,11 @@ public class TrialHandler : NetworkBehaviour
         }
     }
 
+    public int GetScore()
+    {
+        return score;
+    }
+
 
     public override void OnNetworkSpawn()
     {
