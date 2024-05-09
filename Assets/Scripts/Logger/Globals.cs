@@ -9,6 +9,11 @@ namespace Logging
     public static class Globals
     {
         
+        
+        // vals
+        public static float loggingFrequency = 0.2f;
+        
+        
         // initialisers
         public static int port = 0000;
         public static string ip = "ip_here";
@@ -74,6 +79,7 @@ namespace Logging
         public static string triggerActivation = "trigger activation";
         public static string endTrial = "end trial";
         public static string endLogging = "logging ended";
+        public static string timeTriggered = "time";
 
 
         // placeholders

@@ -7,7 +7,13 @@ using Newtonsoft.Json;
 using Unity.Collections;
 using TriggerActivation = GameManager.TriggerActivation;
 using System;
+using Logging;
 
+
+//// Refactor repetitive sections as separate methods
+/* Script containing all log events that are triggered to write game data to the log file.
+Any writer is implemented by the Logger
+Classes used to represent the data in each of the log events are found in Logger/LogClasses.cs */
 public class LoggingEvents : NetworkBehaviour
 {
 
@@ -16,9 +22,9 @@ public class LoggingEvents : NetworkBehaviour
     public TrialHandler trialHandler;
     public event Action loggingEventsSubscribed;
 
-    // Here subscribe to events that trigger each of the logging events
-    // The only exception are the 'start' and 'end' log events which are called directly
-    // when starting end ending the logger
+    /* Here subscribe to events that trigger each of the logging events
+    The only exception are the 'start' and 'end' log events which are called directly
+    when starting end ending the logger */
     public override void OnNetworkSpawn() // Could this be Start() instead of OnNetworkSpawn()?
     {
         gameManager = FindObjectOfType<GameManager>();
@@ -36,9 +42,12 @@ public class LoggingEvents : NetworkBehaviour
         // NetworkVariable
         gameManager.triggerActivation.OnValueChanged += TriggerActivationHandler_TriggerActivationLog;
 
-        // Events triggered when the DiskLogger starts or ends for this session
-        diskLogger.loggingStarted += StartLogging;
-        diskLogger.loggingEnded += EndLogging;
+        // start and end events triggered when the DiskLogger starts or ends for this session
+        diskLogger.loggingStarted += LoggingStartedHandler_StartLogging;
+        diskLogger.loggingEnded += LoggingEndedHandler_EndLogging;
+
+        // time-triggered logging also begins when DiskLogger starts for this session
+        diskLogger.loggingStarted += LoggingStartedHandler_TimeTriggeredLog;
 
         // Start the logger once subscriptions are finished
         loggingEventsSubscribed?.Invoke();
@@ -47,7 +56,7 @@ public class LoggingEvents : NetworkBehaviour
 
 
     // Write a logging start log event when logging first begins
-    public void StartLogging()
+    public void LoggingStartedHandler_StartLogging()
     {
 
         // Create a StartLoggingLogEvent object
@@ -279,7 +288,62 @@ public class LoggingEvents : NetworkBehaviour
         diskLogger.Log(logEntry);
     }
 
-public void EndLogging()
+    // Write a time-triggered log at regular time intervals
+    public void LoggingStartedHandler_TimeTriggeredLog()
+    {
+        if (!IsServer) { Debug.Log("Not server, not running LoggingStartedHandler_TimeTriggeredLog in LoggingEvents");
+         return; }
+
+        Debug.Log("Is Server, so running LoggingStartedHandler_TimeTriggeredLog in LoggingEvents");
+        
+        StartCoroutine(Coroutine_TimeTriggeredLog());
+    }
+
+
+    public IEnumerator Coroutine_TimeTriggeredLog()
+    {
+        
+        yield return new WaitForSeconds(Globals.loggingFrequency); 
+
+        // create position dictionary
+        Dictionary<string,object> playerPosDict = new Dictionary<string, object>();
+
+        // Assemble data to log from each network client
+        Debug.Log($"ConnectedClientsList is {NetworkManager.ConnectedClientsList.Count} items long");
+        foreach (var networkClient in NetworkManager.ConnectedClientsList)
+        {
+            
+            PlayerLocation playerLocation = new PlayerLocation(
+                                    networkClient.PlayerObject.transform.position.x,
+                                    networkClient.PlayerObject.transform.position.y,
+                                    networkClient.PlayerObject.transform.position.z
+                                    );
+
+            PlayerRotation playerRotation = new PlayerRotation(
+                                                Camera.main.transform.rotation.eulerAngles.x,
+                                                networkClient.PlayerObject.transform.rotation.eulerAngles.y,
+                                                Camera.main.transform.rotation.eulerAngles.z
+                                                );
+
+            PlayerPosition thisPlayerPosition = new PlayerPosition(networkClient.ClientId, playerLocation, playerRotation);
+            
+            // Add entry to dictionary for this networkClient
+            playerPosDict.Add(networkClient.ClientId.ToString(), thisPlayerPosition);
+            Debug.LogWarning($"Logging Events sees gameManager.connectecClientIds[0] as {gameManager.connectedClientIds[0]}");
+
+            // create the time-triggered log event
+            TimeTriggeredLogEvent timeTriggeredLogEvent = new TimeTriggeredLogEvent(playerPosDict);
+
+            // serialize to JSON format
+            string logEntry = JsonUtility.ToJson(timeTriggeredLogEvent);
+            
+            // send string to logger
+            diskLogger.Log(logEntry);
+        }
+    }
+
+
+public void LoggingEndedHandler_EndLogging()
 {
     // Create a StopLoggingLogEvent object
     StopLoggingLogEvent stopLoggingLogEvent = new StopLoggingLogEvent();

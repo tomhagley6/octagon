@@ -59,7 +59,7 @@ public LoggingEvents loggingEvents;
             //                                                 player.transform.position.x,
             //                                                 player.transform.position.z));
             
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(Globals.loggingFrequency);
 
         }
     }

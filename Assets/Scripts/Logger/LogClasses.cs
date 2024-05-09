@@ -161,6 +161,31 @@ namespace LoggingClasses
         }
     }
 
+   public class TimeTriggeredLogEvent
+   {
+        // time
+        // description string
+        // positions
+        // head angles
+
+        public string timeLocal;
+        public string timeApplication;
+        public string eventDescription;
+        public Dictionary<string,object> data;
+
+        public TimeTriggeredLogEvent(Dictionary<string,object> playerPosDict)
+        {
+            timeLocal = DateTime.Now.ToString(Globals.logTimeFormat);
+            timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
+            eventDescription = Globals.timeTriggered;
+            data = new Dictionary<string,object>()
+            {
+                {"playerPosition", playerPosDict}
+            };
+        }
+
+   }
+   
     public class StopLoggingLogEvent
     {
         // time
