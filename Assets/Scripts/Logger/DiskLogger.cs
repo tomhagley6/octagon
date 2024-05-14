@@ -1,18 +1,19 @@
 using UnityEngine;
-using Logging;
+using Globals;
 using LoggingClasses;
 using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Text;
 
 // Class to handle logging data to file on the local machine
 public class DiskLogger : Logger
 {   
     // paths
     private string filename;
-    private string dataFolder = Globals.logFolder;
+    private string dataFolder = Logging.logFolder;
     private string filePath;
     
     private bool loggerReady = false;
@@ -113,6 +114,9 @@ public class DiskLogger : Logger
         }
     }
 
+    //// Pretty sure this is writing TO the buffer, not emptying it!
+    //// Buffer emptying to the filestream should only occur on Flush() or Close()
+    //// Should I keep this code at all, or just write directly to buffer with Log()? 
     // LogToFile helper method
     private void EmptyBuffer()
     {
@@ -125,23 +129,18 @@ public class DiskLogger : Logger
                     // File.WriteAllText(item, filePath);
                     try 
                     {
-                        using (StreamWriter sw = new StreamWriter(filePath, true))
-                        {
-                            // // Check whether this is the most efficient way of doing things,
-                            // // or whether this will hog resources
-                            // firstLine = isFirstLine == true ? "[" : "";
-                            sw.WriteLine(item + ",");
-                            Debug.Log(item);
+                        // // Check whether this is the most efficient way of doing things,
+                        // // or whether this will hog resources
+                        // firstLine = isFirstLine == true ? "[" : "";
+                        sw.WriteLine(item + ",");
+                        Debug.Log(item);
 
-                            // string item2 = JsonUtility.ToJson(
-                            //     new {
-                            //         Time = "now"
-                            //     }
-                            // );
-                            // sw.WriteLine(item2);
-
-                            
-                        }
+                        // string item2 = JsonUtility.ToJson(
+                        //     new {
+                        //         Time = "now"
+                        //     }
+                        // );
+                        // sw.WriteLine(item2);
                     }
                     catch (Exception e)
                     {
@@ -169,15 +168,21 @@ public class DiskLogger : Logger
     {
         
         // Path
-        filename = String.Concat(DateTime.Now.ToString(Globals.fileTimeFormat), ".json");
+        filename = String.Concat(DateTime.Now.ToString(Logging.fileTimeFormat), ".json");
         filePath = Path.Combine(dataFolder, filename);
         Debug.Log("Logger created. Filename: " + filename);
 
-        // Begin the file with a square bracket to conform to JSON formatting        
-        using (StreamWriter sw = new StreamWriter(filePath, true))
+        // Initialise the instance of StreamWriter that we will use for this logging session
+        // This instance will need to be flushed regularly to avoid data loss on application crash
+        // Automatic flush will happen when buffer fills
+        // For 20k bytes, will write every ~20000 chars, or roughly 150 lines
+        sw = new StreamWriter(filePath, true, Encoding.UTF8, 20000)
         {
-            sw.WriteLine("[");
-        }
+            AutoFlush = false
+        };
+
+        // Begin the file with a square bracket to conform to JSON formatting        
+        sw.WriteLine("[");
 
         // // Setup StreamWriter with the current file
         // sw = File.AppendText(filePath);
@@ -187,7 +192,7 @@ public class DiskLogger : Logger
         // Record beginning of logger process
         var startEvent = new  
         {
-            LocalTime = DateTime.Now.ToString(Globals.logTimeFormat),
+            LocalTime = DateTime.Now.ToString(Logging.logTimeFormat),
             /* Using realtimeSinceStartup to allow to me later create a pause function without 
             affecting this time measurement, which is taken as real time from the start of the
             application */
@@ -250,6 +255,12 @@ public class DiskLogger : Logger
 
         StopAllCoroutines();
 
+        // Be careful to close the StreamWriter instance before the application exits
+        if (sw != null)
+        {
+            sw.Close();         
+        }
+
  
 
         if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
@@ -281,11 +292,6 @@ public class DiskLogger : Logger
         using (StreamWriter sw = new StreamWriter(filePath, true))
         {
             sw.WriteLine("]");
-        }
-        if (sw != null)
-        {
-            sw.Close();
-            
         }
     }
 

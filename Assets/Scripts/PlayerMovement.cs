@@ -1,4 +1,5 @@
 using System;
+using Globals;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -107,7 +108,7 @@ public class PlayerMovement : NetworkBehaviour
         UpdateMovement();
 
         // Allow manual toggle of player visibility
-        if (Input.GetKeyDown(KeyCode.T))
+        if (Input.GetKeyDown(General.togglePlayer))
         {
             togglePlayerVisible();
         }

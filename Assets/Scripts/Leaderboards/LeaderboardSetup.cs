@@ -28,7 +28,7 @@ public class LeaderboardSetup : MonoBehaviour
             Debug.Log("Player signed out.");
         };
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
-        await AuthenticationService.Instance.UpdatePlayerNameAsync("Curzon");
+        await AuthenticationService.Instance.UpdatePlayerNameAsync("Default");
     }
 
     private async void OnDestroy()

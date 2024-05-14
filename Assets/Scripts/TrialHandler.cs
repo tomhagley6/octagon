@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Globals;
 using Mono.CSharp;
 using Unity.Netcode;
 using UnityEngine;
@@ -17,13 +18,12 @@ public class TrialHandler : NetworkBehaviour
 {
    
    GameManager gameManager;
-   public int score;
    IdentityManager identityManager;
    Color defaultWallColour;
+   public int score;
    bool isTrialEnderClient = false; // flag to check if current trial was 
                                     // ended by this clientId
    public event Action sliceOnset;  
-
 
 
     // Print current active walls for debugging purposes
@@ -36,6 +36,7 @@ public class TrialHandler : NetworkBehaviour
             // Debug.Log($"Activewalls values are {gameManager.activeWalls.Value.wall1} and {gameManager.activeWalls.Value.wall2}");
         }
     }
+
 
     public int GetScore()
     {
@@ -57,9 +58,8 @@ public class TrialHandler : NetworkBehaviour
         gameManager.activeWalls.OnValueChanged += ColourWallsOnChange;
         gameManager.OnReadyStateChanged += GameManager_OnReadyStateChangedHandler;
 
-
+        // If client joins after first walls are painted, catch up to server
         StartCoroutine(DelayedColourWalls());
-
 
         // For case where OnNetworkSpawn occurs after the first trial starts
         if (gameManager.activeWalls == null)
@@ -86,7 +86,6 @@ public class TrialHandler : NetworkBehaviour
             }
         }
     }
-
    
 
     // Due to walls and wall colours not being networked, any late-joining clients will 
@@ -116,6 +115,7 @@ public class TrialHandler : NetworkBehaviour
 
     public override void OnDestroy()
     {
+        // unsubscribe from NetworkVariable changes
         if (gameManager != null)
         {
             gameManager.activeWalls.OnValueChanged -= ColourWallsOnChange;
@@ -142,23 +142,21 @@ public class TrialHandler : NetworkBehaviour
         Debug.Log($"IsServer returns as: {IsServer}");
         if (isReady && IsServer)
         {
-            // // Begin trials
-            // isTrialEnderClient = true;
-            // StartTrial();
             StartCoroutine(StartFirstTrial());
         }
     }
 
+
     // Introduce a delay before starting the first trial to allow setup 
     IEnumerator StartFirstTrial()
     {
-        yield return new WaitForSeconds(0.75f);
-
+        yield return new WaitForSeconds(General.startFirstTrialDelay);
 
             // Begin trials
             isTrialEnderClient = true;
             StartTrial();
     }
+
 
     // Set wall colour for the current trial
     void ColourWalls(int highWallTriggerID, int lowWallTriggerID)
@@ -220,6 +218,7 @@ public class TrialHandler : NetworkBehaviour
         StartCoroutine(StartTrialCoroutine());
     }
 
+
     public IEnumerator StartTrialCoroutine()
     {
         if (!isTrialEnderClient) {yield return null;}
@@ -243,10 +242,10 @@ public class TrialHandler : NetworkBehaviour
         gameManager.ToggleTrialActiveServerRPC();
 
         // Lights up
-        GameObject.Find("DirectionalLight").GetComponent<Light>().intensity = 0.82f;
+        GameObject.Find("DirectionalLight").GetComponent<Light>().intensity = General.globalIlluminationHigh;
 
         // Variable delay period before slice onset
-        var sliceOnsetDelay = Random.Range(0.5f, 1.5f);
+        var sliceOnsetDelay = Random.Range(General.trialStartDurationMin, General.trialStartDurationMax);
         yield return new WaitForSeconds(sliceOnsetDelay);
 
         // Activate the chosen walls for this trial (callstack contains ColourWalls(), which is the slice onset trigger)
@@ -287,8 +286,8 @@ public class TrialHandler : NetworkBehaviour
         // Debug.Log($"ITI duration for this trial: {ITIvalue}");
 
         StartCoroutine(EndTrialCoroutine(increment, isTrialEnderClient));
-        
     }
+
 
     // Replacing EndTrial() contents with this coroutine, to allow a 2 second pause prior to starting
     // the ITI
@@ -311,7 +310,7 @@ public class TrialHandler : NetworkBehaviour
 
         // allow a short grace period before the trial ends 
         // Then update the trial active NetworkVaraible
-        yield return new WaitForSeconds(1.5f); 
+        yield return new WaitForSeconds(General.trialEndDuration); 
         gameManager.ToggleTrialActiveServerRPC();
         
         // Decrease global illimation
@@ -319,12 +318,11 @@ public class TrialHandler : NetworkBehaviour
         light.intensity = 0.6f;
 
         // Begin StartTrial again with a random ITI
-        float ITIvalue = Random.Range(2f,5f);
+        float ITIvalue = Random.Range(General.ITIMin, General.ITIMax);
         // Use Invoke to delay StartTrial until ITI has passed
         // NB no trial logic for the next trial is run until an ITI has ocurred
         Invoke("StartTrial", ITIvalue);
         Debug.Log($"ITI duration for this trial: {ITIvalue}");
-
     }
 
 

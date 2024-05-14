@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using Globals;
 using Mono.CSharp;
 using TMPro;
 using Unity.Netcode;
@@ -52,16 +53,12 @@ public class NetworkManagerUI : NetworkBehaviour
 
         hostButton.onClick.AddListener(() => 
         {
-            Debug.Log(ipAddress);
-            ipAddress = GetPublicIPAddress();
             
             // Get public IP address from NetworkManager
             ipAddress = GetPublicIPAddress();
-            Debug.Log(ipAddress);
             ipAddressText.text = ipAddress;
             Debug.Log("NetworkManagerUI IP is: " + ipAddress);
 
-            
             // Identify if using the default port, or if the end-user has entered one
             if (string.IsNullOrEmpty(enteredPort.GetComponent<TMP_InputField>().text))
             {
@@ -95,6 +92,8 @@ public class NetworkManagerUI : NetworkBehaviour
                 SetConnectionData(ipAddress, port, listenAddress);
             }
             PrintConnectionInfo();
+            
+            // Disable buttons and input fields once no longer needed
             DisableButtons();
             gameObject.transform.Find("IpAddress").gameObject.SetActive(false);
             NetworkManager.Singleton.StartHost();
@@ -183,7 +182,7 @@ public class NetworkManagerUI : NetworkBehaviour
     // Monitor toggle key for IP Address visibility
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F1))
+        if (Input.GetKeyDown(General.toggleIP))
         {
             toggleIpAddress();
         }

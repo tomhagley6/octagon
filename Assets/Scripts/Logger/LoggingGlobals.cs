@@ -4,11 +4,10 @@ using UnityEngine;
 
 // Logging namespace for Global values associated with logging formats
 // and networking values
-namespace Logging
+namespace Globals
 {
-    public static class Globals
+    public static class Logging
     {
-        
         
         // vals
         public static float loggingFrequency = 0.2f;
@@ -26,12 +25,7 @@ namespace Logging
         // Debug.Log("Logger created. Filename: " + filename);
         // fullPath = Path.Combine(folderName, filename);
 
-
-
-
-
         public static string logTimeFormat = "HH:mm:ss:fff";
-
 
         public static string logFormat = "T{0}:UT {1} {2}"; // timestamp, unitytimestamp, 
                                                                // content
@@ -80,21 +74,6 @@ namespace Logging
         public static string endTrial = "end trial";
         public static string endLogging = "logging ended";
         public static string timeTriggered = "time";
-
-
-        // placeholders
-        public static string player = "player_1";
-        public static string trialNum = "1";
-        public static string trialType = "HighLow";
-
-
-        // Formats for log entry types
-        // Trial start
-        public static Dictionary<string,object> trialStartData = new Dictionary<string,object>()
-        {
-            {"trialNum", null}
-        };
-
 
     }
 

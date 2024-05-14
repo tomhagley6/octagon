@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using Unity.Collections;
 using TriggerActivation = GameManager.TriggerActivation;
 using System;
-using Logging;
+using Globals;
 
 
 //// Refactor repetitive sections as separate methods
@@ -302,40 +302,45 @@ public class LoggingEvents : NetworkBehaviour
 
     public IEnumerator Coroutine_TimeTriggeredLog()
     {
-        
-        yield return new WaitForSeconds(Globals.loggingFrequency); 
-
-        // create position dictionary
-        Dictionary<string,object> playerPosDict = new Dictionary<string, object>();
-
-        // Assemble data to log from each network client
-        Debug.Log($"ConnectedClientsList is {NetworkManager.ConnectedClientsList.Count} items long");
-        foreach (var networkClient in NetworkManager.ConnectedClientsList)
+        while (true)
         {
-            
-            PlayerLocation playerLocation = new PlayerLocation(
-                                    networkClient.PlayerObject.transform.position.x,
-                                    networkClient.PlayerObject.transform.position.y,
-                                    networkClient.PlayerObject.transform.position.z
-                                    );
+            yield return new WaitForSeconds(Logging.loggingFrequency); 
 
-            PlayerRotation playerRotation = new PlayerRotation(
-                                                Camera.main.transform.rotation.eulerAngles.x,
-                                                networkClient.PlayerObject.transform.rotation.eulerAngles.y,
-                                                Camera.main.transform.rotation.eulerAngles.z
-                                                );
+            // create position dictionary
+            Dictionary<string,object> playerPosDict = new Dictionary<string, object>();
 
-            PlayerPosition thisPlayerPosition = new PlayerPosition(networkClient.ClientId, playerLocation, playerRotation);
-            
-            // Add entry to dictionary for this networkClient
-            playerPosDict.Add(networkClient.ClientId.ToString(), thisPlayerPosition);
+            // Assemble data to log from each network client
+            Debug.Log($"ConnectedClientsList is {NetworkManager.ConnectedClientsList.Count} items long");
+            foreach (var networkClient in NetworkManager.ConnectedClientsList)
+            {
+                
+                PlayerLocation playerLocation = new PlayerLocation(
+                                        networkClient.PlayerObject.transform.position.x,
+                                        networkClient.PlayerObject.transform.position.y,
+                                        networkClient.PlayerObject.transform.position.z
+                                        );
+
+                PlayerRotation playerRotation = new PlayerRotation(
+                                                    Camera.main.transform.rotation.eulerAngles.x,
+                                                    networkClient.PlayerObject.transform.rotation.eulerAngles.y,
+                                                    Camera.main.transform.rotation.eulerAngles.z
+                                                    );
+
+                PlayerPosition thisPlayerPosition = new PlayerPosition(networkClient.ClientId, playerLocation, playerRotation);
+                
+                // Add entry to dictionary for this networkClient
+                playerPosDict.Add(networkClient.ClientId.ToString(), thisPlayerPosition);
+                Debug.Log("PlayerPosDict should have received a new entry here ");
+
+            }
+
             Debug.LogWarning($"Logging Events sees gameManager.connectecClientIds[0] as {gameManager.connectedClientIds[0]}");
 
             // create the time-triggered log event
             TimeTriggeredLogEvent timeTriggeredLogEvent = new TimeTriggeredLogEvent(playerPosDict);
 
             // serialize to JSON format
-            string logEntry = JsonUtility.ToJson(timeTriggeredLogEvent);
+            string logEntry = JsonConvert.SerializeObject(timeTriggeredLogEvent);
             
             // send string to logger
             diskLogger.Log(logEntry);

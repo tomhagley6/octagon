@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Globals;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -67,7 +68,7 @@ public class ToggleCamera : NetworkBehaviour
     void Update()
     {
         // Allow manual toggle of mouse lock state
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(General.toggleCamera))
         {
             toggleCamera();
         }

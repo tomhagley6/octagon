@@ -3,6 +3,7 @@ using System.Numerics;
 using Unity.Netcode;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
+using Globals;
 
 /* Class to control rotation of the FirstPersonPlayer (around the y-axis) 
 and rotation of the camera (around the x-axis) to allow player camera control.
@@ -10,7 +11,6 @@ To be attached to any camera instance */
 public class MouseLook : NetworkBehaviour
 {
 
-    public float mouseSensitivity = 1000f;
     public Transform playerBody;
     float xRotation = 0f;
     public NetworkManager networkManager;
@@ -23,24 +23,22 @@ public class MouseLook : NetworkBehaviour
         
         networkManager = FindObjectOfType<NetworkManager>();
 
-        // Script is unattached from FirstPersonPlayer Object, so find this through NetworkManager
+        // Script is unattached from FirstPersonPlayer Object, so find FirstPersonPlayer through NetworkManager
         playerBody = networkManager.LocalClient.PlayerObject.transform;
         Cursor.lockState = CursorLockMode.Locked;  // Lock cursor within game view
 
-        // subscribe to a key-triggered event with mouse lock toggle method
+        // subscribe to a key-down-triggered event with mouse lock toggle method
         toggleMouseLock += ToggleMouseLockListener;
         
 
     }
 
     // Toggle mouse lock mode between locked and free
-    // to allow interaction with QuantumConsole
+    // to allow interaction with QuantumConsole console asset
     public void ToggleMouseLockListener()
     {
-        
         unlockMouseTrigger = !unlockMouseTrigger;
         Cursor.lockState = unlockMouseTrigger ? CursorLockMode.None : CursorLockMode.Locked;
-        
     }
     
 
@@ -51,8 +49,8 @@ public class MouseLook : NetworkBehaviour
 
         // Mouse X and Mouse Y axes report the movement along these axes in the current frame
         // only (i.e., not the overall position of the mouse along an axis, just velocity)
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+        float mouseX = Input.GetAxis("Mouse X") * General.mouseSensitivity * Time.deltaTime;
+        float mouseY = Input.GetAxis("Mouse Y") * General.mouseSensitivity * Time.deltaTime;
 
         // // y-axis
         /* Rotate() rotates the player around the 3 local axes of the transform by the angle
@@ -71,17 +69,18 @@ public class MouseLook : NetworkBehaviour
         
         // Clamp rotation around the x-axis to prevent neck-breaking
         xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);  
+        xRotation = Mathf.Clamp(xRotation, General.neckClampMin, General.neckClampMax);  
 
         // Set rotation
         transform.localRotation = UnityEngine.Quaternion.Euler(xRotation, 0f, 0f);
 
 
         // Allow manual toggle of mouse lock state
-        if (Input.GetKeyDown(KeyCode.G))
+        if (Input.GetKeyDown(General.toggleMouse))
         {
             toggleMouseLock();
         }
     }
-    
+
+
 }

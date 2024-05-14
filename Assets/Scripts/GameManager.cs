@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using JetBrains.Annotations;
-using Logging;
+using Globals;
 using LoggingClasses;
 using Newtonsoft.Json;
 using TMPro;
@@ -20,27 +20,27 @@ methods */
 public class GameManager : SingletonNetwork<GameManager>
 {
 
+
+    // //  Variables
+
+
     public DiskLogger diskLogger;
     public TrialHandler trialHandler;
-
-    public int score;
-    List<int> walls;
     public IdentityManager identityManager;
-    public List<GameObject> triggers; // Keep a handle on all triggers
 
-    // Setup an event to enable checking that GameManager has completed startup code
-    public event Action<bool> OnReadyStateChanged; 
     public bool isReady = false;
-    [SerializeField] private int highScore = 50; // globals
-    [SerializeField] private int lowScore = 25; // globals
+    public int score;
     public int wallID1;
     public int wallID2;
+    List<int> walls;
     public List<int> wallIDs;
+    public List<GameObject> triggers; // Keep a handle on all triggers
+    public event Action<bool> OnReadyStateChanged; // event for checking GameManager startup has run
+    public event Action<int> OnTriggerEntered; // delegate to subscribe to when OnTriggerEnter is called
 
-     private string trialType = "HighLowTrial"; // replace with globals
 
-    // delegate to subscribe to when OnTriggerEnter is called
-    public event Action<int> OnTriggerEntered;
+    // // NetworkVariables 
+    
 
     // Winning player should update the server following trigger entry
     // Create new NetworkVariable triggerActivation
@@ -95,12 +95,17 @@ public class GameManager : SingletonNetwork<GameManager>
     public NetworkList<ulong> connectedClientIds;
     public NetworkList<int> scores;
 
+
+    // // Methods
+
+
     public void Awake()
     {
         connectedClientIds = new NetworkList<ulong>(new List<ulong>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         scores = new NetworkList<int>(new List<int>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         Debug.Log("GameManager Awake finished running");
     }
+
 
     public override void OnNetworkSpawn() {
         /* Subscribe to the OnValueChanged delegate with a lambda expression that fulfills the
@@ -167,9 +172,8 @@ public class GameManager : SingletonNetwork<GameManager>
 
         // is GameManager recognising as host or server?
         Debug.LogWarning($"gameManager.IsServer is {IsServer}, gameManager.IsHost is {IsHost}");
-
-
     }
+
 
     void Start()
     {
@@ -205,7 +209,7 @@ public class GameManager : SingletonNetwork<GameManager>
         Debug.Log($"LocalClientId returns as {NetworkManager.Singleton.LocalClientId} on this client");
         triggerID = newValue.triggerID;
 
-        switch (trialType)
+        switch (General.trialType)
         {
             case "HighLowTrial":
                 Debug.Log($"List at HighLowTrial execution is: {string.Join(",", wallID1, wallID2)}");
@@ -215,10 +219,9 @@ public class GameManager : SingletonNetwork<GameManager>
             default:
                 Debug.Log("Trial type not currently implemented");
                 break;
-
         }
-
     }
+
 
     // Subscriber method for activeWall NetworkVariable value change
     // Update local class fields with new wall values and activate the colliders for these walls
@@ -349,7 +352,6 @@ public class GameManager : SingletonNetwork<GameManager>
         
 
     // }
-    
 
     
     // Standard HighLow trial
@@ -379,7 +381,6 @@ public class GameManager : SingletonNetwork<GameManager>
             WallTrialInteraction(triggerID, highWallTriggerID, lowWallTriggerID, isTrialEnderClient);
         }
         else Debug.Log("No conditions met for HighLowTrial");
-    
     }
 
 
@@ -390,7 +391,7 @@ public class GameManager : SingletonNetwork<GameManager>
         Debug.Log("Entered WallTrialInteraction");
 
         // LVs
-        int score = triggerID == highWallTriggerID ? highScore : lowScore;
+        int score = triggerID == highWallTriggerID ? General.highScore : General.lowScore;
         string rewardType = triggerID == highWallTriggerID ? "High" : "Low";
 
         // All clients wash their own walls, making use of the wall number NetworkObject
@@ -422,8 +423,6 @@ public class GameManager : SingletonNetwork<GameManager>
     }
 
 
-
-
     void DeactivateWall(int wallID) 
     {
         // Look into each trigger and find the one with the matching wallID to deactivate
@@ -437,6 +436,7 @@ public class GameManager : SingletonNetwork<GameManager>
         }
     }
     
+
     public List<int> SelectNewWalls() {
         Debug.Log("NEW TRIAL");
 
@@ -467,11 +467,21 @@ public class GameManager : SingletonNetwork<GameManager>
     }
     
 
+    // Limit sessions to a defined number of trials (preserves leaderboard integrity)
+    public void EndCurrentSession()
+    {
+        // Not implemented
+    }
+
+
+    // // Server RPCs
+
+
     public void UpdateActiveWalls(List<int> wallList)
     {
         
         // Update activeWalls with new wall values
-        UpdateWallsServerRpc(wallList[0], wallList[1]);
+        UpdateWallsServerRPC(wallList[0], wallList[1]);
 
         Debug.Log($"activeWalls value is set with the values {wallList[0]} and {wallList[1]}");
     }
@@ -479,7 +489,7 @@ public class GameManager : SingletonNetwork<GameManager>
 
     // RPC to update activeWalls on the server and not the client
     [ServerRpc(RequireOwnership=false)]
-    public void UpdateWallsServerRpc(int _wall1, int _wall2)
+    public void UpdateWallsServerRPC(int _wall1, int _wall2)
     {
         // This will cause a change over the network
         // and ultimately invoke `OnValueChanged` on all receivers
@@ -488,6 +498,7 @@ public class GameManager : SingletonNetwork<GameManager>
             wall2 = _wall2
         };
     }
+    
 
     public void UpdateTriggerActivation(int triggerID, ulong activatorClientId)
     {
@@ -513,6 +524,7 @@ public class GameManager : SingletonNetwork<GameManager>
     
     }
 
+
     // RPC to update trialStart on the server and not the client
     [ServerRpc(RequireOwnership = false)]
     public void ToggleTrialActiveServerRPC()
@@ -520,6 +532,7 @@ public class GameManager : SingletonNetwork<GameManager>
         trialActive.Value = !trialActive.Value;
         Debug.LogError($"trialActive value is now {trialActive.Value}");
     }
+
 
     // RPC to access and update local-client IDs
     [ServerRpc(RequireOwnership=false)]
@@ -540,6 +553,7 @@ public class GameManager : SingletonNetwork<GameManager>
             }
         }
     }
+
 
     // ServerRPC to update player scores
     [ServerRpc(RequireOwnership=false)]
@@ -562,7 +576,6 @@ public class GameManager : SingletonNetwork<GameManager>
         } 
     }
 
-    
 
     /* ServerRPC to log data for all clients at slice onset,
     including clientId, gameObject.transform.position, and 
@@ -574,7 +587,7 @@ public class GameManager : SingletonNetwork<GameManager>
     [ServerRpc(RequireOwnership=false)]
     public void LogClientDataServerRPC()
     {
-        
+        // Not implemented
     }
 
 

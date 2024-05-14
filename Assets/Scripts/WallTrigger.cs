@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Logging;
+using Globals;
 using System;
 using Unity.Netcode;
 using static GameManager;

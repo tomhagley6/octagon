@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using Logging;
+using Globals;
 using System;
 using ActiveWalls = GameManager.ActiveWalls;
 using LoggingClasses;
@@ -59,7 +59,7 @@ public LoggingEvents loggingEvents;
             //                                                 player.transform.position.x,
             //                                                 player.transform.position.z));
             
-            yield return new WaitForSeconds(Globals.loggingFrequency);
+            yield return new WaitForSeconds(0.2f);
 
         }
     }

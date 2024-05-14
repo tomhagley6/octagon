@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
-using Logging;
+using Globals;
 using Unity.Netcode;
 
 namespace LoggingClasses
@@ -25,9 +25,9 @@ namespace LoggingClasses
 
         public StartLoggingLogEvent()
         {
-            timeLocal = DateTime.Now.ToString(Globals.logTimeFormat);
+            timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
             timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
-            eventDescription = Globals.beginLogging;
+            eventDescription = Logging.beginLogging;
         }
     }
 
@@ -46,9 +46,9 @@ namespace LoggingClasses
 
         public TrialStartLogEvent(ushort trialNum, Dictionary<string,object> playerPosDict)
         {
-            timeLocal = DateTime.Now.ToString(Globals.logTimeFormat);
+            timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
             timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
-            eventDescription = Globals.trialStart;
+            eventDescription = Logging.trialStart;
             data = new Dictionary<string, object>()
             {
                 {"trialNum", trialNum},
@@ -82,9 +82,9 @@ namespace LoggingClasses
 
         public SliceOnsetLogEvent(int wall1, int wall2, Dictionary<string,object> playerPosDict)
         {
-            timeLocal = DateTime.Now.ToString(Globals.logTimeFormat);
+            timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
             timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
-            eventDescription = Globals.sliceOnset;
+            eventDescription = Logging.sliceOnset;
             data = new Dictionary<string, object>()
 
             {
@@ -113,9 +113,9 @@ namespace LoggingClasses
 
         public TriggerActivationLogEvent(int wall1, int wall2, int wallTriggered, ulong triggerClientId, Dictionary<string,object> playerPosDict)
         {
-            timeLocal = DateTime.Now.ToString(Globals.logTimeFormat);
+            timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
             timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
-            eventDescription = Globals.triggerActivation;
+            eventDescription = Logging.triggerActivation;
             data = new Dictionary<string, object>()
             {
                 {"wall1", wall1},
@@ -148,9 +148,9 @@ namespace LoggingClasses
 
         public TrialEndLogEvent(ushort trialNum, Dictionary<string, object> playerPosDict, Dictionary<string,object> playerScoresDict)
         {
-            timeLocal = DateTime.Now.ToString(Globals.logTimeFormat);
+            timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
             timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
-            eventDescription = Globals.endTrial;
+            eventDescription = Logging.endTrial;
             data = new Dictionary<string, object>()
             {   
                 {"trialNum", trialNum},
@@ -175,9 +175,9 @@ namespace LoggingClasses
 
         public TimeTriggeredLogEvent(Dictionary<string,object> playerPosDict)
         {
-            timeLocal = DateTime.Now.ToString(Globals.logTimeFormat);
+            timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
             timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
-            eventDescription = Globals.timeTriggered;
+            eventDescription = Logging.timeTriggered;
             data = new Dictionary<string,object>()
             {
                 {"playerPosition", playerPosDict}
@@ -196,9 +196,9 @@ namespace LoggingClasses
 
         public StopLoggingLogEvent()
         {
-            timeLocal = DateTime.Now.ToString(Globals.logTimeFormat);
+            timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
             timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
-            eventDescription = Globals.endLogging;
+            eventDescription = Logging.endLogging;
         }
     }
 
