@@ -444,22 +444,34 @@ public class GameManager : SingletonNetwork<GameManager>
         walls = identityManager.ListCustomIDs();
 
         // Choose a random anchor wall to reference the trial to 
-        int anchorWallIndex = UnityEngine.Random.Range(0, walls.Count);
+        int anchorWallIndex = Random.Range(0, walls.Count);
+        Debug.LogError($"anchor walls is {anchorWallIndex}");
+
+        
+        // Randomly choose a wall separation value for this trial
+        int i = General.wallSeparations[Random.Range(0, General.wallSeparations.Count)];
+
         // choose a random second wall that is consistent with anchor wall for this trial type
-        int wallIndexDiff = new List<int>{-2, 2}[UnityEngine.Random.Range(0, 1)];
+        int wallIndexDiff = new List<int>{-i, i}[Random.Range(0, 2)];
+        Debug.LogError($"wallIndexDiff = {wallIndexDiff}");
         int dependentWallIndex = anchorWallIndex + wallIndexDiff;
+        Debug.LogError($"naive dependent wall is walls is {dependentWallIndex}");
         
         // Account for circular octagon structure
         if (dependentWallIndex < 0)
         {
             dependentWallIndex += walls.Count;
+            Debug.LogError($" dependent wall < 0, so corrected to {dependentWallIndex}");
+
         }
-        else if (dependentWallIndex >= walls.Count - 1)
+        else if (dependentWallIndex >= walls.Count)
         {
             dependentWallIndex -= walls.Count;
+            Debug.LogError($" dependent wall >= walls.Count - 1, so corrected to {dependentWallIndex}");
         }
         
         // assign high and low walls with the generated indexes
+        Debug.LogError($"chosen walls are {anchorWallIndex}, {dependentWallIndex}");
         int highWallTriggerID = walls[anchorWallIndex];
         int lowWallTriggerID = walls[dependentWallIndex];   
 

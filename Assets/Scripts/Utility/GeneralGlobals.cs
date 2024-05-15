@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Globals
@@ -12,6 +13,8 @@ namespace Globals
         public static int highScore = 50;
         public static int lowScore = 10;
         public static string trialType = "HighLowTrial";
+        public static List<int> wallSeparations = new List<int>{1,2,4};   // index difference between trial walls
+                                                                          // random choice within list
 
         //timings
         public static float ITIMin = 2f;
