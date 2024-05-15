@@ -24,6 +24,7 @@ public class TrialHandler : NetworkBehaviour
    bool isTrialEnderClient = false; // flag to check if current trial was 
                                     // ended by this clientId
    public event Action sliceOnset;  
+   public event Action<int> scoreChange;
 
 
     // Print current active walls for debugging purposes
@@ -47,16 +48,19 @@ public class TrialHandler : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         
-        // variables
+        // // variables
         gameManager = FindObjectOfType<GameManager>();
         identityManager = FindObjectOfType<IdentityManager>();
+        
+        // // subscriptions
+        gameManager.activeWalls.OnValueChanged += ColourWallsOnChange;
+        gameManager.OnReadyStateChanged += GameManager_OnReadyStateChangedHandler;
+
+        scoreChange += FindObjectOfType<Score>().AdjustScore;
+        scoreChange += FindObjectOfType<ScorePopup>().PopupScore;
 
         // print current active walls
         StartCoroutine(PrintWalls());
-        
-        // subscriptions
-        gameManager.activeWalls.OnValueChanged += ColourWallsOnChange;
-        gameManager.OnReadyStateChanged += GameManager_OnReadyStateChangedHandler;
 
         // If client joins after first walls are painted, catch up to server
         StartCoroutine(DelayedColourWalls());
@@ -204,11 +208,17 @@ public class TrialHandler : NetworkBehaviour
     }
     
     
-    // Change the score variable, which is accessed by Score.cs to update the UI 
-        public void AdjustScore(int increment = 0)
-    {
-        score += increment;
-    }
+    // // Change the score variable, which is accessed by Score.cs to update the UI 
+    //     public void AdjustScore(int increment = 0)
+    // {
+    //     score += increment;
+    // }
+
+    // // Invoke 
+    // public void PopupScore(int increment)
+    // {
+    //     scoreChange?.Invoke();
+    // }
 
     
     // Run only by the client which ended the trial, pick new walls for the upcoming
@@ -294,10 +304,13 @@ public class TrialHandler : NetworkBehaviour
     public IEnumerator EndTrialCoroutine(int increment, bool isTrialEnderClient)
     {
         
-        // Update score locally and to the NetworkList
-        // Score.cs accesses the score here to display to the Canvas
-        AdjustScore(increment);
+        // Update score locally in Score.cs (and to the NetworkList?)
+        // Score.cs uses this to update the score display on the canvas
+        // Update the score popup text in ScorePopup.cs
+        scoreChange?.Invoke(increment);
+        Debug.LogError("scoreChange was just invoked");
         gameManager.UpdateScoresServerRPC(increment);
+        
 
         // Record whether it was this client that ended the current trial
         this.isTrialEnderClient = isTrialEnderClient;

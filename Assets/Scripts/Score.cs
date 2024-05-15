@@ -16,10 +16,16 @@ public class Score : MonoBehaviour
     }
     
     // Keep canvas text updated with the current value of score
-    // as recorded in GameManager.cs
     void Update()
     {
-        score = trialHandler.score;
         scoreText.text = $"Score: {score}";
+    }
+
+
+      // change the score variable
+        public void AdjustScore(int increment = 0)
+    {
+        Debug.LogError("AdjustScore is running");
+        score += increment;
     }
 }
