@@ -11,6 +11,9 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using Random=UnityEngine.Random;
+using KaimiraGames;
+using Mono.CSharp;
+using Unity.Collections;
 
 
 /* Class to control generation and updating of NetworkVariable
@@ -19,8 +22,6 @@ NB: GameManager does not contain or trigger StartTrial or EndTrial
 methods */
 public class GameManager : SingletonNetwork<GameManager>
 {
-
-
     // //  Variables
 
 
@@ -91,6 +92,7 @@ public class GameManager : SingletonNetwork<GameManager>
 
     public NetworkVariable<bool> trialActive = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     public NetworkVariable<ushort> trialNum = new NetworkVariable<ushort>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public NetworkVariable<FixedString32Bytes> trialType = new NetworkVariable<FixedString32Bytes>("", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     public NetworkList<ulong> connectedClientIds;
     public NetworkList<int> scores;
@@ -209,17 +211,23 @@ public class GameManager : SingletonNetwork<GameManager>
         Debug.Log($"LocalClientId returns as {NetworkManager.Singleton.LocalClientId} on this client");
         triggerID = newValue.triggerID;
 
-        switch (General.trialType)
-        {
-            case "HighLowTrial":
-                Debug.Log($"List at HighLowTrial execution is: {string.Join(",", wallID1, wallID2)}");
-                HighLowTrial(wallID1, wallID2, triggerID, isTrialEnderClient);
-                break;
+        // General game logic for interaction with a wall trigger
+        WallInteraction(wallID1, wallID2, triggerID, isTrialEnderClient);
 
-            default:
-                Debug.Log("Trial type not currently implemented");
-                break;
-        }
+        // switch (trialType.Value)
+        // {
+        //     case "HighLow":
+        //         Debug.Log($"List at HighLowTrial execution is: {string.Join(",", wallID1, wallID2)}");
+        //         HighLowTrial(wallID1, wallID2, triggerID, isTrialEnderClient);
+        //         break;
+
+        //     case "Forced":
+        //         Debug.Log($"List at ForcedTrial execution is {string,Join(",", wallID1, wallID2)}");
+
+        //     default:
+        //         Debug.Log("Trial type not currently implemented");
+        //         break;
+        // }
     }
 
 
@@ -354,19 +362,33 @@ public class GameManager : SingletonNetwork<GameManager>
     // }
 
     
-    // Standard HighLow trial
-    void HighLowTrial(int wallIDHigh, int wallIDLow, int triggerID, bool isTrialEnderClient)
+    public string SelectTrial()
     {
-        Debug.Log("HighLowTrial running");
+        // Create weighted list of trial types to draw from 
+        WeightedList<string> trialTypeDist = new();
+        for (int i = 0; i < General.trialTypes.Count; i++)
+        {
+            trialTypeDist.Add(General.trialTypes[i], General.trialTypeProbabilities[i]);
+        }
         
-        int highWallTriggerID = wallIDHigh;
-        int lowWallTriggerID = wallIDLow;
+        // Return trial type for this trial
+        return trialTypeDist.Next();
+    }
 
-        Debug.Log("Values HighLowTrial receives for high and low wall IDs are: "
-        + $"{highWallTriggerID} and {lowWallTriggerID}");
+
+    // Basic handling of wall interaction prior to specific trial-type handling
+    void WallInteraction(int wallID1, int wallID2, int triggerID, bool isTrialEnderClient)
+    {
+        Debug.Log("WallInteraction running");
+        
+        // int highWallTriggerID = wallIDHigh;
+        // int lowWallTriggerID = wallIDLow;
+
+        Debug.Log("Values WallInteraction receives for wall1 and wall2 wall IDs are: "
+        + $"{wallID1} and {wallID2}");
         
         // If this is a relevant wall for the current trial
-        if (triggerID == highWallTriggerID || triggerID == lowWallTriggerID)
+        if (triggerID == wallID1 || triggerID == wallID2)
         {
             // Invoke the callbacks on OnTriggerEntered Action for each wall currently active
             // Would it be cleaner to only use local variables instead of the wallIDs field? 
@@ -378,29 +400,53 @@ public class GameManager : SingletonNetwork<GameManager>
                 }
 
             // Handle the wall interaction for this trial and trial type
-            WallTrialInteraction(triggerID, highWallTriggerID, lowWallTriggerID, isTrialEnderClient);
+            TrialInteraction(triggerID, wallID1, wallID2, isTrialEnderClient);
         }
-        else Debug.Log("No conditions met for HighLowTrial");
+        else Debug.Log("No conditions met for WallInteraction");
     }
 
 
-    void WallTrialInteraction(int triggerID, int highWallTriggerID,
+    void TrialInteraction(int triggerID, int highWallTriggerID,
                                 int lowWallTriggerID, bool isTrialEnderClient)
     {
         
-        Debug.Log("Entered WallTrialInteraction");
+        Debug.Log("Entered TrialInteraction");
 
         // LVs
-        int score = triggerID == highWallTriggerID ? General.highScore : General.lowScore;
-        string rewardType = triggerID == highWallTriggerID ? "High" : "Low";
+        int score = 0;
+        string rewardType = "";
+
+        switch (trialType.Value)
+        {
+            case var value when value == General.highLow: // No one knows why this works, but cannot directly use FixedString value
+            
+            score = triggerID == highWallTriggerID ? General.highScore : General.lowScore;
+            rewardType = triggerID == highWallTriggerID ? General.highScoreRewardType : General.lowScoreRewardType;
+        
+           break;
+
+            case var value when value == General.forcedHigh:
+            
+            score = General.highScore;
+            rewardType = General.highScoreRewardType;
+
+            break;
+
+            case var value when value == General.forcedLow:
+
+            score = General.lowScore;
+            rewardType = General.lowScoreRewardType;
+
+            break;
+        }
+
+        // Debug statement
+        Debug.Log($"End of trial values: {score}, {wallID1}, {wallID2}"
+        + $" {triggerID}, {rewardType}, {isTrialEnderClient}");
 
         // All clients wash their own walls, making use of the wall number NetworkObject
         // Bugs that prevent triggers triggering on other clients will prevent this code from running
-        trialHandler.WashWalls(highWallTriggerID, lowWallTriggerID);
-        
-        // Debug statement
-        Debug.Log($"End of trial values: {score}, {highWallTriggerID}, {lowWallTriggerID}"
-            + $" {triggerID}, {rewardType}, {isTrialEnderClient}");
+        trialHandler.WashWalls(wallID1, wallID2);
 
         // Only call EndTrial if this client is the one that ended the trial
         // to prevent multiple calls in multiplayer
@@ -410,15 +456,6 @@ public class GameManager : SingletonNetwork<GameManager>
             trialHandler.EndTrial(score, isTrialEnderClient);
         }
 
-
-        // // all clients log their own event information
-        // diskLogger.Log(String.Format(Globals.wallTriggerFormat, Globals.wallTriggerTag,
-        //                                         Globals.trialNum,
-        //                                         Globals.trialType,
-        //                                         triggerID,
-        //                                         rewardType,
-        //                                         score,
-        //                                         isTrialEnderClient));
         Debug.Log($"{rewardType} score ({score}) triggered");
     }
 
@@ -538,11 +575,19 @@ public class GameManager : SingletonNetwork<GameManager>
 
 
     // RPC to update trialStart on the server and not the client
-    [ServerRpc(RequireOwnership = false)]
+    [ServerRpc(RequireOwnership=false)]
     public void ToggleTrialActiveServerRPC()
     {
         trialActive.Value = !trialActive.Value;
         Debug.LogError($"trialActive value is now {trialActive.Value}");
+    }
+
+    // RPC to update the current trial type value
+    [ServerRpc(RequireOwnership=false)]
+    public void UpdateTrialTypeServerRPC(string trialType)
+    {
+        this.trialType.Value = trialType;
+        Debug.LogError($"trialType is now {trialType}");
     }
 
 

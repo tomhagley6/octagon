@@ -138,6 +138,48 @@ public class TrialHandler : NetworkBehaviour
             ColourWalls(gameManager.activeWalls.Value.wall1, gameManager.activeWalls.Value.wall2);
         }
     }   
+    
+    // Set wall colour for the current trial
+    void ColourWalls(int wallID1, int wallID2)
+    {
+        // Access the actual game object through the ID:GameObject dict in IdentityManager
+        GameObject wall1Trigger = identityManager.GetObjectByIdentifier(wallID1); 
+        GameObject wall2Trigger = identityManager.GetObjectByIdentifier(wallID2);
+
+        // Get the (parent) octagon wall of each trigger
+        GameObject wall1 = wall1Trigger.transform.parent.gameObject;
+        GameObject wall2 = wall2Trigger.transform.parent.gameObject;
+
+        // Save the current colour of the wall before overwriting it 
+        // This should be the first material, the wall face
+        defaultWallColour = wall1.GetComponent<Renderer>().materials[0].color;
+        Debug.Log($"Default wall colour is saved as {defaultWallColour}");
+        Debug.Log($"ColourWalls() uses {wallID1} and {wallID2} as wall values");
+
+        // Assign colours to the walls dependent on trial type
+        switch (gameManager.trialType.Value)
+        {
+            case var value when value == General.highLow:
+                wall1.GetComponent<Renderer>().materials[0].color = General.wallHighColour;
+                wall2.GetComponent<Renderer>().materials[0].color = General.wallLowColour;
+                break;
+
+            case var value when value == General.forcedHigh:
+                wall1.GetComponent<Renderer>().materials[0].color = General.wallHighColour;
+                wall2.GetComponent<Renderer>().materials[0].color = General.wallHighColour;
+                break;
+
+            case var value when value == General.forcedLow:
+                wall1.GetComponent<Renderer>().materials[0].color = General.wallLowColour;
+                wall2.GetComponent<Renderer>().materials[0].color = General.wallLowColour;
+                break;
+        }
+
+
+        // Invoke any callback functions associated with slice onset
+        // NB: Slice onset here is defined as when ColourWalls runs on the server
+        sliceOnset?.Invoke();
+    }
 
 
     // When GameManager is ready, have the server begin the first trial
@@ -160,34 +202,7 @@ public class TrialHandler : NetworkBehaviour
             isTrialEnderClient = true;
             StartTrial();
     }
-
-
-    // Set wall colour for the current trial
-    void ColourWalls(int highWallTriggerID, int lowWallTriggerID)
-    {
-        // Access the actual game object through the ID:GameObject dict in IdentityManager
-        GameObject highWallTrigger = identityManager.GetObjectByIdentifier(highWallTriggerID); 
-        GameObject lowWallTrigger = identityManager.GetObjectByIdentifier(lowWallTriggerID);
-
-        // Get the (parent) octagon wall of each trigger
-        GameObject highWall = highWallTrigger.transform.parent.gameObject;
-        GameObject lowWall = lowWallTrigger.transform.parent.gameObject;
-
-        // Save the current colour of the wall before overwriting it 
-        // This should be the first material, the wall face
-        defaultWallColour = highWall.GetComponent<Renderer>().materials[0].color;
-        Debug.Log($"Default wall colour is saved as {defaultWallColour}");
-        Debug.Log($"ColourWalls() uses {highWallTriggerID} and {lowWallTriggerID} as wall values");
-
-        // Assign colours to the walls that fit their rewards
-        highWall.GetComponent<Renderer>().materials[0].color = Color.red;
-        lowWall.GetComponent<Renderer>().materials[0].color = Color.blue;
-
-        // Invoke any callback functions associated with slice onset
-        // NB: Slice onset here is defined as when ColourWalls runs on the server
-        sliceOnset?.Invoke();
-    }
-   
+ 
 
    // Reset wall colour to default after a trial
    public void WashWalls(int highWallTriggerID, int lowWallTriggerID)
@@ -244,6 +259,13 @@ public class TrialHandler : NetworkBehaviour
         until both clients had finished with WallTrialInteraction
         For now, this is an easier fix */
         gameManager.UpdateTriggerActivation(0,0);
+
+        // Choose the current trial type (at the moment only forced-choice or high-low)
+        // NB. This does not include slice separation
+        string thisTrialType = gameManager.SelectTrial();
+        Debug.LogError("thisTrialType: " + thisTrialType);
+        gameManager.UpdateTrialTypeServerRPC(thisTrialType);
+        Debug.LogError("NetworkVariable: " + gameManager.trialType.Value);
 
         List<int> newWalls = gameManager.SelectNewWalls();
         Debug.Log($"The list of ints that is received from GameManager in StartTrail() is {newWalls[0]} and {newWalls[1]}");
@@ -326,7 +348,7 @@ public class TrialHandler : NetworkBehaviour
         yield return new WaitForSeconds(General.trialEndDuration); 
         gameManager.ToggleTrialActiveServerRPC();
         
-        // Decrease global illimation
+        // Decrease global illumimation
         var light = GameObject.Find("DirectionalLight").GetComponent<Light>();
         light.intensity = 0.6f;
 

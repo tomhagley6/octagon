@@ -98,7 +98,7 @@ public class DiskLogger : Logger
             {
                 try
                 {
-                    Debug.Log($"{logEntries[0]} from LogToFile coroutine");
+                    // Debug.Log($"{logEntries[0]} from LogToFile coroutine");
                     EmptyBuffer();
                     
 
@@ -133,7 +133,7 @@ public class DiskLogger : Logger
                         // // or whether this will hog resources
                         // firstLine = isFirstLine == true ? "[" : "";
                         sw.WriteLine(item + ",");
-                        Debug.Log(item);
+                        // Debug.Log(item);
 
                         // string item2 = JsonUtility.ToJson(
                         //     new {
@@ -146,16 +146,16 @@ public class DiskLogger : Logger
                     {
                         Debug.Log(e.Message);
                     }
-                    Debug.Log($"item length after writing is {item.Length}");
+                    // Debug.Log($"item length after writing is {item.Length}");
                     // Debug.Log("TextWriter ran WriteLine for single logEntry");
-                    Debug.Log(item);
+                    // Debug.Log(item);
                 }
                 logEntries.Clear();
 
             }
         }
 
-        Debug.Log("EmptyBuffer() ran.");
+        // Debug.Log("EmptyBuffer() ran.");
     }
 
     private void OnDestroy()

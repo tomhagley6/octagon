@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 
 namespace Globals
@@ -12,11 +13,16 @@ namespace Globals
         // trial logic
         public static int highScore = 50;
         public static int lowScore = 10;
-        public static string trialType = "HighLowTrial";
+        public static string highScoreRewardType = "High";
+        public static string lowScoreRewardType = "Low";
+        public static List<string> trialTypes = new List<string>{"HighLow", "ForcedHigh", "ForcedLow"};
+        public static List<int> trialTypeProbabilities = new List<int>{80, 10, 10};
         public static List<int> wallSeparations = new List<int>{1,2,4};   // index difference between trial walls
                                                                           // random choice within list
+        public static Color wallHighColour = Color.red;
+        public static Color wallLowColour = Color.blue;
 
-        //timings
+        // timings
         public static float ITIMin = 2f;
         public static float ITIMax = 5f;
         public static float trialEndDuration = 2f;
@@ -41,6 +47,11 @@ namespace Globals
         public static KeyCode toggleLeaderboards = KeyCode.F3;
         public static KeyCode togglePlayer = KeyCode.F4;
         public static KeyCode toggleIP = KeyCode.F5;
+
+        // Fixedstring values
+        public static FixedString32Bytes highLow = new("HighLow");
+        public static FixedString32Bytes forcedHigh = new("ForcedHigh");
+        public static FixedString32Bytes forcedLow = new("ForcedLow");
 
     }
 }

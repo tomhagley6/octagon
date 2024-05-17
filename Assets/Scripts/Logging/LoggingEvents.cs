@@ -81,11 +81,13 @@ public class LoggingEvents : NetworkBehaviour
         Debug.Log("Is Server, so running TrialActiveHandler_TrialStartLog in LoggingEvents");
 
         // increment the trial number (this could be done in a better place than the logging method)
+        // probably GameManager
         bool trialActive = gameManager.trialActive.Value;
         if (trialActive == true)
         {
             gameManager.trialNum.Value++; 
         }
+        
 
         Dictionary<string,object> playerPosDict = new Dictionary<string,object>();
 
@@ -111,7 +113,7 @@ public class LoggingEvents : NetworkBehaviour
         }
 
         // create the full log event
-        TrialStartLogEvent trialStartLogEvent = new TrialStartLogEvent(gameManager.trialNum.Value, playerPosDict);
+        TrialStartLogEvent trialStartLogEvent = new TrialStartLogEvent(gameManager.trialNum.Value, gameManager.trialType.Value, playerPosDict);
 
         // JSON serialize the log object to string
         string logEntry = JsonConvert.SerializeObject(trialStartLogEvent);
@@ -146,7 +148,7 @@ public class LoggingEvents : NetworkBehaviour
         // Then, log to JSON format the full slice onset information
         // as defined in LoggingClasses.SliceOnsetLogEvent
         var players = NetworkManager.ConnectedClientsList;
-        Debug.Log($"ConnectedClientsList is {players.Count} items long");
+        // Debug.Log($"ConnectedClientsList is {players.Count} items long");
         for (int i = 0; i < players.Count; i++)
         {
             int clientId = i;
@@ -162,12 +164,12 @@ public class LoggingEvents : NetworkBehaviour
             PlayerPosition thisPlayerPosition = new PlayerPosition(networkClient.ClientId, playerLocation2, playerRotation2);
 
             playerPosDict.Add(networkClient.ClientId.ToString(), thisPlayerPosition);
-            Debug.Log($"playerPosDict is {playerPosDict.Count} item long");
+            // Debug.Log($"playerPosDict is {playerPosDict.Count} item long");
         }
 
         // Create the final log class instance
         SliceOnsetLogEvent sliceOnsetLogEvent = new SliceOnsetLogEvent(wall1, wall2, playerPosDict);
-        Debug.Log("SliceOnsetLogEvent created");
+        // Debug.Log("SliceOnsetLogEvent created");
 
         // Serialize the class to JSON
         string logEntry = JsonConvert.SerializeObject(sliceOnsetLogEvent, new JsonSerializerSettings
@@ -175,7 +177,7 @@ public class LoggingEvents : NetworkBehaviour
             // This ensures that Unity Quaternions can serialize correctly
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         });
-        Debug.Log("SliceOnsetLogEvent serialized to JSON string: " + logEntry);
+        // Debug.Log("SliceOnsetLogEvent serialized to JSON string: " + logEntry);
 
         // Send this string to the active diskLogger to be logged to file
         diskLogger.Log(logEntry);
@@ -310,7 +312,7 @@ public class LoggingEvents : NetworkBehaviour
             Dictionary<string,object> playerPosDict = new Dictionary<string, object>();
 
             // Assemble data to log from each network client
-            Debug.Log($"ConnectedClientsList is {NetworkManager.ConnectedClientsList.Count} items long");
+            // Debug.Log($"ConnectedClientsList is {NetworkManager.ConnectedClientsList.Count} items long");
             foreach (var networkClient in NetworkManager.ConnectedClientsList)
             {
                 
@@ -330,11 +332,11 @@ public class LoggingEvents : NetworkBehaviour
                 
                 // Add entry to dictionary for this networkClient
                 playerPosDict.Add(networkClient.ClientId.ToString(), thisPlayerPosition);
-                Debug.Log("PlayerPosDict should have received a new entry here ");
+                // Debug.Log("PlayerPosDict should have received a new entry here ");
 
             }
 
-            Debug.LogWarning($"Logging Events sees gameManager.connectecClientIds[0] as {gameManager.connectedClientIds[0]}");
+            // Debug.LogWarning($"Logging Events sees gameManager.connectecClientIds[0] as {gameManager.connectedClientIds[0]}");
 
             // create the time-triggered log event
             TimeTriggeredLogEvent timeTriggeredLogEvent = new TimeTriggeredLogEvent(playerPosDict);

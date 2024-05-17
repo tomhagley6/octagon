@@ -32,14 +32,14 @@ public class NetworkManagerScript : MonoBehaviour
             Debug.Log(e.Message);
         }
         
-        Debug.LogWarning($"gameManager.IsServer is {gameManager.IsServer}, gameManager.IsHost is {gameManager.IsHost}");
+        // Debug.LogWarning($"gameManager.IsServer is {gameManager.IsServer}, gameManager.IsHost is {gameManager.IsHost}");
         if (gameManager.IsServer && isReady)
         {
             NetworkManager.Singleton.OnClientConnectedCallback += AddConnectedClientServerRPC;
-            Debug.LogWarning("NetworkManager.Singleton.OnClientConnectedCallback += AddConnectedClientServerRPC; ran");
+            // Debug.LogWarning("NetworkManager.Singleton.OnClientConnectedCallback += AddConnectedClientServerRPC; ran");
             NetworkManager.Singleton.OnClientDisconnectCallback += RemoveDisconnectedClientServerRPC;
-            Debug.LogWarning($"gameManager.IsServer is {gameManager.IsServer}, adding RPCs to callback");
-            Debug.LogWarning($"gameManager.IsHost is {gameManager.IsHost}, adding RPCs to callback");
+            // Debug.LogWarning($"gameManager.IsServer is {gameManager.IsServer}, adding RPCs to callback");
+            // Debug.LogWarning($"gameManager.IsHost is {gameManager.IsHost}, adding RPCs to callback");
         }
         
 

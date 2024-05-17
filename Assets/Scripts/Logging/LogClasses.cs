@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Globals;
 using Unity.Netcode;
+using Unity.Collections;
 
 namespace LoggingClasses
 {
@@ -44,7 +45,7 @@ namespace LoggingClasses
         public string eventDescription;
         public Dictionary<string, object> data;
 
-        public TrialStartLogEvent(ushort trialNum, Dictionary<string,object> playerPosDict)
+        public TrialStartLogEvent(ushort trialNum, FixedString32Bytes trialType, Dictionary<string,object> playerPosDict)
         {
             timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
             timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
@@ -52,6 +53,7 @@ namespace LoggingClasses
             data = new Dictionary<string, object>()
             {
                 {"trialNum", trialNum},
+                {"trialType", trialType.Value}, 
                 {"playerInfo", playerPosDict}
             };
         }
