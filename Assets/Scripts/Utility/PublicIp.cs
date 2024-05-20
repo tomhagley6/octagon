@@ -44,9 +44,9 @@ public class PublicIp : MonoBehaviour
                 Regex regex = new Regex(ipPattern);
 
                 // Check if an IP is present from the queried URL
-                Debug.Log(regex.IsMatch(webTextReturn));
+                Debug.Log("Regex matches an IP address: " + regex.IsMatch(webTextReturn));
                 var match = regex.Match(webTextReturn);
-                Debug.Log(match.Success);
+                // Debug.Log(match.Success);
                 if (match.Success)
                 {
                     publicIp = match.Groups[0].Value;

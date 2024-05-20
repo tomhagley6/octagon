@@ -120,8 +120,6 @@ public class GameManager : SingletonNetwork<GameManager>
 
         }; */
 
-        Debug.Log("GameManager OnNetworkSpawn DOES start");
-
         // access other logic GameObjects in the scene 
         diskLogger = FindObjectOfType<DiskLogger>();
         trialHandler = FindObjectOfType<TrialHandler>();
@@ -136,10 +134,9 @@ public class GameManager : SingletonNetwork<GameManager>
         Invoke called as a method on an event will trigger all methods subscribed to the event
         and passes them isReady as an input */
         isReady = true;
-        Debug.Log($"isReady is set to true: {isReady}");
+        Debug.Log($"GameManager.isReady is set to true: {isReady}");
         OnReadyStateChanged += NetworkManager.GetComponent<NetworkManagerScript>().ConnectionCallbackSubscriptions; // <-- this is messy
         OnReadyStateChanged?.Invoke(isReady);
-        Debug.Log("OnReadyStateChanged?.Invoke(isReady); Ran");
 
         // // Subscribe to changes in the triggerID NetworkVariable value
         // triggerID.OnValueChanged += TriggerIDHandler_DeactivateWalls;
@@ -172,8 +169,8 @@ public class GameManager : SingletonNetwork<GameManager>
         
         // Subscribe to a change in trial active state
 
-        // is GameManager recognising as host or server?
-        Debug.LogWarning($"gameManager.IsServer is {IsServer}, gameManager.IsHost is {IsHost}");
+        // // is GameManager recognising as host or server?
+        // Debug.LogWarning($"gameManager.IsServer is {IsServer}, gameManager.IsHost is {IsHost}");
     }
 
 
@@ -207,8 +204,8 @@ public class GameManager : SingletonNetwork<GameManager>
 
         // Check client ids to see if this client ended the current trial
         isTrialEnderClient = newValue.activatorClientId == NetworkManager.Singleton.LocalClientId ? true : false;
-        Debug.Log($"isTrialEnderClient returns as {isTrialEnderClient} on this client");
-        Debug.Log($"LocalClientId returns as {NetworkManager.Singleton.LocalClientId} on this client");
+        // Debug.Log($"isTrialEnderClient returns as {isTrialEnderClient} on this client");
+        // Debug.Log($"LocalClientId returns as {NetworkManager.Singleton.LocalClientId} on this client");
         triggerID = newValue.triggerID;
 
         // General game logic for interaction with a wall trigger
@@ -379,12 +376,12 @@ public class GameManager : SingletonNetwork<GameManager>
     // Basic handling of wall interaction prior to specific trial-type handling
     void WallInteraction(int wallID1, int wallID2, int triggerID, bool isTrialEnderClient)
     {
-        Debug.Log("WallInteraction running");
+        // Debug.Log("WallInteraction running");
         
         // int highWallTriggerID = wallIDHigh;
         // int lowWallTriggerID = wallIDLow;
 
-        Debug.Log("Values WallInteraction receives for wall1 and wall2 wall IDs are: "
+        Debug.Log("Values WallInteraction receives for wall1 and wall2 are: "
         + $"{wallID1} and {wallID2}");
         
         // If this is a relevant wall for the current trial
@@ -451,8 +448,8 @@ public class GameManager : SingletonNetwork<GameManager>
         // Only call EndTrial if this client is the one that ended the trial
         // to prevent multiple calls in multiplayer
         if (isTrialEnderClient) {
-            Debug.Log($"EndTrial inputs: {score}, {highWallTriggerID}, {lowWallTriggerID}"
-                        + $" {triggerID}, {rewardType}, {isTrialEnderClient}");
+            // Debug.Log($"EndTrial inputs: {score}, {highWallTriggerID}, {lowWallTriggerID}"
+            //             + $" {triggerID}, {rewardType}, {isTrialEnderClient}");
             trialHandler.EndTrial(score, isTrialEnderClient);
         }
 
@@ -482,7 +479,7 @@ public class GameManager : SingletonNetwork<GameManager>
 
         // Choose a random anchor wall to reference the trial to 
         int anchorWallIndex = Random.Range(0, walls.Count);
-        Debug.LogError($"anchor walls is {anchorWallIndex}");
+        // Debug.Log($"anchor walls is {anchorWallIndex}");
 
         
         // Randomly choose a wall separation value for this trial
@@ -490,25 +487,25 @@ public class GameManager : SingletonNetwork<GameManager>
 
         // choose a random second wall that is consistent with anchor wall for this trial type
         int wallIndexDiff = new List<int>{-i, i}[Random.Range(0, 2)];
-        Debug.LogError($"wallIndexDiff = {wallIndexDiff}");
+        // Debug.Log($"wallIndexDiff = {wallIndexDiff}");
         int dependentWallIndex = anchorWallIndex + wallIndexDiff;
-        Debug.LogError($"naive dependent wall is walls is {dependentWallIndex}");
+        // Debug.Log($"naive dependent wall is walls is {dependentWallIndex}");
         
         // Account for circular octagon structure
         if (dependentWallIndex < 0)
         {
             dependentWallIndex += walls.Count;
-            Debug.LogError($" dependent wall < 0, so corrected to {dependentWallIndex}");
+            // Debug.Log($" dependent wall < 0, so corrected to {dependentWallIndex}");
 
         }
         else if (dependentWallIndex >= walls.Count)
         {
             dependentWallIndex -= walls.Count;
-            Debug.LogError($" dependent wall >= walls.Count - 1, so corrected to {dependentWallIndex}");
+            // Debug.Log($" dependent wall >= walls.Count - 1, so corrected to {dependentWallIndex}");
         }
         
         // assign high and low walls with the generated indexes
-        Debug.LogError($"chosen walls are {anchorWallIndex}, {dependentWallIndex}");
+        // Debug.Log($"chosen walls are {anchorWallIndex}, {dependentWallIndex}");
         int highWallTriggerID = walls[anchorWallIndex];
         int lowWallTriggerID = walls[dependentWallIndex];   
 
@@ -579,7 +576,7 @@ public class GameManager : SingletonNetwork<GameManager>
     public void ToggleTrialActiveServerRPC()
     {
         trialActive.Value = !trialActive.Value;
-        Debug.LogError($"trialActive value is now {trialActive.Value}");
+        // Debug.Log($"trialActive value is now {trialActive.Value}");
     }
 
     // RPC to update the current trial type value
@@ -587,7 +584,7 @@ public class GameManager : SingletonNetwork<GameManager>
     public void UpdateTrialTypeServerRPC(string trialType)
     {
         this.trialType.Value = trialType;
-        Debug.LogError($"trialType is now {trialType}");
+        // Debug.LogError($"trialType is now {trialType}");
     }
 
 
@@ -617,7 +614,6 @@ public class GameManager : SingletonNetwork<GameManager>
     public void UpdateScoresServerRPC(int increment)
     {
         var players = NetworkManager.ConnectedClientsList;
-        Debug.Log(NetworkManager.ConnectedClientsList);
 
         for (int i = 0; i < players.Count; i++)
         {

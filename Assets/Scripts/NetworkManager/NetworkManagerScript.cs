@@ -68,7 +68,7 @@ public void AddConnectedClientServerRPC(ulong clientId)
 
     // Also initialise a new client's score to 0
     gameManager.scores.Add(0);
-    Debug.LogWarning($"gameManager.scores[0] = {gameManager.scores[0]}");
+    // Debug.LogWarning($"gameManager.scores[0] = {gameManager.scores[0]}");
 }
 
 

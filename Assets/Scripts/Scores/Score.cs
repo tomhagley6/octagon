@@ -25,7 +25,6 @@ public class Score : MonoBehaviour
       // change the score variable
         public void AdjustScore(int increment = 0)
     {
-        Debug.LogError("AdjustScore is running");
         score += increment;
     }
 }

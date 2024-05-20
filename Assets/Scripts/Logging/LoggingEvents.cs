@@ -202,7 +202,7 @@ public class LoggingEvents : NetworkBehaviour
         Dictionary<string,object> playerPosDict = new Dictionary<string,object>();
 
         // Assemble data to log from each network client
-        Debug.Log($"ConnectedClientsList is {NetworkManager.ConnectedClientsList.Count} items long");
+        // Debug.Log($"ConnectedClientsList is {NetworkManager.ConnectedClientsList.Count} items long");
         foreach(var networkClient in NetworkManager.ConnectedClientsList)
         {
             PlayerLocation playerLocation = new PlayerLocation(
@@ -224,7 +224,7 @@ public class LoggingEvents : NetworkBehaviour
         // Create the final log class instance
         TriggerActivationLogEvent triggerActivationLogEvent = new TriggerActivationLogEvent(wall1, wall2, wallTriggered,
                                                                                              triggerClientId, playerPosDict);
-        Debug.Log("triggerActivationLogEvent created");
+        // Debug.Log("triggerActivationLogEvent created");
 
         // Serialize the class to JSON
         string logEntry = JsonConvert.SerializeObject(triggerActivationLogEvent, new JsonSerializerSettings
@@ -232,7 +232,7 @@ public class LoggingEvents : NetworkBehaviour
             // This ensures that Unity Quaternions can serialize correctly
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         });
-        Debug.Log("triggerActivationLogEvent serialized to JSON string: " + logEntry);
+        // Debug.Log("triggerActivationLogEvent serialized to JSON string: " + logEntry);
 
         // Send this string to the active diskLogger to be logged to file
         diskLogger.Log(logEntry);
@@ -274,7 +274,7 @@ public class LoggingEvents : NetworkBehaviour
             // Add entry to dictionary for this networkClient
             playerPosDict.Add(networkClient.ClientId.ToString(), thisPlayerPosition);
             // Debug.LogWarning($"Logging Events sees gameManager.scores[0] as {gameManager.scores[0]}");
-            Debug.LogWarning($"Logging Events sees gameManager.connectecClientIds[0] as {gameManager.connectedClientIds[0]}");
+            // Debug.LogWarning($"Logging Events sees gameManager.connectedClientIds[0] as {gameManager.connectedClientIds[0]}");
             playerScoresDict.Add(i.ToString(), gameManager.scores[i]);
 
             i++;

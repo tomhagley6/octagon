@@ -10,13 +10,11 @@ public class ScorePopup : MonoBehaviour
 
     public void PopupScore(int increment)
     {
-        Debug.LogError("PopUpScore is running");
         StartCoroutine(PopUpScoreCoroutine(increment));
     }
 
     public IEnumerator PopUpScoreCoroutine(int increment)
     {
-        Debug.LogError($"PopUpScore Coroutine is running, with increment {increment}");
         scorePopupText.text = $"+{increment}";
 
         yield return new WaitForSeconds(2f);

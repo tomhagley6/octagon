@@ -32,7 +32,7 @@ public class ScoreSubmission : NetworkBehaviour
       submitScoreButton.onClick.AddListener(SubmitScoreAsync);
       loadScoresButton.onClick.AddListener(LoadScoresASync);
 
-      Debug.LogError($"playername is {playerName.text}, type: {playerName.text.GetType()}, isnull: {playerName.text == null}, isemptystring: {playerName.text == ""}");
+      Debug.Log($"playername is {playerName.text}, type: {playerName.text.GetType()}, isnull: {playerName.text == null}, isemptystring: {playerName.text == ""}");
 
     }
 

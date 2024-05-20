@@ -77,12 +77,12 @@ public class TrialHandler : NetworkBehaviour
         }
         else 
         {
-            Debug.Log("Either not IsClient or activeWalls has a 0 value now");
+            // Debug.Log("Either not IsClient or activeWalls has a 0 value now");
             if (IsClient)
             {
-                Debug.Log("Current player IS a client, though");
-                Debug.Log($"Active walls are currently {gameManager.activeWalls.Value.wall1}"
-                            + $"and {gameManager.activeWalls.Value.wall2}");
+                // Debug.Log("Current player IS a client, though");
+                // Debug.Log($"Active walls are currently {gameManager.activeWalls.Value.wall1}"
+                //             + $"and {gameManager.activeWalls.Value.wall2}");
             }
             else
             {
@@ -99,7 +99,7 @@ public class TrialHandler : NetworkBehaviour
         
         Color myColour = new Color(0,0,0,0);
         Debug.Log($"Current value of default wall color is {defaultWallColour}");
-        Debug.Log($"Outcome of myColour == defaultWallColour is {myColour == defaultWallColour}");
+        // Debug.Log($"Outcome of myColour == defaultWallColour is {myColour == defaultWallColour}");
         Debug.Log($"DelayedColourWalls conditions are: {WallTrigger.setupComplete}"
                     + $", {gameManager.activeWalls.Value.wall1 != 0}"
                     + $", {defaultWallColour == myColour}");
@@ -185,7 +185,7 @@ public class TrialHandler : NetworkBehaviour
     // When GameManager is ready, have the server begin the first trial
     public void GameManager_OnReadyStateChangedHandler(bool isReady) {
                 
-        Debug.Log($"IsServer returns as: {IsServer}");
+        // Debug.Log($"IsServer returns as: {IsServer}");
         if (isReady && IsServer)
         {
             StartCoroutine(StartFirstTrial());
@@ -263,9 +263,9 @@ public class TrialHandler : NetworkBehaviour
         // Choose the current trial type (at the moment only forced-choice or high-low)
         // NB. This does not include slice separation
         string thisTrialType = gameManager.SelectTrial();
-        Debug.LogError("thisTrialType: " + thisTrialType);
+        Debug.Log("thisTrialType: " + thisTrialType);
         gameManager.UpdateTrialTypeServerRPC(thisTrialType);
-        Debug.LogError("NetworkVariable: " + gameManager.trialType.Value);
+        // Debug.Log("NetworkVariable: " + gameManager.trialType.Value);
 
         List<int> newWalls = gameManager.SelectNewWalls();
         Debug.Log($"The list of ints that is received from GameManager in StartTrail() is {newWalls[0]} and {newWalls[1]}");
@@ -330,7 +330,6 @@ public class TrialHandler : NetworkBehaviour
         // Score.cs uses this to update the score display on the canvas
         // Update the score popup text in ScorePopup.cs
         scoreChange?.Invoke(increment);
-        Debug.LogError("scoreChange was just invoked");
         gameManager.UpdateScoresServerRPC(increment);
         
 

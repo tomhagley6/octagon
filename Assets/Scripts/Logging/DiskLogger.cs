@@ -75,7 +75,7 @@ public class DiskLogger : Logger
                 logEntries.Add(logEntry);
                 // Debug.Log($"{logEntry.ApplicationTime} from Log()");
                 // Debug.Log($"{toLog} from Log()");
-                Debug.Log("Log entry added to logEntries");
+                // Debug.Log("Log entry added to logEntries");
             }
         }
         else
@@ -83,7 +83,7 @@ public class DiskLogger : Logger
             Debug.Log("Logger not ready");
         }
 
-        Debug.Log("DiskLogger.Log() ran");
+        // Debug.Log("DiskLogger.Log() ran");
         // Debug.Log($"logEntries is: {logEntries[0]}");
     }
 
@@ -91,7 +91,7 @@ public class DiskLogger : Logger
     // Spread this over multiple frames in a coroutine instead
     private IEnumerator LogToFile()
     {
-        Debug.Log("LogToFile Coroutine began");
+        // Debug.Log("LogToFile Coroutine began");
         while (loggerReady)
         {
             if (logEntries.Count != 0 )
@@ -218,9 +218,9 @@ public class DiskLogger : Logger
 
         StartLoggingLogEvent startLoggingLogEvent = new StartLoggingLogEvent();
         string jsonData = JsonUtility.ToJson(startLoggingLogEvent);
-        Debug.Log("new attempt at json is "+ jsonData);
+        // Debug.Log("new attempt at json is "+ jsonData);
         StartLoggingLogEvent deserialized = JsonUtility.FromJson<StartLoggingLogEvent>(jsonData);
-        Debug.Log("and deserialized is " + deserialized.eventDescription);
+        // Debug.Log("and deserialized is " + deserialized.eventDescription);
         if (deserialized.eventDescription == null)
         {
             Debug.Log("deserialized.Description is null");
@@ -231,7 +231,7 @@ public class DiskLogger : Logger
         }
 
         string jsonDataNewtonsoft = JsonConvert.SerializeObject(startLoggingLogEvent);
-        Debug.Log($"Now trying Newtonsoft: " + jsonDataNewtonsoft);
+        // Debug.Log($"Now trying Newtonsoft: " + jsonDataNewtonsoft);
 
         Debug.Log($"{startEvent.Event} - {startEvent.LocalTime} - {startEvent.ApplicationTime}");
         
