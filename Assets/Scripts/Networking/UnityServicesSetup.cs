@@ -4,7 +4,7 @@ using Unity.Services.Authentication;
 using Unity.Services.Core;
 using UnityEngine;
 
-public class LeaderboardSetup : MonoBehaviour
+public class UnityServicesSetup : MonoBehaviour
 {
 
     // Using asynchronous code for efficiency
