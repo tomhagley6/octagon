@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4366757, g: 0.48427194, b: 0.5645252, a: 1}
+  m_IndirectSpecularColor: {r: 0.4366765, g: 0.48427117, b: 0.56452465, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3120,7 +3120,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scoreText: {fileID: 966589353}
-  trialHandler: {fileID: 0}
   score: 0
 --- !u!1001 &1037029839
 PrefabInstance:
@@ -4125,6 +4124,7 @@ MonoBehaviour:
   transport: {fileID: 0}
   ipAddress: 
   port: 55598
+  joinCode: 
 --- !u!114 &1600812349
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5539,6 +5539,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2104326712}
   - component: {fileID: 2104326713}
+  - component: {fileID: 2104326714}
   m_Layer: 0
   m_Name: ServicesManager
   m_TagString: Untagged
@@ -5571,6 +5572,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 03d0f4a50a1828d3ebd49e1e91170d04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2104326714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2104326710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4dc58cd7231d81f4ba410666322f39f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &8050923106832289311
