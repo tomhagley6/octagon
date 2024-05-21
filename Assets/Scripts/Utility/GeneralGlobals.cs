@@ -13,6 +13,10 @@ namespace Globals
         // trial logic
         public static int highScore = 50;
         public static int lowScore = 10;
+        public static Dictionary<int, int> repeatsDict = new Dictionary<int,int>{{highScore,3},
+                                                                                 {lowScore,1}};  // Reward sound repeats
+                                                                                                 // for each increment val
+
         public static string highScoreRewardType = "High";
         public static string lowScoreRewardType = "Low";
         public static List<string> trialTypes = new List<string>{"HighLow", "ForcedHigh", "ForcedLow"};
