@@ -41,6 +41,7 @@ public class NetworkManagerUI : NetworkBehaviour
     private string listenAddress = "0.0.0.0";
     private bool? IpDefaultBool; // control logic for updating connection data
     private bool? portDefaultBool; // control logic for updating connection data
+    public string joinCode; // code returned by the Host during Relay server allocation
 
     private void Awake() 
     {
@@ -51,7 +52,7 @@ public class NetworkManagerUI : NetworkBehaviour
         });
 
 
-        hostButton.onClick.AddListener(() => 
+        hostButton.onClick.AddListener(async () => 
         {
             
             // Get public IP address from NetworkManager
@@ -89,9 +90,13 @@ public class NetworkManagerUI : NetworkBehaviour
             if (portDefaultBool != null)
             {
                 port = (bool)portDefaultBool ? portDefault : port = UInt16.Parse(enteredPort.GetComponent<TMP_InputField>().text);
-                SetConnectionData(ipAddress, port, listenAddress);
+                SetConnectionData(ipAddress, port, listenAddress); // This is ignored when using Relay
             }
             PrintConnectionInfo();
+
+            // Request and join a Unity Relay server allocation, returning a join code
+            joinCode = await RelaySetup.ServerAllocation();
+            Debug.LogWarning("join code is: " + joinCode);
             
             // Disable buttons and input fields once no longer needed
             DisableButtons();
@@ -149,7 +154,7 @@ public class NetworkManagerUI : NetworkBehaviour
             {
                 ipAddress = (bool)IpDefaultBool ? ipAddressDefault : enteredIp.GetComponent<TMP_InputField>().text;
                 port = (bool)portDefaultBool ? portDefault : port = UInt16.Parse(enteredPort.GetComponent<TMP_InputField>().text);
-                SetConnectionData(ipAddress, port, listenAddress);
+                SetConnectionData(ipAddress, port, listenAddress); // This is ignored when using Relay
                 PrintConnectionInfo();
             }
 

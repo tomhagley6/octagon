@@ -8,9 +8,9 @@ using Unity.Netcode;
 using System.Threading.Tasks;
 using Unity.Services.Relay.Models;
 
-public class RelayServerAllocation : MonoBehaviour
+public class RelaySetup : MonoBehaviour
 {
-    public async Task<string> ServerAllocation()
+    public static async Task<string> ServerAllocation()
     {
         Allocation allocation = await RelayService.Instance.CreateAllocationAsync(2);
         NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(allocation, "dtls"));
@@ -19,7 +19,7 @@ public class RelayServerAllocation : MonoBehaviour
         return joinCode;
     }
 
-    public async Task<bool> ConnectToAllocation(string joinCode)
+    public static async Task<bool> ConnectToAllocation(string joinCode)
     {
         var joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode: joinCode);
         NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));

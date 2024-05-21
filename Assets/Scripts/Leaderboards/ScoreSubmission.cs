@@ -18,14 +18,14 @@ public class ScoreSubmission : NetworkBehaviour
    [SerializeField] private Button loadScoresButton;
    [SerializeField] private Transform scoresContent;
    [SerializeField] private TMP_InputField playerName;
-   private TrialHandler trialHandler;
+   private Score scoreInstance;
    private GameManager gameManager;
    [SerializeField] private LeaderboardScoreView scoreViewPrefab;
 
 
     public override void OnNetworkSpawn()
     {
-      trialHandler = FindObjectOfType<TrialHandler>();
+      scoreInstance = FindObjectOfType<Score>();
       gameManager = FindObjectOfType<GameManager>();
 
       // subscribe to the score submission button
@@ -47,9 +47,9 @@ public class ScoreSubmission : NetworkBehaviour
          await AuthenticationService.Instance.UpdatePlayerNameAsync(name);
 
          // Upload score
-         int score = trialHandler.GetScore();
-         int normalisedScore = NormaliseScore(gameManager.trialNum.Value, score); // normalise to trialNum
-         await LeaderboardsService.Instance.AddPlayerScoreAsync(General.leaderboardId, normalisedScore);
+         int score = scoreInstance.score;
+         // int normalisedScore = NormaliseScore(gameManager.trialNum.Value, score); // normalise to trialNum
+         await LeaderboardsService.Instance.AddPlayerScoreAsync(General.leaderboardId, score);
          Debug.Log($"{playerName.text}, score submitted!");
       }
       catch (Exception e) {
@@ -60,6 +60,7 @@ public class ScoreSubmission : NetworkBehaviour
 
 
    // Normalise score to number of trials
+   // Currently unused
    private int NormaliseScore(ushort trialNum, int score)
    {  
       // Setting max score equal to 10000

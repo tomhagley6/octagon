@@ -10,11 +10,11 @@ public class UnityServicesSetup : MonoBehaviour
     // Using asynchronous code for efficiency
     private async void Awake()
     {
-        // Initialise the Leaderboards SDK and its dependencies
+        // Initialise the SDK and its dependencies
         await UnityServices.InitializeAsync();
 
         // Anonyous authentication to create an anonymous account for the 
-        // player to persist their scores
+        // player to upload their scores
         AuthenticationService.Instance.SignedIn += () =>
         {
             Debug.Log("Signed in as: " + AuthenticationService.Instance.PlayerId);
