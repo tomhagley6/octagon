@@ -10,7 +10,7 @@ namespace Globals
     {
         
         // vals
-        public static float loggingFrequency = 0.2f;
+        public static float loggingFrequency = 0.02f; // currently 50 fps
         
         
         // initialisers
