@@ -84,6 +84,14 @@ public class TrialHandler : NetworkBehaviour
             }
         }
     }
+
+    public void Update()
+    {
+        if (Input.GetKeyUp(General.startTrials))
+        {
+            StartFirstTrialManual();
+        }
+    }
    
 
     // Due to walls and wall colours not being networked, any late-joining clients will 
@@ -180,15 +188,15 @@ public class TrialHandler : NetworkBehaviour
     public void GameManager_OnReadyStateChangedHandler(bool isReady) {
                 
         // Debug.Log($"IsServer returns as: {IsServer}");
-        if (isReady && IsServer)
+        if (isReady && IsServer && General.automaticStartTrial)
         {
-            StartCoroutine(StartFirstTrial());
+            StartCoroutine(StartFirstTrialAuto());
         }
     }
 
 
     // Introduce a delay before starting the first trial to allow setup 
-    IEnumerator StartFirstTrial()
+    IEnumerator StartFirstTrialAuto()
     {
         yield return new WaitForSeconds(General.startFirstTrialDelay);
 
@@ -196,6 +204,15 @@ public class TrialHandler : NetworkBehaviour
             isTrialEnderClient = true;
             StartTrial();
     }
+
+    private void StartFirstTrialManual()
+    {
+        if (gameManager.isReady && IsServer && !General.automaticStartTrial)
+        {
+            StartTrial();
+        }
+    }
+    
  
 
    // Reset wall colour to default after a trial

@@ -25,6 +25,7 @@ namespace Globals
                                                                           // random choice within list
         public static Color wallHighColour = Color.red;
         public static Color wallLowColour = Color.blue;
+        public static bool automaticStartTrial = false;
 
         // timings
         public static float ITIMin = 2f;
@@ -51,6 +52,7 @@ namespace Globals
         public static KeyCode toggleLeaderboards = KeyCode.F3;
         public static KeyCode togglePlayer = KeyCode.F4;
         public static KeyCode toggleIP = KeyCode.F5;
+        public static KeyCode startTrials = KeyCode.PageUp;
 
         // Fixedstring values
         public static FixedString32Bytes highLow = new("HighLow");
