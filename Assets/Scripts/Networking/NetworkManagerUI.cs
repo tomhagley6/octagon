@@ -24,6 +24,7 @@ public class NetworkManagerUI : NetworkBehaviour
     [SerializeField] TextMeshProUGUI ipAddressText;
 	[SerializeField] TMP_InputField enteredIp;
     [SerializeField] TMP_InputField enteredPort;
+    [SerializeField] TMP_InputField enteredJoinCode;
 
 	
 	[SerializeField] UnityTransport transport;
@@ -41,6 +42,10 @@ public class NetworkManagerUI : NetworkBehaviour
     private string listenAddress = "0.0.0.0";
     private bool? IpDefaultBool; // control logic for updating connection data
     private bool? portDefaultBool; // control logic for updating connection data
+    private bool? joinCodeBool; // control logic for joining a relay server
+    public string joinCode; // code returned by the Host during Relay server allocation
+    [SerializeField] private string clientJoinCode; // code entered by the Client during Relay server connection
+
 
     private void Awake() 
     {
@@ -51,7 +56,7 @@ public class NetworkManagerUI : NetworkBehaviour
         });
 
 
-        hostButton.onClick.AddListener(() => 
+        hostButton.onClick.AddListener(async () => 
         {
             
             // Get public IP address from NetworkManager
@@ -89,9 +94,13 @@ public class NetworkManagerUI : NetworkBehaviour
             if (portDefaultBool != null)
             {
                 port = (bool)portDefaultBool ? portDefault : port = UInt16.Parse(enteredPort.GetComponent<TMP_InputField>().text);
-                SetConnectionData(ipAddress, port, listenAddress);
+                SetConnectionData(ipAddress, port, listenAddress); // This is ignored when using Relay
             }
             PrintConnectionInfo();
+
+            // Request and join a Unity Relay server allocation, returning a join code
+            joinCode = await RelaySetup.ServerAllocation();
+            Debug.LogWarning("join code is: " + joinCode);
             
             // Disable buttons and input fields once no longer needed
             DisableButtons();
@@ -101,9 +110,17 @@ public class NetworkManagerUI : NetworkBehaviour
         });
 
 
-        clientButton.onClick.AddListener(() => 
+        clientButton.onClick.AddListener(async () => 
         {   
 
+            // Identify if connecting to a relay server
+            // (In which case, ignore direct connection logic)
+            if (!string.IsNullOrEmpty(enteredJoinCode.GetComponent<TMP_InputField>().text))
+            {
+                Debug.LogWarning("Join Code field populated, attempting to join Relay server...");
+                joinCodeBool = true;
+            }
+            
             // Identify if using the default IP, or if the end-user has entered one
             if (string.IsNullOrEmpty(enteredIp.GetComponent<TMP_InputField>().text))
             {
@@ -149,8 +166,15 @@ public class NetworkManagerUI : NetworkBehaviour
             {
                 ipAddress = (bool)IpDefaultBool ? ipAddressDefault : enteredIp.GetComponent<TMP_InputField>().text;
                 port = (bool)portDefaultBool ? portDefault : port = UInt16.Parse(enteredPort.GetComponent<TMP_InputField>().text);
-                SetConnectionData(ipAddress, port, listenAddress);
+                SetConnectionData(ipAddress, port, listenAddress); // This is ignored when using Relay
                 PrintConnectionInfo();
+            }
+
+            // Relay server connection logic
+            if (joinCodeBool == true)
+            {
+                clientJoinCode = enteredJoinCode.GetComponent<TMP_InputField>().text;
+                await RelaySetup.ConnectToAllocation(clientJoinCode);
             }
 
 
@@ -223,6 +247,7 @@ public class NetworkManagerUI : NetworkBehaviour
         gameObject.transform.Find("ClientButton").gameObject.SetActive(false);
         gameObject.transform.Find("IpAddressInput").gameObject.SetActive(false);
         gameObject.transform.Find("PortInput").gameObject.SetActive(false);
+        gameObject.transform.Find("JoinCodeInput").gameObject.SetActive(false);
     }
 
     // print IP address, port, and server listen address

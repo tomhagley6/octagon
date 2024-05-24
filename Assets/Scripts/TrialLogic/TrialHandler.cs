@@ -20,7 +20,6 @@ public class TrialHandler : NetworkBehaviour
    GameManager gameManager;
    IdentityManager identityManager;
    Color defaultWallColour;
-   public int score;
    bool isTrialEnderClient = false; // flag to check if current trial was 
                                     // ended by this clientId
    public event Action sliceOnset;  
@@ -39,12 +38,6 @@ public class TrialHandler : NetworkBehaviour
     }
 
 
-    public int GetScore()
-    {
-        return score;
-    }
-
-
     public override void OnNetworkSpawn()
     {
         
@@ -58,6 +51,7 @@ public class TrialHandler : NetworkBehaviour
 
         scoreChange += FindObjectOfType<Score>().AdjustScore;
         scoreChange += FindObjectOfType<ScorePopup>().PopupScore;
+        scoreChange += FindObjectOfType<ScoreSounds>().PlayCoinSound;
 
         // print current active walls
         StartCoroutine(PrintWalls());

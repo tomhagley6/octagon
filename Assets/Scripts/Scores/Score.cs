@@ -6,15 +6,10 @@ using UnityEngine;
 public class Score : MonoBehaviour
 {
     public TextMeshProUGUI scoreText;
-    public TrialHandler trialHandler;
     public int score = 0;
 
 
-    void Start() 
-    {
-        trialHandler = FindObjectOfType<TrialHandler>();
-    }
-    
+
     // Keep canvas text updated with the current value of score
     void Update()
     {
