@@ -247,6 +247,7 @@ public class NetworkManagerUI : NetworkBehaviour
         gameObject.transform.Find("ClientButton").gameObject.SetActive(false);
         gameObject.transform.Find("IpAddressInput").gameObject.SetActive(false);
         gameObject.transform.Find("PortInput").gameObject.SetActive(false);
+        gameObject.transform.Find("JoinCodeInput").gameObject.SetActive(false);
     }
 
     // print IP address, port, and server listen address
