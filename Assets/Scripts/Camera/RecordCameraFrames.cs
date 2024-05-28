@@ -35,6 +35,7 @@ public class CaptureCamera : MonoBehaviour
                 captureCamera.targetTexture = renderTexture;
             }
 
+            isCapturing = true;
             StartCoroutine(CaptureFrames());
             fileWritingThread = new Thread(ProcessFrames);
             fileWritingThread.Start();
@@ -46,6 +47,12 @@ public class CaptureCamera : MonoBehaviour
         {
             Debug.LogError("isCapturing set to false");
             isCapturing = false;
+            StopCoroutine(CaptureFrames());
+            if (fileWritingThread != null && fileWritingThread.IsAlive)
+            {
+                fileWritingThread.Join();
+            }
+            this.isActive = false;
         }
     }
 
