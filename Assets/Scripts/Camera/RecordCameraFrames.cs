@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Threading;
 using System.Collections.Concurrent;
+using Globals;
 
 public class CaptureCamera : MonoBehaviour
 {
@@ -16,23 +17,45 @@ public class CaptureCamera : MonoBehaviour
     private ConcurrentQueue<FrameData> frameQueue = new ConcurrentQueue<FrameData>(); // Thread safe queue to store frame data
     private Thread fileWritingThread; // Separate thread for writing to file
     private bool isCapturing = true;
+    private bool isActive = false;
     private string persistentDataPath; // storage location for output images
 
     // Begin capturing frames and setup a background filewriting thread
-    private void Start()
+    private void ToggleRecording(bool isActive)
     {
-        RenderTexture.active = renderTexture;
-        persistentDataPath = Application.persistentDataPath;
-        Debug.LogError(Application.persistentDataPath);
-
-        if (captureCamera.targetTexture != renderTexture)
+        // Start recording if not already active
+        if (!isActive)
         {
-            captureCamera.targetTexture = renderTexture;
-        }
+            RenderTexture.active = renderTexture;
+            persistentDataPath = Application.persistentDataPath;
+            Debug.LogError("Video frames saved to " + Application.persistentDataPath);
 
-        StartCoroutine(CaptureFrames());
-        fileWritingThread = new Thread(ProcessFrames);
-        fileWritingThread.Start();
+            if (captureCamera.targetTexture != renderTexture)
+            {
+                captureCamera.targetTexture = renderTexture;
+            }
+
+            StartCoroutine(CaptureFrames());
+            fileWritingThread = new Thread(ProcessFrames);
+            fileWritingThread.Start();
+            this.isActive = true;
+            Debug.LogError("isActive set to " + isActive);
+        }
+        // Stop recording if already active
+        else if (isActive)
+        {
+            Debug.LogError("isCapturing set to false");
+            isCapturing = false;
+        }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(General.toggleRecording))
+        {
+            Debug.LogError("Toggling recording with isActive equal to " + isActive);
+            ToggleRecording(isActive);
+        }
     }
 
     // Keep capturing frames at the specified framerate

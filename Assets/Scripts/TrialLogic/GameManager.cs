@@ -38,6 +38,7 @@ public class GameManager : SingletonNetwork<GameManager>
     public List<GameObject> triggers; // Keep a handle on all triggers
     public event Action<bool> OnReadyStateChanged; // event for checking GameManager startup has run
     public event Action<int> OnTriggerEntered; // delegate to subscribe to when OnTriggerEnter is called
+    public static event Action toggleOverlay;          // General overlay toggle 
 
 
     // // NetworkVariables 
@@ -517,6 +518,12 @@ public class GameManager : SingletonNetwork<GameManager>
     public void EndCurrentSession()
     {
         // Not implemented
+    }
+
+    // Toggle UI overlay (move this to a different script?)
+    public static void ToggleOverlay()
+    {
+        toggleOverlay();
     }
 
 

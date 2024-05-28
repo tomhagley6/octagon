@@ -31,7 +31,6 @@ public class NetworkManagerUI : NetworkBehaviour
 
     private NetworkManager networkManager;
 
-    private Action toggleIpAddress;
     bool IpAddressVisible = false;
 
     // SetConnectionData variables
@@ -197,22 +196,23 @@ public class NetworkManagerUI : NetworkBehaviour
 
         // Print network connection value defaults when application starts
         PrintConnectionInfo();
-
+    
         // Subscribe to the method handling IP Address field visibility toggle
-        toggleIpAddress += ToggleIpAddressListener;
+        
+        GameManager.toggleOverlay += ToggleOverlayAddressListener;
     }
 
 
     // Monitor toggle key for IP Address visibility
     public void Update()
     {
-        if (Input.GetKeyDown(General.toggleIP))
+        if (Input.GetKeyDown(General.toggleOverlay))
         {
-            toggleIpAddress();
+            GameManager.ToggleOverlay();
         }
     }
 
-    private void ToggleIpAddressListener() 
+    private void ToggleOverlayAddressListener() 
     {   
         // Set IP Address text GameObject to inactive if toggled off, and active
         // if toggled on 

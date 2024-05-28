@@ -50,9 +50,10 @@ namespace Globals
         public static KeyCode toggleMouse = KeyCode.F1;
         public static KeyCode toggleCamera = KeyCode.F2;
         public static KeyCode toggleLeaderboards = KeyCode.F3;
-        public static KeyCode togglePlayer = KeyCode.F4;
-        public static KeyCode toggleIP = KeyCode.F5;
+        public static KeyCode toggleOverlay = KeyCode.F4;
+        public static KeyCode togglePlayer = KeyCode.F5;
         public static KeyCode startTrials = KeyCode.PageUp;
+        public static KeyCode toggleRecording = KeyCode.PageDown;
 
         // Fixedstring values
         public static FixedString32Bytes highLow = new("HighLow");
