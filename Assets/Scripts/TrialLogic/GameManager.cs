@@ -182,6 +182,9 @@ public class GameManager : SingletonNetwork<GameManager>
         {
             triggers.Add(trigger);
         }
+
+        // This could be moved to a different script? 
+        Application.targetFrameRate = 144;
     }
 
 

@@ -1,7 +1,7 @@
 Library: /home/tom/Unity/Octagon/Temp/BurstOutput/Data/Plugins/lib_burst_generated
 --platform=Linux
 --backend=burst-llvm-15
---target=AVX2
+--target=X64_SSE2
 --global-safety-checks-setting=Off
 --meta-data-generation=False
 --dump=Function
@@ -9,6 +9,7 @@ Library: /home/tom/Unity/Octagon/Temp/BurstOutput/Data/Plugins/lib_burst_generat
 --target-framework=NetFramework
 --assembly-defines=UnityEngine;
 --assembly-defines=Assembly-CSharp;
+--assembly-defines=Unity.Multiplayer.Tools.NetStatsMonitor.Component;
 --assembly-defines=QFSW.QC.Serializers;
 --assembly-defines=Unity.Services.Core.Environments.Internal;
 --assembly-defines=Unity.Multiplayer.Tools.NetworkSolutionInterface;
@@ -23,9 +24,9 @@ Library: /home/tom/Unity/Octagon/Temp/BurstOutput/Data/Plugins/lib_burst_generat
 --assembly-defines=Unity.Services.Relay;
 --assembly-defines=Unity.Services.Core.Configuration;
 --assembly-defines=Unity.Multiplayer.Tools.NetStats;
---assembly-defines=QFSW.QC.Grammar;
 --assembly-defines=Unity.Collections;
 --assembly-defines=Unity.Netcode.Runtime;
+--assembly-defines=QFSW.QC.Grammar;
 --assembly-defines=Unity.Multiplayer.Samples.Utilities.RNSM;
 --assembly-defines=Unity.Multiplayer.Tools.MetricTestData;
 --assembly-defines=Unity.TextMeshPro;
@@ -63,7 +64,7 @@ Library: /home/tom/Unity/Octagon/Temp/BurstOutput/Data/Plugins/lib_burst_generat
 --assembly-defines=Unity.Services.Leaderboards;
 --assembly-defines=QFSW.QC.Demo;
 --assembly-defines=Unity.Multiplayer.Tools.MetricEvents;
---assembly-defines=Unity.Multiplayer.Tools.NetStatsMonitor.Component;
+--assembly-defines=Tayx.Graphy;
 --assembly-defines=QFSW.QC.ScanRules;
 --assembly-defines=Unity.Collections.LowLevel.ILSupport;
 --assembly-defines=mcs;
@@ -182,7 +183,7 @@ Library: /home/tom/Unity/Octagon/Temp/BurstOutput/Data/Plugins/lib_burst_generat
 --method=Unity.Networking.Transport.FragmentationPipelineStage, Unity.Networking.Transport, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null::Send(Unity.Networking.Transport.NetworkPipelineContext&, Unity.Networking.Transport, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|Unity.Networking.Transport.InboundSendBuffer&, Unity.Networking.Transport, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|Unity.Networking.Transport.NetworkPipelineStage+Requests&, Unity.Networking.Transport, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089)--3134d6572ef8ceff1d5057c9272f12fe
 --platform=Linux
 --backend=burst-llvm-15
---target=X64_SSE2
+--target=AVX2
 --global-safety-checks-setting=Off
 --meta-data-generation=False
 --dump=Function
@@ -190,6 +191,7 @@ Library: /home/tom/Unity/Octagon/Temp/BurstOutput/Data/Plugins/lib_burst_generat
 --target-framework=NetFramework
 --assembly-defines=UnityEngine;
 --assembly-defines=Assembly-CSharp;
+--assembly-defines=Unity.Multiplayer.Tools.NetStatsMonitor.Component;
 --assembly-defines=QFSW.QC.Serializers;
 --assembly-defines=Unity.Services.Core.Environments.Internal;
 --assembly-defines=Unity.Multiplayer.Tools.NetworkSolutionInterface;
@@ -204,9 +206,9 @@ Library: /home/tom/Unity/Octagon/Temp/BurstOutput/Data/Plugins/lib_burst_generat
 --assembly-defines=Unity.Services.Relay;
 --assembly-defines=Unity.Services.Core.Configuration;
 --assembly-defines=Unity.Multiplayer.Tools.NetStats;
---assembly-defines=QFSW.QC.Grammar;
 --assembly-defines=Unity.Collections;
 --assembly-defines=Unity.Netcode.Runtime;
+--assembly-defines=QFSW.QC.Grammar;
 --assembly-defines=Unity.Multiplayer.Samples.Utilities.RNSM;
 --assembly-defines=Unity.Multiplayer.Tools.MetricTestData;
 --assembly-defines=Unity.TextMeshPro;
@@ -244,7 +246,7 @@ Library: /home/tom/Unity/Octagon/Temp/BurstOutput/Data/Plugins/lib_burst_generat
 --assembly-defines=Unity.Services.Leaderboards;
 --assembly-defines=QFSW.QC.Demo;
 --assembly-defines=Unity.Multiplayer.Tools.MetricEvents;
---assembly-defines=Unity.Multiplayer.Tools.NetStatsMonitor.Component;
+--assembly-defines=Tayx.Graphy;
 --assembly-defines=QFSW.QC.ScanRules;
 --assembly-defines=Unity.Collections.LowLevel.ILSupport;
 --assembly-defines=mcs;

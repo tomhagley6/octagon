@@ -17,17 +17,22 @@ public class MouseSensitivity : MonoBehaviour
 
    void Start()
    {
+
         // // Avoid incurring runtime costs when you can just assign in editor
         // mouseSensitivityDisplay = GameObject.Find("Canvas").transform
         //                                     .Find("MouseSensitivity")
         //                                     .Find("MouseSensitivityDisplay").gameObject
         //                                     .GetComponent<TextMeshProUGUI>();
+       
+          // Start the game with the overlay inactive
+          mouseSensitivityDisplay.gameObject.SetActive(false);
+          mouseSensitivityInput.gameObject.SetActive(false);
+          
+          // Update the mouse sensitivity display when a new value is input by the user
+          mouseSensitivityInput.onValueChanged.AddListener(AdjustMouseSensitivity);
 
-        // Update the mouse sensitivity display when a new value is input by the user
-        mouseSensitivityInput.onValueChanged.AddListener(AdjustMouseSensitivity);
-
-        // Subscribe to the toggleOverlay event to toggle the mouse sensitivity UI
-        GameManager.toggleOverlay += ToggleOverlayMouseSensitivityListener;
+          // Subscribe to the toggleOverlay event to toggle the mouse sensitivity UI
+          GameManager.toggleOverlay += ToggleOverlayMouseSensitivityListener;
    }
 
    void Update()

@@ -21,6 +21,7 @@ public class ScoreSubmission : NetworkBehaviour
    private Score scoreInstance;
    private GameManager gameManager;
    [SerializeField] private LeaderboardScoreView scoreViewPrefab;
+   [SerializeField] private GameObject leaderboardsUI;
 
 
     public override void OnNetworkSpawn()
@@ -33,6 +34,13 @@ public class ScoreSubmission : NetworkBehaviour
       loadScoresButton.onClick.AddListener(LoadScoresASync);
 
       Debug.Log($"playername is {playerName.text}, type: {playerName.text.GetType()}, isnull: {playerName.text == null}, isemptystring: {playerName.text == ""}");
+
+    }
+
+    public void Start()
+    {
+      // Initially hide the leaderboards UI
+      leaderboardsUI.transform.localScale = new Vector3(0,0,0);
 
     }
 
@@ -116,7 +124,7 @@ public class ScoreSubmission : NetworkBehaviour
 
  private void ToggleButtons()
     {   
-      var leaderboardsUI = GameObject.Find("LeaderboardsUI");
+      // var leaderboardsUI = GameObject.Find("LeaderboardsUI");
       if (leaderboardsUI.transform.localScale == new Vector3(0,0,0))
       {
          leaderboardsUI.transform.localScale = new Vector3(1,1,1);

@@ -5,10 +5,11 @@ using UnityEngine;
 
 public class GraphyToggle : MonoBehaviour
 {
-    bool graphyActive = true;
+    bool graphyActive = false;
 
     void Start()
     {
+        gameObject.SetActive(false);
         GameManager.toggleOverlay += ToggleOverlayGraphyListener;
     }
 
