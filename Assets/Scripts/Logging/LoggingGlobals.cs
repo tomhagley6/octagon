@@ -67,12 +67,12 @@ namespace Globals
         // tags
         public static string posTag = "pos";
         public static string wallTriggerTag = "wall";
-        public static string beginLogging = "logging started";
+        public static string beginLogging = "logging start";
         public static string trialStart = "trial start";
         public static string sliceOnset = "slice onset";
         public static string triggerActivation = "trigger activation";
-        public static string endTrial = "end trial";
-        public static string endLogging = "logging ended";
+        public static string trialEnd = "trial end";
+        public static string endLogging = "logging end";
         public static string timeTriggered = "time";
 
     }

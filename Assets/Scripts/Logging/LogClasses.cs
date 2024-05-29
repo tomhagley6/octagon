@@ -75,6 +75,7 @@ namespace LoggingClasses
         // time
         // description string
         // wall numbers
+        // trial type               // redudant information - should this be re-included here?
         // positions
         // head angles
         public string timeLocal;
@@ -82,7 +83,7 @@ namespace LoggingClasses
         public string eventDescription;
         public Dictionary<string, object> data;
 
-        public SliceOnsetLogEvent(int wall1, int wall2, Dictionary<string,object> playerPosDict)
+        public SliceOnsetLogEvent(int wall1, int wall2, FixedString32Bytes trialType, Dictionary<string,object> playerPosDict)
         {
             timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
             timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
@@ -92,6 +93,7 @@ namespace LoggingClasses
             {
                 {"wall1", wall1},
                 {"wall2", wall2},
+                {"trialType", trialType.Value},
                 {"playerPosition", playerPosDict}
             };
         }
@@ -152,12 +154,13 @@ namespace LoggingClasses
         {
             timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
             timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
-            eventDescription = Logging.endTrial;
+            eventDescription = Logging.trialEnd;
             data = new Dictionary<string, object>()
             {   
                 {"trialNum", trialNum},
-                {"playerPosition", playerPosDict},
-                {"playerScores", playerScoresDict}
+                {"playerScores", playerScoresDict},
+                {"playerPosition", playerPosDict}
+                
 
             };
         }

@@ -168,7 +168,7 @@ public class LoggingEvents : NetworkBehaviour
         }
 
         // Create the final log class instance
-        SliceOnsetLogEvent sliceOnsetLogEvent = new SliceOnsetLogEvent(wall1, wall2, playerPosDict);
+        SliceOnsetLogEvent sliceOnsetLogEvent = new SliceOnsetLogEvent(wall1, wall2, gameManager.trialType.Value, playerPosDict);
         // Debug.Log("SliceOnsetLogEvent created");
 
         // Serialize the class to JSON
