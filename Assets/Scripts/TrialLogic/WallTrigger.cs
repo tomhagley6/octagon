@@ -36,8 +36,8 @@ public class WallTrigger : NetworkBehaviour
     public override void OnNetworkSpawn() 
     {
 
-        /* GetComponent to return the IdentityAssignment instance for the current GameObject
-        Instance for GameManager as there is a single instance per scene (Singleton class)
+        /* GetComponent to return the IdentityAssignment component for the current GameObject
+        instance for GameManager as there is a single instance per scene (Singleton class)
         (Consider checking if these are null or not before running) */
         identityAssignment = gameObject.GetComponent<IdentityAssignment>(); 
         gameManager = FindObjectOfType<GameManager>();
@@ -123,7 +123,7 @@ public class WallTrigger : NetworkBehaviour
 
 
         /* Set all walls active as triggers at the beginning of a trial (change of walls)
-        (reactivate the triggers disabled in the last trial)
+        (to reactivate the triggers disabled in the last trial)
         Any triggers which are irrelevant for the current trial will not take any action
         within OnTriggerEnter */
         if (collider.enabled == false)
@@ -156,9 +156,9 @@ public class WallTrigger : NetworkBehaviour
         // NEW LOGIC TO UPDATE THE NETWORKVARIABLE AND TRIGGER GAMEMANAGER LOGIC
         if (isTrialEnderClient == true)
         {
+            gameManager.UpdateTriggerActivation(triggerID, NetworkManager.Singleton.LocalClientId);   
             Debug.Log("Trigger is entered on local client");
             Debug.Log($"LocalClientId at time of update is {NetworkManager.Singleton.LocalClientId}");
-            gameManager.UpdateTriggerActivation(triggerID, NetworkManager.Singleton.LocalClientId);   
         }
 
         
@@ -187,6 +187,7 @@ public class WallTrigger : NetworkBehaviour
 
     // Deactivate a trigger's collider
     // To use after the first activation of a trigger per trial
+    // // Might be better to keep an array of walltriggers that I can deactivate specific indices of
     void DeactivateWall(int wallID) 
     {
         // Look into each trigger and find the one with the matching wallID to deactivate
