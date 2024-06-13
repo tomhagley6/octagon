@@ -190,8 +190,8 @@ public class LoggingEvents : NetworkBehaviour
     {
         
         if (newVal.triggerID == 0) {return; }
-        if (!IsServer) { Debug.Log("Not server, not running TriggerActivationHandler_TriggerActivationLog in LoggingEvents");
-         return; }
+        // if (!IsServer) { Debug.Log("Not server, not running TriggerActivationHandler_TriggerActivationLog in LoggingEvents");
+        //  return; }
 
         Debug.Log("Is Server, so running TriggerActivationHandler_TriggerActivationLog in LoggingEvents");
 
