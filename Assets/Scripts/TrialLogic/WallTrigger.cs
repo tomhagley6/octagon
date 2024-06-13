@@ -149,16 +149,25 @@ public class WallTrigger : NetworkBehaviour
         
         // Check if the GameObject that entered the trigger was the local client player's
         bool isTrialEnderClient = false;
+        Debug.Log("IsLocalPlayer of interacting object at time of OnTriggerEnter is: " 
+                    + interactingObject.GetComponent<NetworkObject>().IsLocalPlayer);
         if (interactingObject.GetComponent<NetworkObject>() != null
          && interactingObject.GetComponent<NetworkObject>().IsLocalPlayer) isTrialEnderClient = true;
 
+        Debug.Log("isTrialEnderClient at time of if statement in OnTriggerEnter is " + isTrialEnderClient);
+
         
         // NEW LOGIC TO UPDATE THE NETWORKVARIABLE AND TRIGGER GAMEMANAGER LOGIC
+        // // Is this only ever true on the Host? Check behaviour of isLocalPlayer
         if (isTrialEnderClient == true)
         {
             gameManager.UpdateTriggerActivation(triggerID, NetworkManager.Singleton.LocalClientId);   
             Debug.Log("Trigger is entered on local client");
             Debug.Log($"LocalClientId at time of update is {NetworkManager.Singleton.LocalClientId}");
+        }
+        else
+        {
+            Debug.Log("As isTrialEnderClient is false, not updating trigger activation");
         }
 
         

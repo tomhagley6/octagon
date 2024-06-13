@@ -208,7 +208,7 @@ public class GameManager : SingletonNetwork<GameManager>
 
         // Check client ids to see if this client ended the current trial
         isTrialEnderClient = newValue.activatorClientId == NetworkManager.Singleton.LocalClientId ? true : false;
-        // Debug.Log($"isTrialEnderClient returns as {isTrialEnderClient} on this client");
+        Debug.Log($"isTrialEnderClient returns as {isTrialEnderClient} on this client");
         // Debug.Log($"LocalClientId returns as {NetworkManager.Singleton.LocalClientId} on this client");
         triggerID = newValue.triggerID;
 
@@ -561,6 +561,7 @@ public class GameManager : SingletonNetwork<GameManager>
         
         // Update activeWalls with new wall values
         UpdateTriggerActivationServerRPC(triggerID, activatorClientId);
+        Debug.Log("This client just updated the triggerActivation NetworkVariable");
 
     }
 
