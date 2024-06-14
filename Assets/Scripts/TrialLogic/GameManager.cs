@@ -213,7 +213,7 @@ public class GameManager : SingletonNetwork<GameManager>
         triggerID = newValue.triggerID;
 
         // General game logic for interaction with a wall trigger
-        WallInteraction(wallID1, wallID2, triggerID, isTrialEnderClient);
+        WallInteraction(wallID1, wallID2, triggerID, isTrialEnderClient); // will not carry out actions if wall not active
 
         // switch (trialType.Value)
         // {
