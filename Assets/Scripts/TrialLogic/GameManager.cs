@@ -46,6 +46,7 @@ public class GameManager : SingletonNetwork<GameManager>
 
     // Winning player should update the server following trigger entry
     // Create new NetworkVariable triggerActivation
+    // Remember that we need to initialise at declaration
     public NetworkVariable<TriggerActivation> triggerActivation = new NetworkVariable<TriggerActivation>(
 
             new TriggerActivation {
@@ -64,8 +65,30 @@ public class GameManager : SingletonNetwork<GameManager>
             serializer.SerializeValue(ref triggerID);
             serializer.SerializeValue(ref activatorClientId);
         }
-
     }
+
+
+    // Create a server-authoritative version of TriggerActivation to address race conditions
+    public NetworkVariable<TriggerActivationAuthorised> triggerActivationAuthorised = new NetworkVariable<TriggerActivationAuthorised>(
+
+            new TriggerActivationAuthorised {
+                triggerID = 777,
+                activatorClientId = 777
+            }
+
+    );
+
+    public struct TriggerActivationAuthorised : INetworkSerializable {
+        public int triggerID;
+        public ulong activatorClientId;
+        
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref triggerID);
+            serializer.SerializeValue(ref activatorClientId);
+        } 
+    }
+
 
     /* trialNum int to act as a trigger for events to run on each trial start
     Instead of relying on activeWalls changing value for all of my logic, define logic based on epoch boundaries
@@ -158,6 +181,10 @@ public class GameManager : SingletonNetwork<GameManager>
         To prevent re-entry of relevant walls within the same trial */
         OnTriggerEntered += DeactivateWall;
 
+        /* Subscribe triggerActivation with a callback method that runs server-side 
+        client owner authority logic and decides which TriggerActivation call to ratify */
+        triggerActivation.OnValueChanged += TriggerActivationHandler_TriggerEntryREDUX;
+        
         /* Subscribe triggerActivation with a callback method that runs the trial
         logic for a wall interaction */
         triggerActivation.OnValueChanged += TriggerActivationHandler_TriggerEntry;
@@ -231,6 +258,12 @@ public class GameManager : SingletonNetwork<GameManager>
         // }
     }
 
+    public void TriggerActivationHandler_TriggerEntryREDUX(TriggerActivation prevValue, TriggerActivation newValue)
+    {
+        if (!IsServer) return;
+
+        Debug.Log($"Server receives triggerActivation value as triggerID {newValue.triggerID} and clientID {newValue.activatorClientId}");
+    }
 
     // Subscriber method for activeWall NetworkVariable value change
     // Update local class fields with new wall values and activate the colliders for these walls
