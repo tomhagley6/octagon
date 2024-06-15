@@ -71,6 +71,7 @@ namespace Globals
         public static string trialStart = "trial start";
         public static string sliceOnset = "slice onset";
         public static string triggerActivation = "trigger activation";
+        public static string triggerActivationAuthorised = "trigger activation authorised";
         public static string trialEnd = "trial end";
         public static string endLogging = "logging end";
         public static string timeTriggered = "time";

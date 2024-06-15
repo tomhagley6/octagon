@@ -38,7 +38,9 @@ public class GameManager : SingletonNetwork<GameManager>
     public List<GameObject> triggers; // Keep a handle on all triggers
     public event Action<bool> OnReadyStateChanged; // event for checking GameManager startup has run
     public event Action<int> OnTriggerEntered; // delegate to subscribe to when OnTriggerEnter is called
-    public static event Action toggleOverlay;          // General overlay toggle 
+    public static event Action toggleOverlay;  // General overlay toggle 
+    public bool firstTriggerActivationThisTrial = true; // Server-side flag for recognising
+                                                         // first trigger activation of the trial
 
 
     // // NetworkVariables 
@@ -185,9 +187,14 @@ public class GameManager : SingletonNetwork<GameManager>
         client owner authority logic and decides which TriggerActivation call to ratify */
         triggerActivation.OnValueChanged += TriggerActivationHandler_TriggerEntryREDUX;
         
-        /* Subscribe triggerActivation with a callback method that runs the trial
-        logic for a wall interaction */
-        triggerActivation.OnValueChanged += TriggerActivationHandler_TriggerEntry;
+        // /* Subscribe triggerActivation with a callback method that runs the trial
+        // logic for a wall interaction */
+        // triggerActivation.OnValueChanged += TriggerActivationHandler_TriggerEntry;
+
+        /* Subscribe triggerActivationAuthorised with a callback method that executes 
+        trial logic on the client, given that permission has been received from the server
+        */
+        triggerActivationAuthorised.OnValueChanged += TriggerActivationAuthorisedHandler_EnactServerTriggerDecision;
 
         // Subscribe connectedClientIds with a callback ServerRPC that updates
         // Actually we don't need to do this if we're checking the NetworkList when it's needed
@@ -262,8 +269,53 @@ public class GameManager : SingletonNetwork<GameManager>
     {
         if (!IsServer) return;
 
+        if (newValue.triggerID == 0) return;
+
         Debug.Log($"Server receives triggerActivation value as triggerID {newValue.triggerID} and clientID {newValue.activatorClientId}");
+
+        // If this is not the first call of this method on the server, break
+        if (!firstTriggerActivationThisTrial)
+        {
+            Debug.Log($"firstTriggerActivationThisTrial returns as {firstTriggerActivationThisTrial}");
+            return;
+        }
+
+        // Should be able to update NetworkVariable value here without ServerRPC, as already running on server
+        triggerActivationAuthorised.Value = new TriggerActivationAuthorised {
+            triggerID = newValue.triggerID,
+            activatorClientId = newValue.activatorClientId
+        };
+
+        // prevent further call of this method on the server
+        firstTriggerActivationThisTrial = false;
+
+        // reset values to 0 to account for next trial's TriggerActivation values being identical to the first
+        triggerActivationAuthorised.Value = new TriggerActivationAuthorised {
+            triggerID = 0,
+            activatorClientId = 0
+        };
+
     }
+
+    public void TriggerActivationAuthorisedHandler_EnactServerTriggerDecision(TriggerActivationAuthorised prevValue, TriggerActivationAuthorised newValue)
+    {
+        Debug.Log($"triggerActivationAuthorisd value received as triggerID {newValue.triggerID} and clientID {newValue.activatorClientId}");
+        if (newValue.triggerID == 0) return;
+
+        bool isTrialEnderClient;
+        int triggerID;
+
+        // Check client ids to see if this client ended the current trial
+        isTrialEnderClient = newValue.activatorClientId == NetworkManager.Singleton.LocalClientId ? true : false;
+        Debug.Log($"isTrialEnderClient returns as {isTrialEnderClient} on this client");
+        // Debug.Log($"LocalClientId returns as {NetworkManager.Singleton.LocalClientId} on this client");
+        triggerID = newValue.triggerID;
+
+        // General game logic for interaction with a wall trigger
+        WallInteraction(wallID1, wallID2, triggerID, isTrialEnderClient); // will not carry out actions if wall not active
+
+    }
+
 
     // Subscriber method for activeWall NetworkVariable value change
     // Update local class fields with new wall values and activate the colliders for these walls
