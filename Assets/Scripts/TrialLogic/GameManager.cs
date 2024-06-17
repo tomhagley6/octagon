@@ -54,8 +54,9 @@ public class GameManager : SingletonNetwork<GameManager>
             new TriggerActivation {
                 triggerID = 777,
                 activatorClientId = 777
-            }, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+            }
 
+    );
     
     public struct TriggerActivation : INetworkSerializable {
         public int triggerID;
@@ -75,8 +76,9 @@ public class GameManager : SingletonNetwork<GameManager>
             new TriggerActivationAuthorised {
                 triggerID = 777,
                 activatorClientId = 777
-            }, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+            }
 
+    );
 
     public struct TriggerActivationAuthorised : INetworkSerializable {
         public int triggerID;
@@ -308,8 +310,6 @@ public class GameManager : SingletonNetwork<GameManager>
         Debug.Log($"isTrialEnderClient returns as {isTrialEnderClient} on this client");
         // Debug.Log($"LocalClientId returns as {NetworkManager.Singleton.LocalClientId} on this client");
         triggerID = newValue.triggerID;
-
-        Debug.LogWarning($"triggerID and activator client respectively are: {triggerID} and {newValue.activatorClientId}");
 
         // General game logic for interaction with a wall trigger
         WallInteraction(wallID1, wallID2, triggerID, isTrialEnderClient); // will not carry out actions if wall not active

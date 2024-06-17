@@ -57,7 +57,6 @@ public class TrialHandler : NetworkBehaviour
         StartCoroutine(PrintWalls());
 
         // If client joins after first walls are painted, catch up to server
-        Debug.LogWarning($"Active walls at time of starting DelayedColourWalls in OnNetworkSpawn of TrialHandler are {gameManager.activeWalls.Value.wall1}, {gameManager.activeWalls.Value.wall2}");
         StartCoroutine(DelayedColourWalls());
 
         // For case where OnNetworkSpawn occurs after the first trial starts
@@ -114,14 +113,8 @@ public class TrialHandler : NetworkBehaviour
         // and that walls are not already coloured (which implies host)
         yield return new WaitUntil( () => WallTrigger.setupComplete == true 
                                     && gameManager.activeWalls.Value.wall1 != 0
-                                    && defaultWallColour == myColour
-                                    && false);
+                                    && defaultWallColour == myColour);
 
-        Debug.Log($"DelayedColourWalls conditions are: {WallTrigger.setupComplete}"
-            + $", {gameManager.activeWalls.Value.wall1 != 0}"
-            + $", {defaultWallColour == myColour}");
-
-        Debug.LogWarning($"active walls on client at time of delayed colour walls update are: {gameManager.activeWalls.Value.wall1}, {gameManager.activeWalls.Value.wall2}");
         ColourWalls(gameManager.activeWalls.Value.wall1, gameManager.activeWalls.Value.wall2);
     }
 
