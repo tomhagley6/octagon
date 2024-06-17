@@ -39,8 +39,8 @@ public class GameManager : SingletonNetwork<GameManager>
     public event Action<bool> OnReadyStateChanged; // event for checking GameManager startup has run
     public event Action<int> OnTriggerEntered; // delegate to subscribe to when OnTriggerEnter is called
     public static event Action toggleOverlay;  // General overlay toggle 
-    public bool firstTriggerActivationThisTrial = true; // Server-side flag for recognising
-                                                         // first trigger activation of the trial
+    // public bool firstTriggerActivationThisTrial = true; // Server-side flag for recognising
+    //                                                      // first trigger activation of the trial
 
 
     // // NetworkVariables 
@@ -118,6 +118,7 @@ public class GameManager : SingletonNetwork<GameManager>
 
     public NetworkVariable<bool> trialActive = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     public NetworkVariable<ushort> trialNum = new NetworkVariable<ushort>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public NetworkVariable<bool> firstTriggerActivationThisTrial = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     public NetworkVariable<FixedString32Bytes> trialType = new NetworkVariable<FixedString32Bytes>("", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     public NetworkList<ulong> connectedClientIds;
@@ -274,11 +275,34 @@ public class GameManager : SingletonNetwork<GameManager>
         Debug.Log($"Server receives triggerActivation value as triggerID {newValue.triggerID} and clientID {newValue.activatorClientId}");
 
         // If this is not the first call of this method on the server, break
-        if (!firstTriggerActivationThisTrial)
+        if (!firstTriggerActivationThisTrial.Value)
         {
             Debug.Log($"firstTriggerActivationThisTrial returns as {firstTriggerActivationThisTrial}");
             return;
         }
+
+        StartCoroutine(TriggerActivationHandler_TriggerEntryCoroutine(newValue));
+
+        // // Should be able to update NetworkVariable value here without ServerRPC, as already running on server
+        // triggerActivationAuthorised.Value = new TriggerActivationAuthorised {
+        //     triggerID = newValue.triggerID,
+        //     activatorClientId = newValue.activatorClientId
+        // };
+
+        // // prevent further call of this method on the server
+        // firstTriggerActivationThisTrial = false;
+
+        // // reset values to 0 to account for next trial's TriggerActivation values being identical to the first
+        // triggerActivationAuthorised.Value = new TriggerActivationAuthorised {
+        //     triggerID = 0,
+        //     activatorClientId = 0
+        // };
+
+    }
+
+    private IEnumerator TriggerActivationHandler_TriggerEntryCoroutine(TriggerActivation newValue)
+    {
+        // pre-reset code
 
         // Should be able to update NetworkVariable value here without ServerRPC, as already running on server
         triggerActivationAuthorised.Value = new TriggerActivationAuthorised {
@@ -287,14 +311,19 @@ public class GameManager : SingletonNetwork<GameManager>
         };
 
         // prevent further call of this method on the server
-        firstTriggerActivationThisTrial = false;
+        // again, no need to write a ServerRPC for changing this value, as we are on the server here
+        firstTriggerActivationThisTrial.Value = false;
 
-        // // reset values to 0 to account for next trial's TriggerActivation values being identical to the first
-        // triggerActivationAuthorised.Value = new TriggerActivationAuthorised {
-        //     triggerID = 0,
-        //     activatorClientId = 0
-        // };
+        yield return new WaitForSeconds(1f);
 
+        // post-reset code
+
+        // reset values to 0 to account for next trial's TriggerActivation values being identical to the first
+        triggerActivationAuthorised.Value = new TriggerActivationAuthorised {
+            triggerID = 0,
+            activatorClientId = 0
+        };
+        Debug.LogWarning($"triggerActivationAuthorised value has been changed to {triggerActivationAuthorised.Value.triggerID} and {triggerActivationAuthorised.Value.activatorClientId}");
     }
     
 
@@ -686,6 +715,11 @@ public class GameManager : SingletonNetwork<GameManager>
         // Debug.LogError($"trialType is now {trialType}");
     }
 
+    [ServerRpc(RequireOwnership=false)]
+    public void UpdateFirstTriggerActivationThisTrialServerRPC(bool firstTriggerActivationThisTrial)
+    {
+        this.firstTriggerActivationThisTrial.Value = firstTriggerActivationThisTrial;
+    }
 
     // RPC to access and update local-client IDs
     [ServerRpc(RequireOwnership=false)]

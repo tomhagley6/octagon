@@ -288,7 +288,9 @@ public class TrialHandler : NetworkBehaviour
         GameObject.Find("DirectionalLight").GetComponent<Light>().intensity = General.globalIlluminationHigh;
 
         // Reset the firstTriggerThisTrial variable 
-        gameManager.firstTriggerActivationThisTrial = true;
+        // firstTriggerThisTrial is a NetworkVariable, so use a ServerRPC
+        // gameManager.firstTriggerActivationThisTrial.Value = true;
+        gameManager.UpdateFirstTriggerActivationThisTrialServerRPC(true);
 
         // Variable delay period before slice onset
         var sliceOnsetDelay = Random.Range(General.trialStartDurationMin, General.trialStartDurationMax);
