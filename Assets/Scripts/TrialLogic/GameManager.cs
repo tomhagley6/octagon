@@ -289,13 +289,14 @@ public class GameManager : SingletonNetwork<GameManager>
         // prevent further call of this method on the server
         firstTriggerActivationThisTrial = false;
 
-        // reset values to 0 to account for next trial's TriggerActivation values being identical to the first
-        triggerActivationAuthorised.Value = new TriggerActivationAuthorised {
-            triggerID = 0,
-            activatorClientId = 0
-        };
+        // // reset values to 0 to account for next trial's TriggerActivation values being identical to the first
+        // triggerActivationAuthorised.Value = new TriggerActivationAuthorised {
+        //     triggerID = 0,
+        //     activatorClientId = 0
+        // };
 
     }
+    
 
     public void TriggerActivationAuthorisedHandler_EnactServerTriggerDecision(TriggerActivationAuthorised prevValue, TriggerActivationAuthorised newValue)
     {
@@ -313,6 +314,8 @@ public class GameManager : SingletonNetwork<GameManager>
 
         // General game logic for interaction with a wall trigger
         WallInteraction(wallID1, wallID2, triggerID, isTrialEnderClient); // will not carry out actions if wall not active
+
+        Debug.Log($"isLocalPlayer returns as {IsLocalPlayer}");
 
     }
 
