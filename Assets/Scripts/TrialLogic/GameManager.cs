@@ -676,9 +676,14 @@ public class GameManager : SingletonNetwork<GameManager>
     public void UpdateTriggerActivation(int triggerID, ulong activatorClientId)
     {
         
-        // Update activeWalls with new wall values
-        UpdateTriggerActivationServerRPC(triggerID, activatorClientId);
-        Debug.Log("This client just updated the triggerActivation NetworkVariable");
+        // Update triggerActivation with new wall values
+
+        if (wallIDs.Contains(triggerID))
+        {
+            UpdateTriggerActivationServerRPC(triggerID, activatorClientId);
+            Debug.Log("This client just updated the triggerActivation NetworkVariable");
+        }
+
 
     }
 
