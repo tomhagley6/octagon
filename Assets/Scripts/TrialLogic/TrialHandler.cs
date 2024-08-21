@@ -346,7 +346,7 @@ public class TrialHandler : NetworkBehaviour
         // Score.cs uses this to update the score display on the canvas
         // Update the score popup text in ScorePopup.cs
         scoreChange?.Invoke(increment);
-        gameManager.UpdateScoresServerRPC(increment);
+        gameManager.UpdateScoresServerRPC(increment, NetworkManager.Singleton.LocalClientId);
         
 
         // Record whether it was this client that ended the current trial
