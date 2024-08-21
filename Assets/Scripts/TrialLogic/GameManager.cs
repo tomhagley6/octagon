@@ -747,23 +747,27 @@ public class GameManager : SingletonNetwork<GameManager>
 
 
     // ServerRPC to update player scores
+    // Currently this is probably only attributing scores to the Host player because this method is run ON the server
+    // hence LocalClientId will always be 0 
     [ServerRpc(RequireOwnership=false)]
-    public void UpdateScoresServerRPC(int increment)
+    public void UpdateScoresServerRPC(int increment, ulong callerClientId)
     {
-        var players = NetworkManager.ConnectedClientsList;
+        // var players = NetworkManager.ConnectedClientsList;
 
-        for (int i = 0; i < players.Count; i++)
-        {
-            if ((ulong)i == NetworkManager.Singleton.LocalClientId)
-            {
-                Debug.Log($"Local player Id {NetworkManager.Singleton.LocalClientId} contained in client list, updating score");
-                scores[i] += increment;
-            }
-            else
-            {
-                Debug.Log($"client {i} is connected to the server but is not the local player, not updating score");
-            }
-        } 
+        // for (int i = 0; i < players.Count; i++)
+        // {
+        //     if ((ulong)i == NetworkManager.Singleton.LocalClientId)
+        //     {
+        //         Debug.Log($"Local player Id {NetworkManager.Singleton.LocalClientId} contained in client list, updating score");
+        //         scores[i] += increment;
+        //     }
+        //     else
+        //     {
+        //         Debug.Log($"client {i} is connected to the server but is not the local player, not updating score");
+        //     }
+        // } 
+
+        scores[(int)callerClientId] += increment; 
     }
 
 
