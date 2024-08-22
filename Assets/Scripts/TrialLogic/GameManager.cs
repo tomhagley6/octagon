@@ -312,7 +312,8 @@ public class GameManager : SingletonNetwork<GameManager>
 
         // prevent further call of this method on the server
         // again, no need to write a ServerRPC for changing this value, as we are on the server here
-        firstTriggerActivationThisTrial.Value = false;
+        // firstTriggerActivationThisTrial.Value = false;
+        UpdateFirstTriggerActivationThisTrialServerRPC(true);
 
         yield return new WaitForSeconds(1f);
 
