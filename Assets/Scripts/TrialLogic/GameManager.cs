@@ -304,16 +304,17 @@ public class GameManager : SingletonNetwork<GameManager>
     {
         // pre-reset code
 
+        // prevent further call of this method on the server
+        // again, no need to write a ServerRPC for changing this value, as we are on the server here
+        // Also, keeping this as a direct server change may be faster and help prevent the race condition
+        firstTriggerActivationThisTrial.Value = false;
+        // UpdateFirstTriggerActivationThisTrialServerRPC(true);
+
         // Should be able to update NetworkVariable value here without ServerRPC, as already running on server
         triggerActivationAuthorised.Value = new TriggerActivationAuthorised {
             triggerID = newValue.triggerID,
             activatorClientId = newValue.activatorClientId
         };
-
-        // prevent further call of this method on the server
-        // again, no need to write a ServerRPC for changing this value, as we are on the server here
-        // firstTriggerActivationThisTrial.Value = false;
-        UpdateFirstTriggerActivationThisTrialServerRPC(true);
 
         yield return new WaitForSeconds(1f);
 
@@ -330,7 +331,7 @@ public class GameManager : SingletonNetwork<GameManager>
 
     public void TriggerActivationAuthorisedHandler_EnactServerTriggerDecision(TriggerActivationAuthorised prevValue, TriggerActivationAuthorised newValue)
     {
-        Debug.Log($"triggerActivationAuthorisd value received as triggerID {newValue.triggerID} and clientID {newValue.activatorClientId}");
+        Debug.Log($"triggerActivationAuthorised value received as triggerID {newValue.triggerID} and clientID {newValue.activatorClientId}");
         if (newValue.triggerID == 0) return;
 
         bool isTrialEnderClient;
@@ -688,7 +689,7 @@ public class GameManager : SingletonNetwork<GameManager>
     }
 
 
-    // RPC to update activeWalls on the server and not the client
+    // RPC to update triggerActivation on the server and not the client
     [ServerRpc(RequireOwnership=false)]
     public void UpdateTriggerActivationServerRPC(int _triggerID, ulong _activatorClientId)
     {
