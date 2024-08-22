@@ -192,6 +192,9 @@ public class LoggingEvents : NetworkBehaviour
     
     // Write a trigger activation log event when the value of NetworkVariable TriggerActivation
     // changes
+    // CURRENTLY DISABLED, as any trigger activation is only recognised by the server if it is the first valid
+    // trigger activation for this trial
+    //  This could be changed so that any interaction with walls is recognised in the logger
     public void TriggerActivationHandler_TriggerActivationLog(TriggerActivation prevVal, TriggerActivation newVal)
     {
         
@@ -240,8 +243,8 @@ public class LoggingEvents : NetworkBehaviour
         });
         // Debug.Log("triggerActivationLogEvent serialized to JSON string: " + logEntry);
 
-        // Send this string to the active diskLogger to be logged to file
-        diskLogger.Log(logEntry);
+        // // Send this string to the active diskLogger to be logged to file
+        // diskLogger.Log(logEntry);
 
     }
 
