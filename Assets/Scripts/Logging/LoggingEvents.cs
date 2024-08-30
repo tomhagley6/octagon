@@ -218,25 +218,25 @@ public class LoggingEvents : NetworkBehaviour
         ulong triggerClientId = gameManager.triggerActivation.Value.activatorClientId;
         Dictionary<string,object> playerPosDict = new Dictionary<string,object>();
 
-        // // Assemble data to log from each network client
-        // // Debug.Log($"ConnectedClientsList is {NetworkManager.ConnectedClientsList.Count} items long");
-        // foreach(var networkClient in NetworkManager.ConnectedClientsList)
-        // {
-        //     PlayerLocation playerLocation = new PlayerLocation(
-        //                                         networkClient.PlayerObject.transform.position.x,
-        //                                         networkClient.PlayerObject.transform.position.y,
-        //                                         networkClient.PlayerObject.transform.position.z
-        //                                         );
+        // Assemble data to log from each network client
+        // Debug.Log($"ConnectedClientsList is {NetworkManager.ConnectedClientsList.Count} items long");
+        foreach(var networkClient in NetworkManager.ConnectedClientsList)
+        {
+            PlayerLocation playerLocation = new PlayerLocation(
+                                                networkClient.PlayerObject.transform.position.x,
+                                                networkClient.PlayerObject.transform.position.y,
+                                                networkClient.PlayerObject.transform.position.z
+                                                );
 
-        //     PlayerRotation playerRotation = new PlayerRotation(
-        //                                         Camera.main.transform.rotation.eulerAngles.x,
-        //                                         networkClient.PlayerObject.transform.rotation.eulerAngles.y,
-        //                                         Camera.main.transform.rotation.eulerAngles.z
-        //                                         );
+            PlayerRotation playerRotation = new PlayerRotation(
+                                                Camera.main.transform.rotation.eulerAngles.x,
+                                                networkClient.PlayerObject.transform.rotation.eulerAngles.y,
+                                                Camera.main.transform.rotation.eulerAngles.z
+                                                );
 
-        //     PlayerPosition thisPlayerPosition = new PlayerPosition(networkClient.ClientId, playerLocation, playerRotation);
-        //     playerPosDict.Add(networkClient.ClientId.ToString(), thisPlayerPosition);
-        // }
+            PlayerPosition thisPlayerPosition = new PlayerPosition(networkClient.ClientId, playerLocation, playerRotation);
+            playerPosDict.Add(networkClient.ClientId.ToString(), thisPlayerPosition);
+        }
 
         // Create the final log class instance
         TriggerActivationLogEvent triggerActivationLogEvent = new TriggerActivationLogEvent(wall1, wall2, wallTriggered,
@@ -273,27 +273,27 @@ public class LoggingEvents : NetworkBehaviour
         ulong triggerClientId = gameManager.triggerActivation.Value.activatorClientId;
         Dictionary<string,object> playerPosDict = new Dictionary<string,object>();
 
-        // // Assemble data to log from each network client
-        // // Debug.Log($"ConnectedClientsList is {NetworkManager.ConnectedClientsList.Count} items long");
-        // foreach(var networkClient in NetworkManager.ConnectedClientsList)
-        // {
-        //     PlayerLocation playerLocation = new PlayerLocation(
-        //                                         networkClient.PlayerObject.transform.position.x,
-        //                                         networkClient.PlayerObject.transform.position.y,
-        //                                         networkClient.PlayerObject.transform.position.z
-        //                                         );
+        // Assemble data to log from each network client
+        // Debug.Log($"ConnectedClientsList is {NetworkManager.ConnectedClientsList.Count} items long");
+        foreach(var networkClient in NetworkManager.ConnectedClientsList)
+        {
+            PlayerLocation playerLocation = new PlayerLocation(
+                                                networkClient.PlayerObject.transform.position.x,
+                                                networkClient.PlayerObject.transform.position.y,
+                                                networkClient.PlayerObject.transform.position.z
+                                                );
 
-        //     PlayerRotation playerRotation = new PlayerRotation(
-        //                                         Camera.main.transform.rotation.eulerAngles.x,
-        //                                         networkClient.PlayerObject.transform.rotation.eulerAngles.y,
-        //                                         Camera.main.transform.rotation.eulerAngles.z
-        //                                         );
+            PlayerRotation playerRotation = new PlayerRotation(
+                                                Camera.main.transform.rotation.eulerAngles.x,
+                                                networkClient.PlayerObject.transform.rotation.eulerAngles.y,
+                                                Camera.main.transform.rotation.eulerAngles.z
+                                                );
 
-        //     PlayerPosition thisPlayerPosition = new PlayerPosition(networkClient.ClientId, playerLocation, playerRotation);
-        //     playerPosDict.Add(networkClient.ClientId.ToString(), thisPlayerPosition);
-        // }
+            PlayerPosition thisPlayerPosition = new PlayerPosition(networkClient.ClientId, playerLocation, playerRotation);
+            playerPosDict.Add(networkClient.ClientId.ToString(), thisPlayerPosition);
+        }
 
-        // Create the final log class instance
+        // Create the log class instance
         TriggerActivationLogEvent triggerActivationLogEvent = new TriggerActivationLogEvent(wall1, wall2, wallTriggered,
                                                                                              triggerClientId, playerPosDict)
         {
@@ -327,6 +327,26 @@ public class LoggingEvents : NetworkBehaviour
         int wallTriggered = gameManager.triggerActivation.Value.triggerID;
         ulong triggerClientId = gameManager.triggerActivation.Value.activatorClientId;
         Dictionary<string,object> playerPosDict = new Dictionary<string,object>();
+
+        // Assemble data to log from each network client
+        // Debug.Log($"ConnectedClientsList is {NetworkManager.ConnectedClientsList.Count} items long");
+        foreach(var networkClient in NetworkManager.ConnectedClientsList)
+        {
+            PlayerLocation playerLocation = new PlayerLocation(
+                                                networkClient.PlayerObject.transform.position.x,
+                                                networkClient.PlayerObject.transform.position.y,
+                                                networkClient.PlayerObject.transform.position.z
+                                                );
+
+            PlayerRotation playerRotation = new PlayerRotation(
+                                                Camera.main.transform.rotation.eulerAngles.x,
+                                                networkClient.PlayerObject.transform.rotation.eulerAngles.y,
+                                                Camera.main.transform.rotation.eulerAngles.z
+                                                );
+
+            PlayerPosition thisPlayerPosition = new PlayerPosition(networkClient.ClientId, playerLocation, playerRotation);
+            playerPosDict.Add(networkClient.ClientId.ToString(), thisPlayerPosition);
+        }
 
         // Create the log class instance
         TriggerActivationLogEvent triggerActivationLogEvent = new TriggerActivationLogEvent(wall1, wall2, wallTriggered,
