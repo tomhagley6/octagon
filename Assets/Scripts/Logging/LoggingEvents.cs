@@ -207,8 +207,8 @@ public class LoggingEvents : NetworkBehaviour
     {
         
         if (newVal.triggerID == 0) {return; }
-        // if (!IsServer) { Debug.Log("Not server, not running TriggerActivationHandler_TriggerActivationLog in LoggingEvents");
-        //  return; }
+        if (!IsServer) { Debug.Log("Not server, not running TriggerActivationHandler_TriggerActivationLog in LoggingEvents");
+         return; }
 
         Debug.Log("Is Server, so running TriggerActivationHandler_TriggerActivationLog in LoggingEvents");
 
@@ -262,10 +262,10 @@ public class LoggingEvents : NetworkBehaviour
     {
         
         if (newVal.triggerID == 0) return; 
-        // if (!IsServer) { Debug.Log("Not server, not running TriggerActivationHandler_TriggerActivationLog in LoggingEvents");
-        //  return; }
+        if (!IsServer) { Debug.Log("Not server, not running TriggerActivationHandler_TriggerActivationLog in LoggingEvents");
+         return; }
 
-        Debug.Log("Is Server, so running TriggerActivationHandler_TriggerActivationLog in LoggingEvents");
+        Debug.Log("Is Server, so running TriggerActivationHandler_AuthorisedTriggerActivationLog in LoggingEvents");
 
         int wall1 = gameManager.activeWalls.Value.wall1;
         int wall2 = gameManager.activeWalls.Value.wall2;
@@ -320,6 +320,8 @@ public class LoggingEvents : NetworkBehaviour
     public void TriggerActivationIrrelevantHandler_IrrelevantTriggerActivationLog(TriggerActivationIrrelevant prevVal, TriggerActivationIrrelevant newVal)
     {
         if (newVal.triggerID == 0) return;
+        if (!IsServer) { Debug.Log("Not server, not running TriggerActivationHandler_IrrelevantTriggerActivationLog in LoggingEvents");
+         return; }
         
         // variables used in the log event    
         int wall1 = gameManager.activeWalls.Value.wall1;
