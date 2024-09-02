@@ -25,6 +25,7 @@ namespace Globals
                                                                           // random choice within list
         public static Color wallHighColour = Color.red;
         public static Color wallLowColour = Color.blue;
+        public static Color wallInteractionZoneColour = new Color(1, 215/255f, 0, 129/255f);
         public static bool automaticStartTrial = false;
 
         // timings

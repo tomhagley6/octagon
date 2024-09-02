@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 3151096267927145166}
   - component: {fileID: -5431547885606662288}
   m_Layer: 8
-  m_Name: WallTrigger
+  m_Name: WallTriggerPreInteractionZone
   m_TagString: WallTrigger
   m_Icon: {fileID: 419385456094870383, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -0.15}
-  m_LocalScale: {x: 0.33333334, y: 1, z: 1.3}
+  m_LocalScale: {x: 1, y: 1, z: 1.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -120,7 +120,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2669352836
+  GlobalObjectIdHash: 2249484420
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
