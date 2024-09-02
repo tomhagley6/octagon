@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Globals;
 using System;
+using System.Linq;
 using Unity.Netcode;
 using static GameManager;
 using Unity.VisualScripting;
@@ -21,7 +22,9 @@ public class WallTrigger : NetworkBehaviour
     public List<GameObject> triggers; // Keep a handle on all triggers
     public int wallID1;
     public int wallID2;
-    public List<int> wallIDs;
+    public List<int> wallIDs; // Updated to contain new ActiveWalls IDs
+                              // on ActiveWalls.OnValueChanged
+    public List<int> prevActiveWallIDs;
 
     public DiskLogger diskLogger;
     public TrialHandler trialHandler;
@@ -149,16 +152,25 @@ public class WallTrigger : NetworkBehaviour
         
         // Check if the GameObject that entered the trigger was the local client player's
         bool isTrialEnderClient = false;
+        Debug.Log("IsLocalPlayer of interacting object at time of OnTriggerEnter is: " 
+                    + interactingObject.GetComponent<NetworkObject>().IsLocalPlayer);
         if (interactingObject.GetComponent<NetworkObject>() != null
          && interactingObject.GetComponent<NetworkObject>().IsLocalPlayer) isTrialEnderClient = true;
 
+        Debug.Log("isTrialEnderClient at time of if statement in OnTriggerEnter is " + isTrialEnderClient);
+
         
         // NEW LOGIC TO UPDATE THE NETWORKVARIABLE AND TRIGGER GAMEMANAGER LOGIC
+        // // Is this only ever true on the Host? Check behaviour of isLocalPlayer
         if (isTrialEnderClient == true)
         {
             gameManager.UpdateTriggerActivation(triggerID, NetworkManager.Singleton.LocalClientId);   
             Debug.Log("Trigger is entered on local client");
             Debug.Log($"LocalClientId at time of update is {NetworkManager.Singleton.LocalClientId}");
+        }
+        else
+        {
+            Debug.Log("As isTrialEnderClient is false, not updating trigger activation");
         }
 
         
@@ -182,6 +194,46 @@ public class WallTrigger : NetworkBehaviour
         //         break;
 
         // }
+    }
+
+    void OnTriggerStay(Collider interactingObject)
+    {   
+        
+        // if ActiveWalls has changed since previous frame (when this method was last run)
+        if (!prevActiveWallIDs.SequenceEqual(wallIDs))
+        {
+            // If the new ActiveWalls contains the wall that this script is attached to
+            if (gameManager.firstTriggerActivationThisTrial.Value && wallIDs.Contains(triggerID))
+            {
+                // Check if the GameObject present in the trigger at time of change was the local player's
+                bool isTrialEnderClient = false;
+                Debug.Log("IsLocalPlayer of interacting object at time of OnTriggerStay logic is: " 
+                            + interactingObject.GetComponent<NetworkObject>().IsLocalPlayer);
+                if (interactingObject.GetComponent<NetworkObject>() != null
+                && interactingObject.GetComponent<NetworkObject>().IsLocalPlayer) isTrialEnderClient = true;
+
+                Debug.Log("isTrialEnderClient at time of if statement in OnTriggerStay is " + isTrialEnderClient);
+
+                // // Is this only ever true on the Host? Check behaviour of isLocalPlayer
+                if (isTrialEnderClient == true)
+                {
+                    // Update TriggerActivation with the trigger that this player entered and is stil occupying
+                    // since the before this trial start
+                    gameManager.UpdateTriggerActivation(triggerID, NetworkManager.Singleton.LocalClientId);   
+                    Debug.Log("Relevant trigger is already occupied on local client");
+                    Debug.Log($"LocalClientId at time of update is {NetworkManager.Singleton.LocalClientId}");
+                }
+                else
+                {
+                    Debug.Log("As isTrialEnderClient is false, not updating trigger activation");
+                }
+            }
+        }
+
+
+        // Each frame, update the previous ActiveWall IDs variable to be queried next frame
+        // Does this have high overhead? 
+        prevActiveWallIDs = wallIDs;
     }
 
 

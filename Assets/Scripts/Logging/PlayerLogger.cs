@@ -18,6 +18,7 @@ public GameObject player;
 public Action<bool> playerSpawned;
 public GameManager gameManager;
 public LoggingEvents loggingEvents;
+
     public override void OnNetworkSpawn() {
             
             
@@ -26,7 +27,8 @@ public LoggingEvents loggingEvents;
         diskLogger = FindObjectOfType<DiskLogger>();
         loggingEvents = FindObjectOfType<LoggingEvents>();
 
-
+        // Careful here, we're not explicitly specifying the order of the subscription
+        // and the invoke
         loggingEvents.loggingEventsSubscribed += StartPlayerLogger;
 
     }
@@ -39,13 +41,17 @@ public LoggingEvents loggingEvents;
         does not even need a player reference passed
         First line of OnNetworkSpawn can be to call a method in GameManager or LoggingEvents that subscribes to  */
         // Actually should not be necessary, as logging will only happen on the host
-        if (IsLocalPlayer) {
+        if (player.GetComponent<NetworkObject>().IsLocalPlayer && player != null) {
             Debug.Log("Local player; beginning logging");
             diskLogger.StartLogger();
             StartCoroutine("LogPos");
         }
         else {
             Debug.Log("NOT local player");
+            if (player == null)
+            {
+                Debug.Log("player not initialised");
+            }
         }
     }
 

@@ -287,6 +287,11 @@ public class TrialHandler : NetworkBehaviour
         // Lights up
         GameObject.Find("DirectionalLight").GetComponent<Light>().intensity = General.globalIlluminationHigh;
 
+        // Reset the firstTriggerThisTrial variable 
+        // firstTriggerThisTrial is a NetworkVariable, so use a ServerRPC
+        // gameManager.firstTriggerActivationThisTrial.Value = true;
+        gameManager.UpdateFirstTriggerActivationThisTrialServerRPC(true);
+
         // Variable delay period before slice onset
         var sliceOnsetDelay = Random.Range(General.trialStartDurationMin, General.trialStartDurationMax);
         yield return new WaitForSeconds(sliceOnsetDelay);
@@ -341,7 +346,7 @@ public class TrialHandler : NetworkBehaviour
         // Score.cs uses this to update the score display on the canvas
         // Update the score popup text in ScorePopup.cs
         scoreChange?.Invoke(increment);
-        gameManager.UpdateScoresServerRPC(increment);
+        gameManager.UpdateScoresServerRPC(increment, NetworkManager.Singleton.LocalClientId);
         
 
         // Record whether it was this client that ended the current trial
