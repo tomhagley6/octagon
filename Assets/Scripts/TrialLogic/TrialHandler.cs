@@ -177,6 +177,12 @@ public class TrialHandler : NetworkBehaviour
                 break;
         }
 
+        // NEW
+        // Assign interaction colour to the centre of the wall
+        Transform wall1Centre = wall1.transform.Find("InteractionZone");
+        wall1Centre.GetComponent<Renderer>().materials[0].color = General.wallInteractionZoneColour;
+        Transform wall2Centre = wall2.transform.Find("InteractionZone");
+        wall2Centre.GetComponent<Renderer>().materials[0].color = General.wallInteractionZoneColour;
 
         // Invoke any callback functions associated with slice onset
         // NB: Slice onset here is defined as when ColourWalls runs on the server
@@ -230,7 +236,17 @@ public class TrialHandler : NetworkBehaviour
 
         // Reset wall colours back to their previously-saved defaults
         highWall.GetComponent<Renderer>().materials[0].color = defaultWallColour; 
-        lowWall.GetComponent<Renderer>().materials[0].color = defaultWallColour;   
+        lowWall.GetComponent<Renderer>().materials[0].color = defaultWallColour;  
+
+        // Reset interaction zone back to full transparency
+        GameObject wall1Centre = highWall.transform.Find("InteractionZone").gameObject;
+        GameObject wall2Centre = lowWall.transform.Find("InteractionZone").gameObject;
+        Color wallCentreColor = wall1Centre.GetComponent<Renderer>().materials[0].color;
+        wallCentreColor.a = 0f;
+        wall1Centre.GetComponent<Renderer>().materials[0].color = wallCentreColor;
+        wall2Centre.GetComponent<Renderer>().materials[0].color = wallCentreColor;
+
+
     }
     
     
@@ -287,7 +303,7 @@ public class TrialHandler : NetworkBehaviour
         // Lights up
         GameObject.Find("DirectionalLight").GetComponent<Light>().intensity = General.globalIlluminationHigh;
 
-        // Reset the firstTriggerThisTrial variable 
+        // Reset the firstTriggerThisTrial variable with the new trial
         // firstTriggerThisTrial is a NetworkVariable, so use a ServerRPC
         // gameManager.firstTriggerActivationThisTrial.Value = true;
         gameManager.UpdateFirstTriggerActivationThisTrialServerRPC(true);
