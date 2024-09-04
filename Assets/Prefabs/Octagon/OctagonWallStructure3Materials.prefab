@@ -62,10 +62,39 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 17120d8aa6d3a0e66857dc863c981f2e, type: 2}
     - target: {fileID: 919132149155446097, guid: 85981558c9b16fbf9a3e0675f6031208, type: 3}
       propertyPath: m_Name
-      value: octagon_wall_two-material_open-centre
+      value: OctagonWallStructure3Materials
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 85981558c9b16fbf9a3e0675f6031208, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -8419635596103792974}
   m_SourcePrefab: {fileID: 100100000, guid: 85981558c9b16fbf9a3e0675f6031208, type: 3}
+--- !u!1 &7772495659566108894 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 85981558c9b16fbf9a3e0675f6031208, type: 3}
+  m_PrefabInstance: {fileID: 7429842411099598223}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &-8419635596103792974
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7772495659566108894}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
