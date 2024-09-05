@@ -192,6 +192,10 @@ public class GameManager : SingletonNetwork<GameManager>
 
         
         /// WALL NETWORKVARIABLE
+        
+        // REMOVED
+        // Having TriggerActivationAuthorised should remove the need to manually activate and
+        // deactivate WallTriggers on each trial
         // Subscribe to the change in value for activeWalls NetworkVariable with a method 
         // which will update our class variables for the current active wall1 and wall2
         activeWalls.OnValueChanged += ActiveWallsHandler_OnWallChange;
@@ -200,6 +204,8 @@ public class GameManager : SingletonNetwork<GameManager>
         wallID1 = activeWalls.Value.wall1;
         wallID2 = activeWalls.Value.wall2;
 
+        // REMOVED
+        // Seems to be a duplicate of the method in TrialLogic? Didn't realise I had 2
         /* Subscribe OnTriggerEntered Action with a callback method that 
         deactivates the walls on this trial
         To prevent re-entry of relevant walls within the same trial */

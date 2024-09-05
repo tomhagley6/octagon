@@ -303,11 +303,6 @@ public class TrialHandler : NetworkBehaviour
         // Lights up
         GameObject.Find("DirectionalLight").GetComponent<Light>().intensity = General.globalIlluminationHigh;
 
-        // Reset the firstTriggerThisTrial variable with the new trial
-        // firstTriggerThisTrial is a NetworkVariable, so use a ServerRPC
-        // gameManager.firstTriggerActivationThisTrial.Value = true;
-        gameManager.UpdateFirstTriggerActivationThisTrialServerRPC(true);
-
         // Variable delay period before slice onset
         var sliceOnsetDelay = Random.Range(General.trialStartDurationMin, General.trialStartDurationMax);
         yield return new WaitForSeconds(sliceOnsetDelay);
@@ -316,6 +311,12 @@ public class TrialHandler : NetworkBehaviour
         // Activate this only after the variable delay
         gameManager.UpdateActiveWalls(newWalls);
         isTrialEnderClient = false;
+
+        // Reset the firstTriggerThisTrial variable with the new trial
+        // Left until last to avoid having this conditional reset before active walls are updated
+        // firstTriggerThisTrial is a NetworkVariable, so use a ServerRPC
+        // gameManager.firstTriggerActivationThisTrial.Value = true;
+        gameManager.UpdateFirstTriggerActivationThisTrialServerRPC(true);
     }
 
 

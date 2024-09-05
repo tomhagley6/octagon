@@ -94,6 +94,8 @@ public class WallTrigger : NetworkBehaviour
             Debug.Log("WallIDs have been corrected in WallTrigger");
         }
         
+        // REMOVED
+        // In theory this issue should be dealt with by only having the server accept one authorised trigger entry per trial
         /* Subscribe OnTriggerEntered Action with a callback function that 
         deactivates the walls on this trial
         To prevent re-entry of relevant walls within the same trial */
