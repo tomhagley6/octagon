@@ -462,8 +462,8 @@ public class GameManager : SingletonNetwork<GameManager>
                 Collider collider = trigger.GetComponent<Collider>();
                 if (collider.enabled == false)
                 {
-                    collider.enabled = true;
-                    Debug.Log($"Collider for wall {trigger.GetComponent<WallTrigger>().triggerID} re-enabled");
+                    // collider.enabled = true;
+                    // Debug.Log($"Collider for wall {trigger.GetComponent<WallTrigger>().triggerID} re-enabled");
                 }
             }
         }
@@ -675,7 +675,7 @@ public class GameManager : SingletonNetwork<GameManager>
             WallTrigger wallTrigger = trigger.GetComponent<WallTrigger>();
             if (wallTrigger != null && wallTrigger.triggerID == wallID)
             { 
-                wallTrigger.collider.enabled = false;
+                // wallTrigger.collider.enabled = false;
             }
         }
     }

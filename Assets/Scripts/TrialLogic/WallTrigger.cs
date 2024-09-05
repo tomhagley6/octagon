@@ -250,7 +250,7 @@ public class WallTrigger : NetworkBehaviour
             WallTrigger wallTrigger = trigger.GetComponent<WallTrigger>();
             if (wallTrigger != null && wallTrigger.triggerID == wallID)
             { 
-                wallTrigger.collider.enabled = false;
+                // wallTrigger.collider.enabled = false;
             }
         }
     }
