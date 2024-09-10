@@ -1,6 +1,8 @@
 using System;
 using Globals;
+using Unity.Mathematics;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -76,6 +78,14 @@ public class PlayerMovement : NetworkBehaviour
         // These axes also work by default with controllers
         float inputX = Input.GetAxis("Horizontal");
         float inputZ = Input.GetAxis("Vertical");
+
+        // Keep the same vector magnitude when moving diagonally, as horizontall/vertically
+        // By halfing the contribution of each axis to the magnitude, when both are active
+        if (math.abs(inputX) > 0 && math.abs(inputZ) > 0)
+        {
+            inputX = inputX * (float)math.sqrt(0.5);
+            inputZ = inputZ * (float)math.sqrt(0.5);
+        }
 
         // Create overall vector for current frame movement
         Vector3 planarMovement = transform.right * inputX + transform.forward * inputZ;
