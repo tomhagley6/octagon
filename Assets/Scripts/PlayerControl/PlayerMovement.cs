@@ -120,7 +120,7 @@ public class PlayerMovement : NetworkBehaviour
         else
         {
             animator.SetBool("isRunning", false);
-            Debug.LogWarning("isRunning is false");
+            Debug.LogWarning("isRunning is false"); //
         }
 
         // Apply gravity
