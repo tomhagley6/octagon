@@ -18,6 +18,9 @@ public class AssignCamera : NetworkBehaviour
     public ulong clientId;
     private bool playerLoaded = false;
 
+
+    // Instantiate the camera prefab and attach it to the local player object
+    // Also call ColourPlayer
     public override void OnNetworkSpawn()
     {   
         // Instantiate the camera prefab
@@ -105,11 +108,16 @@ public class AssignCamera : NetworkBehaviour
     {
         Debug.Log("Start CreateCamera");
 
+        // Player objects are created by NetworkManager (set in Inspector)
+        // Wait for this object to exist before attempting to attach the player camera
         yield return new WaitUntil(() => networkManager.LocalClient.PlayerObject != null);
         
         Debug.Log("CreateCamera WaitUntil finished");
 
+        // Load the prefab from the Assets/Resources folder
+        // See this folder for all camera parameters
         camera = Resources.Load<GameObject>(prefabName);
+
         // Create client-side instance of PlayerCamera
         if (camera != null) camInstance = Instantiate(camera);
         else 
@@ -125,6 +133,8 @@ public class AssignCamera : NetworkBehaviour
 
     }
 
+
+    // Set the colour of the local player
     public void ColourHostPlayer()
     {
         var localPlayer = networkManager.LocalClient.PlayerObject.transform;

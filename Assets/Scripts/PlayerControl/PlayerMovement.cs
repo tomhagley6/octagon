@@ -79,21 +79,27 @@ public class PlayerMovement : NetworkBehaviour
         float inputX = Input.GetAxis("Horizontal");
         float inputZ = Input.GetAxis("Vertical");
 
-        // Keep the same vector magnitude when moving diagonally, as horizontall/vertically
-        // By halfing the contribution of each axis to the magnitude, when both are active
-        if (math.abs(inputX) > 0 && math.abs(inputZ) > 0)
-        {
-            inputX = inputX * (float)math.sqrt(0.5);
-            inputZ = inputZ * (float)math.sqrt(0.5);
-        }
+        // Naive attempt
+        // // Keep the same vector magnitude when moving diagonally, as horizontall/vertically
+        // // By halfing the contribution of each axis to the magnitude, when both are active
+        // if (math.abs(inputX) > 0 && math.abs(inputZ) > 0)
+        // {
+        //     inputX = inputX * (float)math.sqrt(0.5);
+        //     inputZ = inputZ * (float)math.sqrt(0.5);
+        // }
 
-        // Create overall vector for current frame movement
+        // Normalise the resulting vector to 1 
+        // NB. GetAxis does a smoothing on input values to give a natural feel to stopping
+        // Therefore we only want to normalise resultant vector magnitudes > 1, or all
+        // smoothed values between 0 and 1 will be set to 1, replacing gradual slow down 
+        // with sudden halt
         Vector3 planarMovement = transform.right * inputX + transform.forward * inputZ;
+        if (planarMovement.magnitude > 1) {planarMovement.Normalize();}
 
         // Use Character Controller Move method to apply a translation defined by move Vector3
         controller.Move(planarMovement * speed * Time.deltaTime);
 
-        // It's time to stop defying gravity (I think I'll try applying gravity)
+        // Apply gravity
         /* SUVAT equation for gravity: v = u + a*t
         n.b. that here Time.deltaTime is the 't' in the equation
         it is NOT the term used to account for framerate differences */ 

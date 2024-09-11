@@ -5,6 +5,8 @@ using System.Threading;
 using System.Collections.Concurrent;
 using Globals;
 
+// Video recording of gameplay session from the topdown camera
+
 public class CaptureCamera : MonoBehaviour
 {
     public Camera captureCamera;
@@ -20,7 +22,8 @@ public class CaptureCamera : MonoBehaviour
     private bool isActive = false;
     private string persistentDataPath; // storage location for output images
 
-    // Begin capturing frames and setup a background filewriting thread
+    // Begin capturing frames and setup a background filewriting thread if inactive
+    // Stop capturing frames and close the filewriting thread if active
     private void ToggleRecording(bool isActive)
     {
         // Start recording if not already active
@@ -56,6 +59,7 @@ public class CaptureCamera : MonoBehaviour
         }
     }
 
+    // Listen for recording toggle
     private void Update()
     {
         if (Input.GetKeyDown(General.toggleRecording))
@@ -96,7 +100,8 @@ public class CaptureCamera : MonoBehaviour
         // Initialise a new Texture2D object with our specified dims and 3 8-bit colour channels
         Texture2D frame = new Texture2D(captureWidth, captureHeight, TextureFormat.RGB24, false);
 
-        // Read pixel data from a crop of our current active RenderTexture and apply this read to frame
+        // Read pixel data from a crop of our current active RenderTexture and apply this read to the new Texture2D
+        // Here source is just the crop dimensions, the actual source image is assumed the active RenderTexture
         frame.ReadPixels(new Rect(0, 0, captureWidth, captureHeight), 0, 0);
         frame.Apply();
 

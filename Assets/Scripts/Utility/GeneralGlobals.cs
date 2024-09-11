@@ -40,7 +40,7 @@ namespace Globals
 
 
         // movement
-        public static float mouseSensitivity = 1000f;
+        public static float mouseSensitivity = 100f;
         public static float neckClampMin = -60f;
         public static float neckClampMax = 90f;
 
