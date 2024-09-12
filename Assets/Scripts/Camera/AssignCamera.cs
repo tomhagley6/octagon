@@ -140,7 +140,7 @@ public class AssignCamera : NetworkBehaviour
         var localPlayer = networkManager.LocalClient.PlayerObject.transform;
         if (NetworkManager.Singleton.LocalClientId == 0 || IsServer)
         {
-           localPlayer.GetChild(0).GetComponent<Renderer>().material.color = Color.yellow;
+        //    localPlayer.GetChild(0).GetComponent<Renderer>().material.color = Color.yellow;
         }
         else
         {
@@ -152,7 +152,7 @@ public class AssignCamera : NetworkBehaviour
         // Random rnd = new Random();
         foreach(GameObject p in players)
         {
-            p.transform.GetChild(0).GetComponent<Renderer>().material.color = Random.ColorHSV();
+            // p.transform.GetChild(0).GetComponent<Renderer>().material.color = Random.ColorHSV();
         }
     }
 
