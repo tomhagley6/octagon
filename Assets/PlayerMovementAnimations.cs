@@ -42,7 +42,7 @@ public class PlayerMovementAnimations : MonoBehaviour
         float horizontal = localMovement.x;
         float vertical = localMovement.z;
 
-        Debug.Log($"horizontal is: {horizontal}, vertical is {vertical}");
+        // Debug.Log($"horizontal is: {horizontal}, vertical is {vertical}");
         
 
         animator.SetFloat("Horizontal", horizontal);
