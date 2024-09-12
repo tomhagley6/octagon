@@ -115,12 +115,12 @@ public class PlayerMovement : NetworkBehaviour
         if (planarMovement.magnitude > 0)
         {
             animator.SetBool("isRunning", true);
-            Debug.LogWarning("isRunning is true");
+            // Debug.LogWarning("isRunning is true");
         }
         else
         {
             animator.SetBool("isRunning", false);
-            Debug.LogWarning("isRunning is false"); //
+            // Debug.LogWarning("isRunning is false"); //
         }
 
         // Apply gravity
