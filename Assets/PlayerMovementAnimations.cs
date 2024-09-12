@@ -8,6 +8,7 @@ public class PlayerMovementAnimations : MonoBehaviour
 
     public Animator animator;
     private Vector3 previousPosition;
+    bool smallDifference = true;
 
 
     void Start()
@@ -22,6 +23,17 @@ public class PlayerMovementAnimations : MonoBehaviour
         // calculate movement direction
         Vector3 worldMovementDirection = transform.position - previousPosition;
 
+        Debug.LogWarning(worldMovementDirection.magnitude);
+        if (worldMovementDirection.magnitude > 1e-02)
+        {
+            smallDifference = false;
+            Debug.LogWarning("smallDifference is false");
+        }
+        else
+        {
+            smallDifference = true;
+        }
+
         // Update previous position for the next frame
         previousPosition = transform.position;
 
@@ -32,11 +44,11 @@ public class PlayerMovementAnimations : MonoBehaviour
         Vector3 localMovement = localMovementDirection.normalized;
 
         // Send movement information to the animator
-        UpdateAnimation(localMovement);
+        UpdateAnimation(localMovement, smallDifference);
 
     }
 
-    void UpdateAnimation(Vector3 localMovement)
+    void UpdateAnimation(Vector3 localMovement, bool smallDifference)
     {
         // Calculate direction (forward, backward, diagonal, etc.)
         float horizontal = localMovement.x;
@@ -44,8 +56,15 @@ public class PlayerMovementAnimations : MonoBehaviour
 
         // Debug.Log($"horizontal is: {horizontal}, vertical is {vertical}");
         
-
-        animator.SetFloat("Horizontal", horizontal);
-        animator.SetFloat("Vertical", vertical);
+        if (!smallDifference)
+        {
+            animator.SetFloat("Horizontal", horizontal);
+            animator.SetFloat("Vertical", vertical);
+        }
+        else
+        {
+            animator.SetFloat("Horizontal", 0);
+            animator.SetFloat("Vertical", 0);
+        }
     }
 }
