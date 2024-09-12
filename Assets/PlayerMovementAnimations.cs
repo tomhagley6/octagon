@@ -23,11 +23,11 @@ public class PlayerMovementAnimations : MonoBehaviour
         // calculate movement direction
         Vector3 worldMovementDirection = transform.position - previousPosition;
 
-        Debug.LogWarning(worldMovementDirection.magnitude);
+        // Debug.LogWarning(worldMovementDirection.magnitude);
         if (worldMovementDirection.magnitude > 1e-02)
         {
             smallDifference = false;
-            Debug.LogWarning("smallDifference is false");
+            // Debug.LogWarning("smallDifference is false");
         }
         else
         {
