@@ -2,7 +2,8 @@ using System;
 using Globals;
 using Unity.Mathematics;
 using Unity.Netcode;
-using Unity.VisualScripting;
+// using Unity.VisualScripting;
+// using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
 
 
@@ -30,6 +31,8 @@ public class PlayerMovement : NetworkBehaviour
     private Transform playerBody;
     private GameObject canvas;
     public Action togglePlayerVisible;
+    
+    public Animator animator;
  
 
     public override void OnNetworkSpawn()
@@ -51,8 +54,18 @@ public class PlayerMovement : NetworkBehaviour
         networkManager.LocalClient.PlayerObject.transform.position = new Vector3(0,10,0);
         playerBody = gameObject.transform;
         canvas = GameObject.Find("Canvas");
+        // animator = GetComponent<Animator>();
+
 
         togglePlayerVisible += TogglePlayerVisibleListener;
+
+        CreateCamera(); // TODO, create the camera as this script initiates, which means we have a player body to follow
+    }
+
+    void CreateCamera()
+    {
+        // TODO
+        // Similar code to in AssignCamera
     }
 
 
@@ -99,6 +112,17 @@ public class PlayerMovement : NetworkBehaviour
         // Use Character Controller Move method to apply a translation defined by move Vector3
         controller.Move(planarMovement * speed * Time.deltaTime);
 
+        if (planarMovement.magnitude > 0)
+        {
+            animator.SetBool("isRunning", true);
+            // Debug.LogWarning("isRunning is true");
+        }
+        else
+        {
+            animator.SetBool("isRunning", false);
+            // Debug.LogWarning("isRunning is false"); //
+        }
+
         // Apply gravity
         /* SUVAT equation for gravity: v = u + a*t
         n.b. that here Time.deltaTime is the 't' in the equation
@@ -107,12 +131,21 @@ public class PlayerMovement : NetworkBehaviour
 
         // Jumping
         if (Input.GetButtonDown("Jump") && isGrounded)
+        {
             // Velocity change required for jump height equation
             // Source: Brackeys - First Person Movement in Unity
             yAxisVelocity.y += Mathf.Sqrt(-2f * jumpHeight * -gravity); 
+            animator.SetBool("isJumping", true);
+        }
+        else
+        {
+            animator.SetBool("isJumping", false);
+        }
 
         // Now apply resultant y-axis velocity, account for framerate
         controller.Move(yAxisVelocity * Time.deltaTime);
+
+        // Animations
     
     }   
 
@@ -123,12 +156,24 @@ public class PlayerMovement : NetworkBehaviour
         
         UpdateMovement();
 
+        UpdateCameraPosition();
+
         // Allow manual toggle of player visibility
         if (Input.GetKeyDown(General.togglePlayer))
         {
             togglePlayerVisible();
         }
         
+    }
+
+    void UpdateCameraPosition()
+    {
+        // TODO
+
+        // set transform point of camera to be slightly ahead of player
+        // https://www.youtube.com/watch?v=naaVpEyr4RA
+        // possibly this only needs to be done once?
+
     }
 
 

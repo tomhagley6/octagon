@@ -54,7 +54,7 @@ namespace LoggingClasses
             {
                 {"trialNum", trialNum},
                 {"trialType", trialType.Value}, 
-                {"playerInfo", playerPosDict}
+                {"playerPosition", playerPosDict}
             };
         }
 

@@ -48,7 +48,6 @@ public class ToggleCamera : NetworkBehaviour
     public void toggleCameraTriggerListener()
     {
         
-        toggleCameraTrigger = !toggleCameraTrigger;
         if (toggleCameraTrigger)
         {
             topDownCam.depth = Camera.main.depth - 1;
@@ -62,12 +61,13 @@ public class ToggleCamera : NetworkBehaviour
             topDownCam.targetDisplay = 1;
             Camera.main.targetDisplay = 0;
         }   
+        toggleCameraTrigger = !toggleCameraTrigger;
     }
 
 
     void Update()
     {
-        // Allow manual toggle of mouse lock state
+        // Allow manual toggle of camera
         if (Input.GetKeyDown(General.toggleCamera))
         {
             toggleCamera();
