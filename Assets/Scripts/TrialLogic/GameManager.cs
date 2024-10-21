@@ -691,12 +691,23 @@ public class GameManager : SingletonNetwork<GameManager>
         int anchorWallIndex = Random.Range(0, walls.Count);
         // Debug.Log($"anchor walls is {anchorWallIndex}");
 
+        // Replaced with a weighted list to bias towards wallSep=1 trials
+        // // Randomly choose a wall separation value for this trial
+        // int i = General.wallSeparations[Random.Range(0, General.wallSeparations.Count)];
+
+
+        // Create weighted list of wall separation values to draw from 
+        WeightedList<string> wallSeparationsWeighted = new();
+        for (int i = 0; i < General.wallSeparations.Count; i++)
+        {
+            wallSeparationsWeighted.Add(General.wallSeparations[i], General.wallSeparationsProbabilities[i]);
+        }
+        // Query the weighted list for this trial's wall separation
+        wallSeparation = wallSeparationsWeighted.Next();
         
-        // Randomly choose a wall separation value for this trial
-        int i = General.wallSeparations[Random.Range(0, General.wallSeparations.Count)];
 
         // choose a random second wall that is consistent with anchor wall for this trial type
-        int wallIndexDiff = new List<int>{-i, i}[Random.Range(0, 2)];
+        int wallIndexDiff = new List<int>{-wallSeparation, wallSeparation}[Random.Range(0, 2)];
         // Debug.Log($"wallIndexDiff = {wallIndexDiff}");
         int dependentWallIndex = anchorWallIndex + wallIndexDiff;
         // Debug.Log($"naive dependent wall is walls is {dependentWallIndex}");
