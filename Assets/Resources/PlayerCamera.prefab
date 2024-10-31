@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 7285429163594190396}
   - component: {fileID: 407985838471721892}
   - component: {fileID: 6774969042331722791}
+  - component: {fileID: -3198529440930816959}
+  - component: {fileID: 486424479694939262}
   m_Layer: 0
   m_Name: PlayerCamera
   m_TagString: MainCamera
@@ -129,3 +131,30 @@ MonoBehaviour:
   playerBody: {fileID: 0}
   networkManager: {fileID: 0}
   unlockMouseTrigger: 0
+--- !u!114 &-3198529440930816959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6136897480289246582}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8afafaae642171d47bf3383a1c6a03f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerCamera: {fileID: 0}
+  wall8Centre: {x: 0, y: 0, z: 0}
+--- !u!114 &486424479694939262
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6136897480289246582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eaeec672c1da3f43941017687fcd25c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerCamera: {fileID: 0}
