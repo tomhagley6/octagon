@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 7285429163594190396}
   - component: {fileID: 407985838471721892}
   - component: {fileID: 6774969042331722791}
+  - component: {fileID: 486424479694939262}
+  - component: {fileID: 1395623634295999046}
   m_Layer: 0
   m_Name: PlayerCamera
   m_TagString: MainCamera
@@ -106,7 +108,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 981360803
+  GlobalObjectIdHash: 4183896318
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -129,3 +131,29 @@ MonoBehaviour:
   playerBody: {fileID: 0}
   networkManager: {fileID: 0}
   unlockMouseTrigger: 0
+--- !u!114 &486424479694939262
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6136897480289246582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eaeec672c1da3f43941017687fcd25c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerCamera: {fileID: 0}
+--- !u!114 &1395623634295999046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6136897480289246582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a16c47aba9c0af04cb1199885ae2fbcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerCamera: {fileID: 0}

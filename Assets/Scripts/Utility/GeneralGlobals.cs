@@ -23,8 +23,10 @@ namespace Globals
         public static List<int> trialTypeProbabilities = new List<int>{80, 10, 10};
         public static List<int> wallSeparations = new List<int>{1,2,4};   // index difference between trial walls
                                                                           // random choice within list
-        public static Color wallHighColour = Color.red;
-        public static Color wallLowColour = Color.blue;
+
+        public static List<int> wallSeparationsProbabilities = new List<int>{50,25,25};
+        public static Color wallHighColour = Color.blue; // Color.red
+        public static Color wallLowColour = Color.red;  // Color.blue
         public static Color wallInteractionZoneColour = new Color(1, 215/255f, 0, 129/255f);
         public static bool automaticStartTrial = false;
 

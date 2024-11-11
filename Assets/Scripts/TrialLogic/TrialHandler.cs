@@ -154,6 +154,7 @@ public class TrialHandler : NetworkBehaviour
 
         // Save the current colour of the wall before overwriting it 
         // This should be the first material, the wall face
+        // (May be cleaner to specify this variable in a higher scope. But works fine atm)
         defaultWallColour = wall1.GetComponent<Renderer>().materials[0].color;
         Debug.Log($"Default wall colour is saved as {defaultWallColour}");
         Debug.Log($"ColourWalls() uses {wallID1} and {wallID2} as wall values");
