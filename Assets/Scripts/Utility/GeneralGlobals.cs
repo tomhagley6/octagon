@@ -24,7 +24,7 @@ namespace Globals
         public static List<int> wallSeparations = new List<int>{1,2,4};   // index difference between trial walls
                                                                           // random choice within list
 
-        public static List<int> wallSeparationsProbabilities = new List<int>{30,50,20};
+        public static List<int> wallSeparationsProbabilities = new List<int>{50,25,25};
         public static Color wallHighColour = Color.red; // Color.blue
         public static Color wallLowColour = Color.blue;  // Color.red
         public static Color wallInteractionZoneColour = new Color(1, 215/255f, 0, 129/255f);
