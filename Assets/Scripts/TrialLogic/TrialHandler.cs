@@ -176,6 +176,12 @@ public class TrialHandler : NetworkBehaviour
                 wall1.GetComponent<Renderer>().materials[0].color = General.wallLowColour;
                 wall2.GetComponent<Renderer>().materials[0].color = General.wallLowColour;
                 break;
+            
+            case var value when value == General.riskyChoice:
+                wall1.GetComponent<Renderer>().materials[0].color = General.wallRiskyColour;
+                wall2.GetComponent<Renderer>().materials[0].color = General.wallLowColour;
+                break;
+
         }
 
         // NEW

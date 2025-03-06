@@ -1,6 +1,8 @@
 
 using System.Collections.Generic;
+using Mono.CSharp;
 using Unity.Collections;
+using UnityEditor;
 using UnityEngine;
 
 namespace Globals
@@ -19,14 +21,16 @@ namespace Globals
 
         public static string highScoreRewardType = "High";
         public static string lowScoreRewardType = "Low";
-        public static List<string> trialTypes = new List<string>{"HighLow", "ForcedHigh", "ForcedLow"};
-        public static List<int> trialTypeProbabilities = new List<int>{80, 10, 10};
+        public static string zeroRewardType = "Zero";
+        public static List<string> trialTypes = new List<string>{"HighLow", "ForcedHigh", "ForcedLow", "RiskyChoice"};
+        public static List<int> trialTypeProbabilities = new List<int>{40, 10, 10, 40};
         public static List<int> wallSeparations = new List<int>{1,2,4};   // index difference between trial walls
                                                                           // random choice within list
 
         public static List<int> wallSeparationsProbabilities = new List<int>{50,25,25};
-        public static Color wallHighColour = Color.red; // Color.blue
-        public static Color wallLowColour = Color.blue;  // Color.red
+        public static Color wallHighColour = Color.magenta; // Color.blue
+        public static Color wallLowColour = Color.cyan;  // Color.red
+        public static Color wallRiskyColour = Color.yellow;
         public static Color wallInteractionZoneColour = new Color(1, 215/255f, 0, 129/255f);
         public static bool automaticStartTrial = false;
 
@@ -62,6 +66,7 @@ namespace Globals
         public static FixedString32Bytes highLow = new("HighLow");
         public static FixedString32Bytes forcedHigh = new("ForcedHigh");
         public static FixedString32Bytes forcedLow = new("ForcedLow");
+        public static FixedString32Bytes riskyChoice = new("RiskyChoice");
 
     }
 }

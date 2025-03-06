@@ -622,6 +622,7 @@ public class GameManager : SingletonNetwork<GameManager>
         // LVs
         int score = 0;
         string rewardType = "";
+        float probability = 0.4f;
 
         switch (trialType.Value)
         {
@@ -643,6 +644,23 @@ public class GameManager : SingletonNetwork<GameManager>
 
             score = General.lowScore;
             rewardType = General.lowScoreRewardType;
+
+            break;
+
+            case var value when value == General.riskyChoice:
+
+                bool isRiskyWin = UnityEngine.Random.value < probability;
+
+                if (triggerID == highWallTriggerID)
+                {
+                   score = isRiskyWin ? General.highScore : 0;
+                   rewardType = isRiskyWin ? General.highScoreRewardType : General.zeroRewardType; 
+                }
+                else
+                {
+                    score = General.lowScore;
+                    rewardType = General.lowScoreRewardType;
+                }
 
             break;
         }
