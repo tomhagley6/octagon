@@ -28,9 +28,9 @@ namespace Globals
                                                                           // random choice within list
 
         public static List<int> wallSeparationsProbabilities = new List<int>{50,25,25};
-        public static Color wallHighColour = Color.magenta; // Color.blue
-        public static Color wallLowColour = Color.cyan;  // Color.red
-        public static Color wallRiskyColour = Color.yellow;
+        public static Material wallHighColour; // Material for high wall
+        public static Material wallLowColour;  // Material for low wall
+        public static Material wallRiskyColour; // Material for risky wall
         public static Color wallInteractionZoneColour = new Color(1, 215/255f, 0, 129/255f);
         public static bool automaticStartTrial = false;
 
