@@ -47,7 +47,7 @@ namespace Globals
         
 
         // paths
-        public static string logFolder = @"C:\Users\tomha\Unity\risky-choice-octagon\risky-choice-data";
+        public static string logFolder = "/home/tom/Unity/data";
 
         // log formatting
         public static string logEntryFormat = "[{0}]:{1}";  // [tag]:data

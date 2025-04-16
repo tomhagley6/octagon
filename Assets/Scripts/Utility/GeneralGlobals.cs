@@ -18,11 +18,12 @@ namespace Globals
         public static Dictionary<int, int> repeatsDict = new Dictionary<int,int>{{highScore,3},
                                                                                  {lowScore,1}};  // Reward sound repeats
                                                                                                  // for each increment val
+        public static float probabilityRisky = 0.4f;
 
         public static string highScoreRewardType = "High";
         public static string lowScoreRewardType = "Low";
         public static string zeroRewardType = "Zero";
-        public static List<string> trialTypes = new List<string>{"HighLow", "ForcedHigh", "ForcedLow", "RiskyChoice"};
+        public static List<string> trialTypes = new List<string>{"HighLow", "ForcedHigh", "ForcedLow", "RiskyLow"};
         public static List<int> trialTypeProbabilities = new List<int>{40, 10, 10, 40};
         public static List<int> wallSeparations = new List<int>{1,2,4};   // index difference between trial walls
                                                                           // random choice within list
@@ -66,7 +67,7 @@ namespace Globals
         public static FixedString32Bytes highLow = new("HighLow");
         public static FixedString32Bytes forcedHigh = new("ForcedHigh");
         public static FixedString32Bytes forcedLow = new("ForcedLow");
-        public static FixedString32Bytes riskyChoice = new("RiskyChoice");
+        public static FixedString32Bytes riskyLow = new("riskyLow");
 
     }
 }
