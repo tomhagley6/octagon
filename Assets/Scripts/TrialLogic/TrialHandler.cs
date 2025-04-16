@@ -25,6 +25,10 @@ public class TrialHandler : NetworkBehaviour
    public event Action sliceOnset;  
    public event Action<int> scoreChange;
 
+   private Material[] highWallOriginalMaterials;
+   private Material[] lowWallOriginalMaterials;
+
+
 
     // Print current active walls for debugging purposes
     IEnumerator PrintWalls()
@@ -159,23 +163,32 @@ public class TrialHandler : NetworkBehaviour
         Debug.Log($"Default wall colour is saved as {defaultWallColour}");
         Debug.Log($"ColourWalls() uses {wallID1} and {wallID2} as wall values");
 
+        highWallOriginalMaterials = wall1.GetComponent<Renderer>().materials;
+        lowWallOriginalMaterials = wall2.GetComponent<Renderer>().materials;
+
         // Assign colours to the walls dependent on trial type
         switch (gameManager.trialType.Value)
         {
             case var value when value == General.highLow:
-                wall1.GetComponent<Renderer>().materials[0].color = General.wallHighColour;
-                wall2.GetComponent<Renderer>().materials[0].color = General.wallLowColour;
+                wall1.GetComponent<Renderer>().material = General.wallHighColour;
+                wall2.GetComponent<Renderer>().material = General.wallLowColour;
                 break;
 
             case var value when value == General.forcedHigh:
-                wall1.GetComponent<Renderer>().materials[0].color = General.wallHighColour;
-                wall2.GetComponent<Renderer>().materials[0].color = General.wallHighColour;
+                wall1.GetComponent<Renderer>().material = General.wallHighColour;
+                wall2.GetComponent<Renderer>().material = General.wallHighColour;
                 break;
 
             case var value when value == General.forcedLow:
-                wall1.GetComponent<Renderer>().materials[0].color = General.wallLowColour;
-                wall2.GetComponent<Renderer>().materials[0].color = General.wallLowColour;
+                wall1.GetComponent<Renderer>().material = General.wallLowColour;
+                wall2.GetComponent<Renderer>().material = General.wallLowColour;
                 break;
+            
+            case var value when value == General.riskyLow:
+                wall1.GetComponent<Renderer>().material = General.wallRiskyColour;
+                wall2.GetComponent<Renderer>().material = General.wallLowColour;
+                break;
+
         }
 
         // NEW
@@ -239,6 +252,8 @@ public class TrialHandler : NetworkBehaviour
         highWall.GetComponent<Renderer>().materials[0].color = defaultWallColour; 
         lowWall.GetComponent<Renderer>().materials[0].color = defaultWallColour;  
 
+        highWall.GetComponent<Renderer>().materials = highWallOriginalMaterials;
+        lowWall.GetComponent<Renderer>().materials = lowWallOriginalMaterials;
         // Reset interaction zone back to full transparency
         GameObject wall1Centre = highWall.transform.Find("InteractionZone").gameObject;
         GameObject wall2Centre = lowWall.transform.Find("InteractionZone").gameObject;
@@ -365,6 +380,9 @@ public class TrialHandler : NetworkBehaviour
         // Update the score popup text in ScorePopup.cs
         scoreChange?.Invoke(increment);
         gameManager.UpdateScoresServerRPC(increment, NetworkManager.Singleton.LocalClientId);
+        gameManager.UpdateWinnerScoreChangeServerRPC(increment);
+        Debug.Log($"winnerScoreChange updated with score {gameManager.winnerScoreChange.Value}");
+
         
 
         // Record whether it was this client that ended the current trial

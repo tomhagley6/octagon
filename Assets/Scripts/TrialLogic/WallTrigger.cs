@@ -11,10 +11,17 @@ using System.Collections;
 /* Pass in the current ordered active triggers and the current trial type (controlled by GameController)
 Then, use the trial type to decide how the trigger should respond to activation
 Also consider which trigger instance has been activated on trigger entry */
+public enum TrialType
+{
+    HighLowTrial,
+    riskyLowTrial
+}
+
 public class WallTrigger : NetworkBehaviour
 {
     public GameManager gameManager; 
-    private string trialType = "HighLowTrial"; // replace with globals
+    //private string trialType = "HighLowTrial"; // replace with globals
+    [SerializeField] private TrialType trialType;
     [SerializeField] private int highScore = 50; // globals
     [SerializeField] private int lowScore = 10; // globals
     IdentityAssignment identityAssignment;
@@ -263,8 +270,34 @@ public class WallTrigger : NetworkBehaviour
         Debug.Log("Entered WallTrialInteraction");
 
         // LVs
-        int score = triggerID == highWallTriggerID ? highScore : lowScore;
-        string rewardType = triggerID == highWallTriggerID ? "High" : "Low";
+        int score;
+        string rewardType;
+        float probability = 0.4f;
+
+        switch(trialType)
+        {
+            case TrialType.HighLowTrial:
+               score = (triggerID == highWallTriggerID) ? highScore : lowScore;
+               rewardType = (triggerID == highWallTriggerID) ? "High" : "Low";
+               break;
+
+            case TrialType.riskyLowTrial:
+               if (triggerID == highWallTriggerID)
+               {
+                score = (UnityEngine.Random.value < probability) ? highScore : 0;
+                rewardType = (triggerID == highWallTriggerID) ? "High" : "Zero";
+               }
+               else
+               {
+                score = lowScore;
+                rewardType = "Low";
+               }
+               break;
+            default: 
+               Debug.LogError("Unknown trial type");
+               return;
+
+        }
 
         // All clients wash their own walls, making use of the wall number NetworkVariable
         // and TrialActivation NetworkVariable
@@ -317,6 +350,27 @@ public class WallTrigger : NetworkBehaviour
         }
         else Debug.Log("No conditions met for HighLowTrial");
     
+    }
+
+    void riskyLowTrial(int wallIDHigh, int wallIDLow, int triggerID, bool isTrialEnderClient)
+    {
+        Debug.Log("riskyLowTrial running");
+
+        int highWallTriggerID = wallIDHigh;
+        int lowWallTriggerID = wallIDLow;
+
+        Debug.Log("Values riskyLowTrial received for high and low wall IDs are"
+        + $"{highWallTriggerID} and {lowWallTriggerID}");
+
+        if (triggerID == highWallTriggerID || triggerID == lowWallTriggerID)
+        {
+            for (int i = 0; i < wallIDs.Count; i++)
+                {
+                OnTriggerEntered?.Invoke(wallIDs[i]);
+                }
+            WallTrialInteraction(triggerID, highWallTriggerID, lowWallTriggerID, isTrialEnderClient);
+        }
+        else Debug.Log("No conditions met for riskyLowTrial");
     }
 
 }
