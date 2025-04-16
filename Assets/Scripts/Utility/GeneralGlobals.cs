@@ -1,6 +1,8 @@
 
 using System.Collections.Generic;
+using Mono.CSharp;
 using Unity.Collections;
+using UnityEditor;
 using UnityEngine;
 
 namespace Globals
@@ -16,17 +18,20 @@ namespace Globals
         public static Dictionary<int, int> repeatsDict = new Dictionary<int,int>{{highScore,3},
                                                                                  {lowScore,1}};  // Reward sound repeats
                                                                                                  // for each increment val
+        public static float probabilityRisky = 0.4f;
 
         public static string highScoreRewardType = "High";
         public static string lowScoreRewardType = "Low";
-        public static List<string> trialTypes = new List<string>{"HighLow", "ForcedHigh", "ForcedLow"};
-        public static List<int> trialTypeProbabilities = new List<int>{80, 10, 10};
+        public static string zeroRewardType = "Zero";
+        public static List<string> trialTypes = new List<string>{"HighLow", "ForcedHigh", "ForcedLow", "RiskyLow"};
+        public static List<int> trialTypeProbabilities = new List<int>{40, 10, 10, 40};
         public static List<int> wallSeparations = new List<int>{1,2,4};   // index difference between trial walls
                                                                           // random choice within list
 
         public static List<int> wallSeparationsProbabilities = new List<int>{50,25,25};
-        public static Color wallHighColour = Color.red; // Color.blue
-        public static Color wallLowColour = Color.blue;  // Color.red
+        public static Material wallHighColour; // Material for high wall
+        public static Material wallLowColour;  // Material for low wall
+        public static Material wallRiskyColour; // Material for risky wall
         public static Color wallInteractionZoneColour = new Color(1, 215/255f, 0, 129/255f);
         public static bool automaticStartTrial = false;
 
@@ -62,6 +67,7 @@ namespace Globals
         public static FixedString32Bytes highLow = new("HighLow");
         public static FixedString32Bytes forcedHigh = new("ForcedHigh");
         public static FixedString32Bytes forcedLow = new("ForcedLow");
+        public static FixedString32Bytes riskyLow = new("riskyLow");
 
     }
 }
