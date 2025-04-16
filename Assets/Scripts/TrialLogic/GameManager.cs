@@ -141,9 +141,11 @@ public class GameManager : SingletonNetwork<GameManager>
     public NetworkVariable<ushort> trialNum = new NetworkVariable<ushort>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     public NetworkVariable<bool> firstTriggerActivationThisTrial = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     public NetworkVariable<FixedString32Bytes> trialType = new NetworkVariable<FixedString32Bytes>("", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    public NetworkVariable<int> winnerScoreChange = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     public NetworkList<ulong> connectedClientIds;
     public NetworkList<int> scores;
+
 
 
     // // Methods
@@ -622,7 +624,7 @@ public class GameManager : SingletonNetwork<GameManager>
         // LVs
         int score = 0;
         string rewardType = "";
-        float probability = 0.4f;
+        float probability = General.probabilityRisky;
 
         switch (trialType.Value)
         {
@@ -647,7 +649,7 @@ public class GameManager : SingletonNetwork<GameManager>
 
             break;
 
-            case var value when value == General.riskyChoice:
+            case var value when value == General.riskyLow:
 
                 bool isRiskyWin = UnityEngine.Random.value < probability;
 
@@ -678,6 +680,7 @@ public class GameManager : SingletonNetwork<GameManager>
         if (isTrialEnderClient) {
             // Debug.Log($"EndTrial inputs: {score}, {highWallTriggerID}, {lowWallTriggerID}"
             //             + $" {triggerID}, {rewardType}, {isTrialEnderClient}");
+            Debug.Log($"winnerScoreChange updated with score {winnerScoreChange.Value}");
             trialHandler.EndTrial(score, isTrialEnderClient);
         }
 
@@ -891,6 +894,13 @@ public class GameManager : SingletonNetwork<GameManager>
 
         scores[(int)callerClientId] += increment; 
     }
+
+    [ServerRpc(RequireOwnership=false)]
+    public void UpdateWinnerScoreChangeServerRPC(int winnerScoreChange)
+    {
+        this.winnerScoreChange.Value = winnerScoreChange;
+    }
+
 
 
     /* ServerRPC to log data for all clients at slice onset,

@@ -184,7 +184,7 @@ public class TrialHandler : NetworkBehaviour
                 wall2.GetComponent<Renderer>().material = General.wallLowColour;
                 break;
             
-            case var value when value == General.riskyChoice:
+            case var value when value == General.riskyLow:
                 wall1.GetComponent<Renderer>().material = General.wallRiskyColour;
                 wall2.GetComponent<Renderer>().material = General.wallLowColour;
                 break;
@@ -380,6 +380,9 @@ public class TrialHandler : NetworkBehaviour
         // Update the score popup text in ScorePopup.cs
         scoreChange?.Invoke(increment);
         gameManager.UpdateScoresServerRPC(increment, NetworkManager.Singleton.LocalClientId);
+        gameManager.UpdateWinnerScoreChangeServerRPC(increment);
+        Debug.Log($"winnerScoreChange updated with score {gameManager.winnerScoreChange.Value}");
+
         
 
         // Record whether it was this client that ended the current trial

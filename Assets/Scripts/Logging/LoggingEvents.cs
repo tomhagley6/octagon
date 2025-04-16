@@ -414,7 +414,8 @@ public class LoggingEvents : NetworkBehaviour
         }
 
         // create the full log event
-        TrialEndLogEvent trialEndLogEvent = new TrialEndLogEvent(gameManager.trialNum.Value, playerPosDict, playerScoresDict);
+        TrialEndLogEvent trialEndLogEvent = new TrialEndLogEvent(gameManager.trialNum.Value, gameManager.winnerScoreChange.Value, playerPosDict, playerScoresDict);
+        Debug.Log($"winnerScoreChange directly after trialEndLogEvent is created is {gameManager.winnerScoreChange.Value}");
 
         // JSON serialize the log object to string
         string logEntry = JsonConvert.SerializeObject(trialEndLogEvent);
@@ -483,17 +484,17 @@ public class LoggingEvents : NetworkBehaviour
     }
 
 
-public void LoggingEndedHandler_EndLogging()
-{
-    // Create a StopLoggingLogEvent object
-    StopLoggingLogEvent stopLoggingLogEvent = new StopLoggingLogEvent();
+    public void LoggingEndedHandler_EndLogging()
+    {
+        // Create a StopLoggingLogEvent object
+        StopLoggingLogEvent stopLoggingLogEvent = new StopLoggingLogEvent();
 
-    // Serialize log event object to JSON formatted string
-    string toLog = JsonConvert.SerializeObject(stopLoggingLogEvent);
+        // Serialize log event object to JSON formatted string
+        string toLog = JsonConvert.SerializeObject(stopLoggingLogEvent);
 
-    // Write string to file 
-    diskLogger.Log(toLog);
-}
+        // Write string to file 
+        diskLogger.Log(toLog);
+    }
     public void TrialActiveHandler(bool prevVal, bool newVal)
     {
         // if trial start
