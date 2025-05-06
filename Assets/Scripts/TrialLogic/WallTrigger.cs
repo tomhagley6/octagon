@@ -14,7 +14,7 @@ Also consider which trigger instance has been activated on trigger entry */
 public enum TrialType
 {
     HighLowTrial,
-    riskyLowTrial
+    RiskyChoiceTrial
 }
 
 public class WallTrigger : NetworkBehaviour
@@ -281,7 +281,7 @@ public class WallTrigger : NetworkBehaviour
                rewardType = (triggerID == highWallTriggerID) ? "High" : "Low";
                break;
 
-            case TrialType.riskyLowTrial:
+            case TrialType.RiskyChoiceTrial:
                if (triggerID == highWallTriggerID)
                {
                 score = (UnityEngine.Random.value < probability) ? highScore : 0;
@@ -352,14 +352,14 @@ public class WallTrigger : NetworkBehaviour
     
     }
 
-    void riskyLowTrial(int wallIDHigh, int wallIDLow, int triggerID, bool isTrialEnderClient)
+    void RiskyChoiceTrial(int wallIDHigh, int wallIDLow, int triggerID, bool isTrialEnderClient)
     {
-        Debug.Log("riskyLowTrial running");
+        Debug.Log("RiskyChoiceTrial running");
 
         int highWallTriggerID = wallIDHigh;
         int lowWallTriggerID = wallIDLow;
 
-        Debug.Log("Values riskyLowTrial received for high and low wall IDs are"
+        Debug.Log("Values RiskyChoiceTrial received for high and low wall IDs are"
         + $"{highWallTriggerID} and {lowWallTriggerID}");
 
         if (triggerID == highWallTriggerID || triggerID == lowWallTriggerID)
@@ -370,7 +370,7 @@ public class WallTrigger : NetworkBehaviour
                 }
             WallTrialInteraction(triggerID, highWallTriggerID, lowWallTriggerID, isTrialEnderClient);
         }
-        else Debug.Log("No conditions met for riskyLowTrial");
+        else Debug.Log("No conditions met for RiskyChoiceTrial");
     }
 
 }

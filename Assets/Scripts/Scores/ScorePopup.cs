@@ -15,7 +15,7 @@ public class ScorePopup : MonoBehaviour
 
     public IEnumerator PopUpScoreCoroutine(int increment)
     {
-        scorePopupText.text = $"+{increment}";
+        scorePopupText.text = $"+{increment} \n You Won!";
 
         yield return new WaitForSeconds(2f);
 

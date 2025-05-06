@@ -23,15 +23,50 @@ namespace Globals
         public static string highScoreRewardType = "High";
         public static string lowScoreRewardType = "Low";
         public static string zeroRewardType = "Zero";
-        public static List<string> trialTypes = new List<string>{"HighLow", "ForcedHigh", "ForcedLow", "RiskyLow"};
-        public static List<int> trialTypeProbabilities = new List<int>{40, 10, 10, 40};
-        public static List<int> wallSeparations = new List<int>{1,2,4};   // index difference between trial walls
+        // og risky choice
+        // public static List<string> trialTypes = new List<string>{"HighLow", "RiskyChoice", "ForcedHigh", "ForcedLow"};
+        
+        // solo sessions
+        // public static List<string> trialTypes = new List<string>{"HighLow", "RiskyChoice", "ForcedHigh", "ForcedLow", "ForcedRisky"};
+
+        // socials
+        public static List<string> trialTypes = new List<string>{"HighLow", "RiskyChoice"};
+
+        // og risky choicee
+        // public static List<int> trialTypeProbabilities = new List<int>{40, 40, 10, 10};
+        
+        // solo sessions
+        // public static List<int> trialTypeProbabilities = new List<int>{35, 35, 10, 10, 10};
+
+        // socials
+        public static List<int> trialTypeProbabilities = new List<int>{50, 50};
+
+        // og risky choice
+        // public static List<int> wallSeparations = new List<int>{1,2,4};   // index difference between trial walls
                                                                           // random choice within list
 
-        public static List<int> wallSeparationsProbabilities = new List<int>{50,25,25};
-        public static Material wallHighColour; // Material for high wall
-        public static Material wallLowColour;  // Material for low wall
-        public static Material wallRiskyColour; // Material for risky wall
+        // solo sessions
+        // public static List<int> wallSeparations = new List<int>{1,2}; 
+
+        // socials
+        public static List<int> wallSeparations = new List<int>{1,2};
+
+        // og risky choice
+        // public static List<int> wallSeparationsProbabilities = new List<int>{50,25,25};
+
+
+        // solo sessions
+        // public static List<int> wallSeparationsProbabilities = new List<int>{50,50};
+
+        // socials
+        public static List<int> wallSeparationsProbabilities = new List<int>{50,50};
+
+        public static Color wallHighColour = Color.magenta;
+        public static Color wallLowColour = Color.cyan;
+        public static Color wallRiskyColour = Color.yellow;
+        public static Material wallHighMaterial; // Material for high wall
+        public static Material wallLowMaterial;  // Material for low wall
+        public static Material wallRiskyMaterial; // Material for risky wall
         public static Color wallInteractionZoneColour = new Color(1, 215/255f, 0, 129/255f);
         public static bool automaticStartTrial = false;
 
@@ -65,9 +100,11 @@ namespace Globals
 
         // Fixedstring values
         public static FixedString32Bytes highLow = new("HighLow");
+        public static FixedString32Bytes riskyChoice = new("RiskyChoice");
+
         public static FixedString32Bytes forcedHigh = new("ForcedHigh");
         public static FixedString32Bytes forcedLow = new("ForcedLow");
-        public static FixedString32Bytes riskyLow = new("riskyLow");
-
+        public static FixedString32Bytes forcedRisky = new("ForcedRisky");
+        
     }
 }
