@@ -614,6 +614,30 @@ public class GameManager : SingletonNetwork<GameManager>
         else Debug.Log("No conditions met for WallInteraction");
     }
 
+    // helper method for riskyChoice and forcedRisky trials
+
+    float probability = General.probabilityRisky;
+    bool EvaluateRisk() => UnityEngine.Random.value < probability;
+
+    void AssignRiskyReward(bool isRiskyWin, bool isHighWall)
+
+    {
+        // LVs
+        int score = 0;
+        string rewardType = "";
+        float probability = General.probabilityRisky;
+
+        if (isHighWall)
+        {
+            score = isRiskyWin ? General.highScore : 0;
+            rewardType = isRiskyWin ? General.highScoreRewardType : General.zeroRewardType;
+        }
+        else
+        {
+            score = General.lowScore;
+            rewardType = General.lowScoreRewardType;
+        }
+    }
 
     void TrialInteraction(int triggerID, int highWallTriggerID,
                                 int lowWallTriggerID, bool isTrialEnderClient)
@@ -633,7 +657,16 @@ public class GameManager : SingletonNetwork<GameManager>
             score = triggerID == highWallTriggerID ? General.highScore : General.lowScore;
             rewardType = triggerID == highWallTriggerID ? General.highScoreRewardType : General.lowScoreRewardType;
         
-           break;
+            break;
+
+            case var value when value == General.riskyChoice:
+
+                {
+                    bool isRiskyWin = EvaluateRisk();
+                    AssignRiskyReward(isRiskyWin, triggerID == highWallTriggerID);
+
+                    break;
+                }
 
             case var value when value == General.forcedHigh:
             
@@ -649,22 +682,15 @@ public class GameManager : SingletonNetwork<GameManager>
 
             break;
 
-            case var value when value == General.riskyLow:
+            case var value when value == General.forcedRisky:
 
-                bool isRiskyWin = UnityEngine.Random.value < probability;
+                {
+                    bool isRiskyWin = EvaluateRisk();
+                    AssignRiskyReward(isRiskyWin, triggerID == highWallTriggerID);
 
-                if (triggerID == highWallTriggerID)
-                {
-                   score = isRiskyWin ? General.highScore : 0;
-                   rewardType = isRiskyWin ? General.highScoreRewardType : General.zeroRewardType; 
-                }
-                else
-                {
-                    score = General.lowScore;
-                    rewardType = General.lowScoreRewardType;
+                    break;
                 }
 
-            break;
         }
 
         // Debug statement
