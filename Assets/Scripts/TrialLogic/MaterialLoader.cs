@@ -6,9 +6,9 @@ public class MaterialLoader : MonoBehaviour
     // This method runs when the object is initialized
     void Start()
     {
-        LoadMaterial(ref General.wallHighColour, "VerticalGrating");
-        LoadMaterial(ref General.wallLowColour, "HorizontalGrating");
-        LoadMaterial(ref General.wallRiskyColour, "Checkers");
+        LoadMaterial(ref General.wallHighMaterial, "VerticalGrating");
+        LoadMaterial(ref General.wallLowMaterial, "HorizontalGrating");
+        LoadMaterial(ref General.wallRiskyMaterial, "Checkers");
     }
 
     // Helper method to load materials and log status
