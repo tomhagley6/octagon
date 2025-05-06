@@ -619,10 +619,19 @@ public class GameManager : SingletonNetwork<GameManager>
     // float probability = General.probabilityRisky;
     // bool EvaluateRisk() => UnityEngine.Random.value < probability;
 
+<<<<<<< HEAD
     void AssignRiskyReward(int triggerID, int highWallTriggerID, int lowWallTriggerID, ref int score, ref string rewardType)
 
     {
         float probability = General.probabilityRisky;
+=======
+    (int score, string rewardType) AssignRiskyReward(bool isRiskyWin, bool isHighWall)
+
+    {
+        // LVs
+        int score = 0;
+        string rewardType = "";
+>>>>>>> 971d96c6f308a34c369ef6a5b9749d8e92ba78f6
 
         bool isRiskyWin = UnityEngine.Random.value < probability;
 
@@ -636,6 +645,8 @@ public class GameManager : SingletonNetwork<GameManager>
             score = General.lowScore;
             rewardType = General.lowScoreRewardType;
         }
+
+        return (score, rewardType);
     }
 
     void TrialInteraction(int triggerID, int highWallTriggerID,
@@ -660,7 +671,13 @@ public class GameManager : SingletonNetwork<GameManager>
 
             case var value when value == General.riskyChoice:
 
+<<<<<<< HEAD
             AssignRiskyReward(triggerID, wallID1, wallID2, ref score, ref rewardType);
+=======
+                {
+                    bool isRiskyWin = EvaluateRisk();
+                    (score, rewardType) = AssignRiskyReward(isRiskyWin, triggerID == highWallTriggerID);
+>>>>>>> 971d96c6f308a34c369ef6a5b9749d8e92ba78f6
 
             break;
 
@@ -680,7 +697,13 @@ public class GameManager : SingletonNetwork<GameManager>
 
             case var value when value == General.forcedRisky:
 
+<<<<<<< HEAD
             AssignRiskyReward(triggerID, wallID1, wallID2, ref score, ref rewardType);
+=======
+                {
+                    bool isRiskyWin = EvaluateRisk();
+                    (score, rewardType) = AssignRiskyReward(isRiskyWin, triggerID == highWallTriggerID);
+>>>>>>> 971d96c6f308a34c369ef6a5b9749d8e92ba78f6
 
             break;
 
