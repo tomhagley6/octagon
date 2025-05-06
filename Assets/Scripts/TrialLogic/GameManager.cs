@@ -616,21 +616,20 @@ public class GameManager : SingletonNetwork<GameManager>
 
     // helper method for riskyChoice and forcedRisky trials
 
-    float probability = General.probabilityRisky;
-    bool EvaluateRisk() => UnityEngine.Random.value < probability;
+    // float probability = General.probabilityRisky;
+    // bool EvaluateRisk() => UnityEngine.Random.value < probability;
 
-    void AssignRiskyReward(bool isRiskyWin, bool isHighWall)
+    void AssignRiskyReward(int triggerID, int highWallTriggerID, int lowWallTriggerID, ref int score, ref string rewardType)
 
     {
-        // LVs
-        int score = 0;
-        string rewardType = "";
         float probability = General.probabilityRisky;
 
-        if (isHighWall)
+        bool isRiskyWin = UnityEngine.Random.value < probability;
+
+        if (triggerID == highWallTriggerID)
         {
             score = isRiskyWin ? General.highScore : 0;
-            rewardType = isRiskyWin ? General.highScoreRewardType : General.zeroRewardType;
+            rewardType = isRiskyWin ? General.highScoreRewardType : General.zeroRewardType; 
         }
         else
         {
@@ -661,12 +660,9 @@ public class GameManager : SingletonNetwork<GameManager>
 
             case var value when value == General.riskyChoice:
 
-                {
-                    bool isRiskyWin = EvaluateRisk();
-                    AssignRiskyReward(isRiskyWin, triggerID == highWallTriggerID);
+            AssignRiskyReward(triggerID, wallID1, wallID2, ref score, ref rewardType);
 
-                    break;
-                }
+            break;
 
             case var value when value == General.forcedHigh:
             
@@ -684,12 +680,9 @@ public class GameManager : SingletonNetwork<GameManager>
 
             case var value when value == General.forcedRisky:
 
-                {
-                    bool isRiskyWin = EvaluateRisk();
-                    AssignRiskyReward(isRiskyWin, triggerID == highWallTriggerID);
+            AssignRiskyReward(triggerID, wallID1, wallID2, ref score, ref rewardType);
 
-                    break;
-                }
+            break;
 
         }
 
