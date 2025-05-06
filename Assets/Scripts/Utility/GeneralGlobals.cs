@@ -27,39 +27,39 @@ namespace Globals
         // public static List<string> trialTypes = new List<string>{"HighLow", "RiskyChoice", "ForcedHigh", "ForcedLow"};
         
         // solo sessions
-        // public static List<string> trialTypes = new List<string>{"HighLow", "RiskyChoice", "ForcedHigh", "ForcedLow", "ForcedRisky"};
+        public static List<string> trialTypes = new List<string>{"HighLow", "RiskyChoice", "ForcedHigh", "ForcedLow", "ForcedRisky"};
 
         // socials
-        public static List<string> trialTypes = new List<string>{"HighLow", "RiskyChoice"};
+        // public static List<string> trialTypes = new List<string>{"HighLow", "RiskyChoice"};
 
         // og risky choicee
         // public static List<int> trialTypeProbabilities = new List<int>{40, 40, 10, 10};
         
         // solo sessions
-        // public static List<int> trialTypeProbabilities = new List<int>{35, 35, 10, 10, 10};
+        public static List<int> trialTypeProbabilities = new List<int>{35, 35, 10, 10, 10};
 
         // socials
-        public static List<int> trialTypeProbabilities = new List<int>{50, 50};
+        // public static List<int> trialTypeProbabilities = new List<int>{50, 50};
 
         // og risky choice
         // public static List<int> wallSeparations = new List<int>{1,2,4};   // index difference between trial walls
                                                                           // random choice within list
 
         // solo sessions
-        // public static List<int> wallSeparations = new List<int>{1,2}; 
+        public static List<int> wallSeparations = new List<int>{1,2}; 
 
         // socials
-        public static List<int> wallSeparations = new List<int>{1,2};
+        // public static List<int> wallSeparations = new List<int>{1,2};
 
         // og risky choice
         // public static List<int> wallSeparationsProbabilities = new List<int>{50,25,25};
 
 
         // solo sessions
-        // public static List<int> wallSeparationsProbabilities = new List<int>{50,50};
+        public static List<int> wallSeparationsProbabilities = new List<int>{50,50};
 
         // socials
-        public static List<int> wallSeparationsProbabilities = new List<int>{50,50};
+        // public static List<int> wallSeparationsProbabilities = new List<int>{50,50};
 
         public static Color wallHighColour = Color.magenta;
         public static Color wallLowColour = Color.cyan;
