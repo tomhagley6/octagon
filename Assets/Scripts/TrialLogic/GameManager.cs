@@ -615,7 +615,6 @@ public class GameManager : SingletonNetwork<GameManager>
     }
 
     // helper method for riskyChoice and forcedRisky trials
-
     // float probability = General.probabilityRisky;
     // bool EvaluateRisk() => UnityEngine.Random.value < probability;
 
