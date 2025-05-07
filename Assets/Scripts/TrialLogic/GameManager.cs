@@ -647,6 +647,7 @@ public class GameManager : SingletonNetwork<GameManager>
         int score = 0;
         string rewardType = "";
         float probability = General.probabilityRisky;
+        bool isRiskyWin = UnityEngine.Random.value < probability;
 
         switch (trialType.Value)
         {
@@ -679,7 +680,8 @@ public class GameManager : SingletonNetwork<GameManager>
 
             case var value when value == General.forcedRisky:
 
-            (score, rewardType) = AssignRiskyReward(triggerID, wallID1, wallID2);
+            score = isRiskyWin ? General.highScore : 0;
+            rewardType = isRiskyWin ? General.highScoreRewardType : General.zeroRewardType;
 
             break;
 
