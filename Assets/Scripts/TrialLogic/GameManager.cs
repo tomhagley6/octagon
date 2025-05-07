@@ -637,25 +637,6 @@ public class GameManager : SingletonNetwork<GameManager>
     }
 
 
-    void AssignRiskyReward(int triggerID, int highWallTriggerID, int lowWallTriggerID, ref int score, ref string rewardType)
-
-    {
-        float probability = General.probabilityRisky;
-
-        bool isRiskyWin = UnityEngine.Random.value < probability;
-
-        if (triggerID == highWallTriggerID)
-        {
-            score = isRiskyWin ? General.highScore : 0;
-            rewardType = isRiskyWin ? General.highScoreRewardType : General.zeroRewardType; 
-        }
-        else
-        {
-            score = General.lowScore;
-            rewardType = General.lowScoreRewardType;
-        }
-    }
-
     void TrialInteraction(int triggerID, int highWallTriggerID,
                                 int lowWallTriggerID, bool isTrialEnderClient)
     {
@@ -666,6 +647,7 @@ public class GameManager : SingletonNetwork<GameManager>
         int score = 0;
         string rewardType = "";
         float probability = General.probabilityRisky;
+        bool isRiskyWin = UnityEngine.Random.value < probability;
 
         switch (trialType.Value)
         {
@@ -698,7 +680,8 @@ public class GameManager : SingletonNetwork<GameManager>
 
             case var value when value == General.forcedRisky:
 
-            (score, rewardType) = AssignRiskyReward(triggerID, wallID1, wallID2);
+            score = isRiskyWin ? General.highScore : 0;
+            rewardType = isRiskyWin ? General.highScoreRewardType : General.zeroRewardType; 
 
             break;
 
