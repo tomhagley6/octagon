@@ -1,0 +1,65 @@
+{
+    "MLAgent": {
+        "checkpoints": [
+            {
+                "steps": 349989,
+                "file_path": "results/run_3/MLAgent/MLAgent-349989.onnx",
+                "reward": 297.0,
+                "creation_time": 1748133067.1513631,
+                "auxillary_file_paths": [
+                    "results/run_3/MLAgent/MLAgent-349989.pt"
+                ]
+            },
+            {
+                "steps": 399956,
+                "file_path": "results/run_3/MLAgent/MLAgent-399956.onnx",
+                "reward": 285.0,
+                "creation_time": 1748134925.9581592,
+                "auxillary_file_paths": [
+                    "results/run_3/MLAgent/MLAgent-399956.pt"
+                ]
+            },
+            {
+                "steps": 449997,
+                "file_path": "results/run_3/MLAgent/MLAgent-449997.onnx",
+                "reward": 307.0,
+                "creation_time": 1748136868.447131,
+                "auxillary_file_paths": [
+                    "results/run_3/MLAgent/MLAgent-449997.pt"
+                ]
+            },
+            {
+                "steps": 499964,
+                "file_path": "results/run_3/MLAgent/MLAgent-499964.onnx",
+                "reward": null,
+                "creation_time": 1748138877.980861,
+                "auxillary_file_paths": [
+                    "results/run_3/MLAgent/MLAgent-499964.pt"
+                ]
+            },
+            {
+                "steps": 500028,
+                "file_path": "results/run_3/MLAgent/MLAgent-500028.onnx",
+                "reward": null,
+                "creation_time": 1748138878.5458949,
+                "auxillary_file_paths": [
+                    "results/run_3/MLAgent/MLAgent-500028.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 500028,
+            "file_path": "results/run_3/MLAgent.onnx",
+            "reward": null,
+            "creation_time": 1748138878.5458949,
+            "auxillary_file_paths": [
+                "results/run_3/MLAgent/MLAgent-500028.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.2.0.dev0",
+        "torch_version": "2.2.2"
+    }
+}
