@@ -8,6 +8,9 @@ TagManager:
   - Camera
   - CinemachineTarget
   - ArmatureCamera
+  - Wall
+  - PlayerAgent
+  - OpponentAgent
   layers:
   - Default
   - TransparentFX

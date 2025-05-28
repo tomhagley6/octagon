@@ -2,6 +2,7 @@
   "dependencies": {
     "com.unity.collab-proxy": "2.2.0",
     "com.unity.feature.development": "1.0.1",
+    "com.unity.ml-agents": "https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents#release_21",
     "com.unity.multiplayer.samples.coop": "https://github.com/Unity-Technologies/com.unity.multiplayer.samples.coop.git?path=/Packages/com.unity.multiplayer.samples.coop#main",
     "com.unity.multiplayer.tools": "1.1.1",
     "com.unity.netcode.gameobjects": "1.7.1",
