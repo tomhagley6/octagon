@@ -13,6 +13,8 @@ public class MLAgent : Agent
     public WallTriggerExtension wallTriggerExtension;
     public GameManagerExtension gameManagerExtension;
     public TrialHandlerExtension trialHandlerExtension;
+    // public Agent agent;
+    public Camera agentCamera;
 
     public float moveSpeed = 0.5f;
     public float turnSpeed = 1f;
@@ -24,20 +26,30 @@ public class MLAgent : Agent
     public int RandomNumber;
     private Vector3 startPosition;
 
-    protected void Awake()
+    // setting this to keep track of steps taken and reward appropriately
+    // public new int MaxStep;
+
+    public override void Initialize()
+    {
+        agentCamera.enabled = true;
+        Debug.Log($"Agent Camera Enabled: {agentCamera.enabled}");
+    }
+    protected override void Awake()
 
     // Awake is called when the script instance is being loaded
     // Use Awake to initialize references and set up the environment
     // Get rigidbody for agent movement
 
     {
+        base.Awake();
+
         if (gameManagerExtension == null) gameManagerExtension = FindObjectOfType<GameManagerExtension>();
         if (trialHandlerExtension == null) trialHandlerExtension = FindObjectOfType<TrialHandlerExtension>();
         if (wallTriggerExtension == null) wallTriggerExtension = FindObjectOfType<WallTriggerExtension>();
 
         rb = GetComponent<Rigidbody>();
         rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-        
+
     }
 
     public override void OnEpisodeBegin()
@@ -66,7 +78,7 @@ public class MLAgent : Agent
 
             // relocating trial counter to trial handler extension
             trialHandlerExtension.trialCounter = 0;
-            RandomNumber = Random.Range(20, 30);
+            RandomNumber = Random.Range(5, 10);
             // Debug.Log($"[Agent] Trial counter reset. Starting 0 of {RandomNumber}");
 
             // Start trial loop from TrialHandler
@@ -107,14 +119,14 @@ public class MLAgent : Agent
     public override void OnActionReceived(ActionBuffers actions)
     {
         MoveAgent(actions);
-        // Debug.Log($"[Agent] StepCount: {StepCount}");
+        // Debug.Log($"[Agent] StepCount: {StepCount}")
     }
-
+    
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         var continuousActionsOut = actionsOut.ContinuousActions;
 
-        continuousActionsOut[0] = 0f; 
+        continuousActionsOut[0] = 0f;
         continuousActionsOut[2] = 0f;
 
         if (Input.GetKey(KeyCode.W))
@@ -126,11 +138,11 @@ public class MLAgent : Agent
             continuousActionsOut[0] = -1f;
         }
 
-        if (Input.GetKey(KeyCode.D)) 
+        if (Input.GetKey(KeyCode.D))
         {
             continuousActionsOut[2] = 1f;
         }
-        else if (Input.GetKey(KeyCode.A)) 
+        else if (Input.GetKey(KeyCode.A))
         {
             continuousActionsOut[2] = -1f;
         }

@@ -1,0 +1,66 @@
+{
+    "MLAgent": {
+        "checkpoints": [
+            {
+                "steps": 49984,
+                "file_path": "results/VB_4/MLAgent/MLAgent-49984.onnx",
+                "reward": -1.0,
+                "creation_time": 1748772344.039835,
+                "auxillary_file_paths": [
+                    "results/VB_4/MLAgent/MLAgent-49984.pt"
+                ]
+            },
+            {
+                "steps": 99968,
+                "file_path": "results/VB_4/MLAgent/MLAgent-99968.onnx",
+                "reward": 6.666666666666667,
+                "creation_time": 1748775655.5057092,
+                "auxillary_file_paths": [
+                    "results/VB_4/MLAgent/MLAgent-99968.pt"
+                ]
+            },
+            {
+                "steps": 149952,
+                "file_path": "results/VB_4/MLAgent/MLAgent-149952.onnx",
+                "reward": 3.0,
+                "creation_time": 1748778985.298012,
+                "auxillary_file_paths": [
+                    "results/VB_4/MLAgent/MLAgent-149952.pt"
+                ]
+            },
+            {
+                "steps": 199936,
+                "file_path": "results/VB_4/MLAgent/MLAgent-199936.onnx",
+                "reward": -0.05000000074505806,
+                "creation_time": 1748782070.055101,
+                "auxillary_file_paths": [
+                    "results/VB_4/MLAgent/MLAgent-199936.pt"
+                ]
+            },
+            {
+                "steps": 200896,
+                "file_path": "results/VB_4/MLAgent/MLAgent-200896.onnx",
+                "reward": -0.05000000074505806,
+                "creation_time": 1748782365.695106,
+                "auxillary_file_paths": [
+                    "results/VB_4/MLAgent/MLAgent-200896.pt"
+                ]
+            }
+        ],
+        "elo": 1200.0,
+        "final_checkpoint": {
+            "steps": 200896,
+            "file_path": "results/VB_4/MLAgent.onnx",
+            "reward": -0.05000000074505806,
+            "creation_time": 1748782365.695106,
+            "auxillary_file_paths": [
+                "results/VB_4/MLAgent/MLAgent-200896.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.2.0.dev0",
+        "torch_version": "2.2.2"
+    }
+}

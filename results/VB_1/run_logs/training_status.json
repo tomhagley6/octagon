@@ -1,24 +1,60 @@
 {
     "MLAgent": {
-        "elo": 1200.0,
         "checkpoints": [
             {
-                "steps": 10048,
-                "file_path": "results/VB_1/MLAgent/MLAgent-10048.onnx",
+                "steps": 349948,
+                "file_path": "results/VB_1/MLAgent/MLAgent-349948.onnx",
                 "reward": null,
-                "creation_time": 1748392570.608968,
+                "creation_time": 1748658021.559118,
                 "auxillary_file_paths": [
-                    "results/VB_1/MLAgent/MLAgent-10048.pt"
+                    "results/VB_1/MLAgent/MLAgent-349948.pt"
+                ]
+            },
+            {
+                "steps": 399998,
+                "file_path": "results/VB_1/MLAgent/MLAgent-399998.onnx",
+                "reward": null,
+                "creation_time": 1748659426.7100952,
+                "auxillary_file_paths": [
+                    "results/VB_1/MLAgent/MLAgent-399998.pt"
+                ]
+            },
+            {
+                "steps": 449982,
+                "file_path": "results/VB_1/MLAgent/MLAgent-449982.onnx",
+                "reward": null,
+                "creation_time": 1748660822.399449,
+                "auxillary_file_paths": [
+                    "results/VB_1/MLAgent/MLAgent-449982.pt"
+                ]
+            },
+            {
+                "steps": 499966,
+                "file_path": "results/VB_1/MLAgent/MLAgent-499966.onnx",
+                "reward": null,
+                "creation_time": 1748662224.7451031,
+                "auxillary_file_paths": [
+                    "results/VB_1/MLAgent/MLAgent-499966.pt"
+                ]
+            },
+            {
+                "steps": 500030,
+                "file_path": "results/VB_1/MLAgent/MLAgent-500030.onnx",
+                "reward": null,
+                "creation_time": 1748662225.180802,
+                "auxillary_file_paths": [
+                    "results/VB_1/MLAgent/MLAgent-500030.pt"
                 ]
             }
         ],
+        "elo": 1200.0,
         "final_checkpoint": {
-            "steps": 10048,
+            "steps": 500030,
             "file_path": "results/VB_1/MLAgent.onnx",
             "reward": null,
-            "creation_time": 1748392570.608968,
+            "creation_time": 1748662225.180802,
             "auxillary_file_paths": [
-                "results/VB_1/MLAgent/MLAgent-10048.pt"
+                "results/VB_1/MLAgent/MLAgent-500030.pt"
             ]
         }
     },

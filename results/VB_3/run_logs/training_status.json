@@ -1,0 +1,48 @@
+{
+    "MLAgent": {
+        "checkpoints": [
+            {
+                "steps": 49981,
+                "file_path": "results/VB_3/MLAgent/MLAgent-49981.onnx",
+                "reward": 7.100000001490116,
+                "creation_time": 1748714102.672427,
+                "auxillary_file_paths": [
+                    "results/VB_3/MLAgent/MLAgent-49981.pt"
+                ]
+            },
+            {
+                "steps": 99941,
+                "file_path": "results/VB_3/MLAgent/MLAgent-99941.onnx",
+                "reward": 8.43333333482345,
+                "creation_time": 1748715495.10413,
+                "auxillary_file_paths": [
+                    "results/VB_3/MLAgent/MLAgent-99941.pt"
+                ]
+            },
+            {
+                "steps": 107808,
+                "file_path": "results/VB_3/MLAgent/MLAgent-107808.onnx",
+                "reward": 4.449999999254942,
+                "creation_time": 1748715763.378138,
+                "auxillary_file_paths": [
+                    "results/VB_3/MLAgent/MLAgent-107808.pt"
+                ]
+            }
+        ],
+        "elo": 1200.0,
+        "final_checkpoint": {
+            "steps": 107808,
+            "file_path": "results/VB_3/MLAgent.onnx",
+            "reward": 4.449999999254942,
+            "creation_time": 1748715763.378138,
+            "auxillary_file_paths": [
+                "results/VB_3/MLAgent/MLAgent-107808.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.2.0.dev0",
+        "torch_version": "2.2.2"
+    }
+}

@@ -10,6 +10,8 @@ public class WallTriggerExtension : MonoBehaviour
 {
     public TrialLogicExtension trialLogicExtension;
     public TrialHandlerExtension trialHandlerExtension;
+    // public MLAgent agentExtension;
+    // public Agent baseAgent;
     private IdentityAssignment identityAssignment;
 
     public int triggerID;
@@ -33,7 +35,7 @@ public class WallTriggerExtension : MonoBehaviour
 
     public List<Collider> wallColliders;
     // public static string thisTrialType;  // trial type for this trial
-    public BoxCollider collider;
+    // public BoxCollider collider;
 
     void Awake()
     {
@@ -94,22 +96,46 @@ public class WallTriggerExtension : MonoBehaviour
         wallID1 = trialHandlerExtension.wallID1;
         wallID2 = trialHandlerExtension.wallID2;
 
-        if (!wallIDs.Contains(triggerID)) return;
+        // if (!wallIDs.Contains(triggerID)) return;
+        if (wallIDs.Contains(triggerID))
+        {
+            string winnerTag = agent.CompareTag("PlayerAgent") ? "PlayerAgent" : "OpponentAgent";
+            string loserTag = winnerTag == "PlayerAgent" ? "OpponentAgent" : "PlayerAgent";
 
-        string winnerTag = agent.CompareTag("PlayerAgent") ? "PlayerAgent" : "OpponentAgent";
-        string loserTag = winnerTag == "PlayerAgent" ? "OpponentAgent" : "PlayerAgent";
+            Debug.Log($"[OnTriggerEnter] agent {winnerTag} triggered Wall {triggerID}");
 
-        Debug.Log($"[OnTriggerEnter] agent {winnerTag} triggered Wall {triggerID}");
+            HandleWallTrigger(triggerID, wallID1, wallID2, winnerTag, loserTag);
+        }
 
-        HandleWallTrigger(triggerID, wallID1, wallID2, winnerTag, loserTag);
+        else if (!wallIDs.Contains(triggerID))
+        {
+            string interactorTag = agent.CompareTag("PlayerAgent") ? "PlayerAgent" : "OpponentAgent";
 
+            HandleInactiveTrigger(triggerID, interactorTag);
+        }
     }
-     
-    
+
+    public void HandleInactiveTrigger(int triggerID, string interactorTag)
+    {
+        //if (isHandlingTrigger)
+        //{
+        //    return;
+        //}
+
+        //isHandlingTrigger = true;
+        float negReward = -0.1f;
+
+        MLAgent interactor = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
+
+        interactor.AddReward(negReward);
+        Debug.Log($"[HandleInactiveTrigger] Agent is negatively rewarded for interacting with inactive wall {triggerID}");
+
+        //isHandlingTrigger = false;
+    }
     public void HandleWallTrigger(int triggerID, int wallID1, int wallID2, string winnerTag, string loserTag)
     {
 
-        if (!playerAgent.isTrialInProgress || isHandlingTrigger) 
+        if (!playerAgent.isTrialInProgress || isHandlingTrigger)
         {
             Debug.Log($"[HandleWallTrigger] Ignoring trigger; trial in progress: {playerAgent.isTrialInProgress}, already handling: {isHandlingTrigger}");
             return;
@@ -126,8 +152,9 @@ public class WallTriggerExtension : MonoBehaviour
 
         var (score, rewardType) = trialLogicExtension.TrialInteraction(triggerID, wallID1, wallID2, thisTrialType);
         Debug.Log($"passed to trial interaction method: triggerID: {triggerID}, wallID1: {wallID1}, wallID2: {wallID2}, trialType: {thisTrialType}");
-        
+
         float scaledReward = score / 10f; // normalize if needed
+        // float receivedReward = scaledReward + 0.1f; // changing scoring system to add small positive bonus for triggering a wall (so that risky reward 0 is still positive)
         Debug.Log($"Score for this trial is {score}, scaled reward is {scaledReward}");
 
         trialLogicExtension.WashWalls(wallID1, wallID2); // reset walls
@@ -135,10 +162,25 @@ public class WallTriggerExtension : MonoBehaviour
         MLAgent winner = winnerTag == "PlayerAgent" ? playerAgent : opponentAgent;
         MLAgent loser = winnerTag == "PlayerAgent" ? opponentAgent : playerAgent;
 
-        winner.AddReward(scaledReward);
+        winner.AddReward(scaledReward != 0 ? scaledReward : 0.1f);
         loser.AddReward(scaledReward != 0 ? -scaledReward : -0.1f);
 
-        Debug.Log($"[HandleWallTrigger] ({winner.tag}) + {scaledReward}, {loser.tag} {(scaledReward != 0 ? -scaledReward : -0.1f)} ({rewardType})");
+        // winner.AddReward(receivedReward);
+        // loser.AddReward(-receivedReward);
+
+        Debug.Log($"[HandleWallTrigger] ({winner.tag}) + {(scaledReward != 0 ? scaledReward : 0.1f)}, {loser.tag} {(scaledReward != 0 ? -scaledReward : -0.1f)} ({rewardType})");
+
+        float endReward = 0.1f;
+
+        Debug.Log($"[HandleWallTrigger] current StepCount is {playerAgent.StepCount} out of {playerAgent.MaxStep}");
+        Debug.Log($"[HandleWallTrigger] current trial is {trialHandlerExtension.trialCounter} out of {playerAgent.RandomNumber}");
+
+        if ((playerAgent.StepCount < playerAgent.MaxStep) && (trialHandlerExtension.trialCounter == playerAgent.RandomNumber))
+        {
+            winner.AddReward(endReward);
+            loser.AddReward(endReward);
+            Debug.Log($"[HandleWallTrigger] agents completed all trials before max step was reached and receive reward {endReward}");
+        }
 
         StartCoroutine(trialHandlerExtension.TrialLoop());
 
