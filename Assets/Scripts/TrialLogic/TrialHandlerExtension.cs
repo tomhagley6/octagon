@@ -110,9 +110,15 @@ public class TrialHandlerExtension : MonoBehaviour
         if (trialCounter >= playerAgent.RandomNumber)
         {
             Debug.Log("[TrialLoop] Max number of trials reached. Ending episode.");
-            
+            float opponentReward = opponentAgent.GetCumulativeReward();
+            float playerReward = playerAgent.GetCumulativeReward();
+
             opponentAgent.CustomEndEpisode();
             playerAgent.CustomEndEpisode();
+
+            Debug.Log($"[{opponentAgent.name}] Episode ended. Cumulative Reward: {opponentReward}");
+            Debug.Log($"[{playerAgent.name}] Episode ended. Cumulative Reward: {playerReward}");
+
 
             isTrialLoopRunning = false;
 
