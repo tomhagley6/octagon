@@ -5,6 +5,7 @@ using System.Diagnostics;
 using Globals;
 using Mono.CSharp;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using static GameManager;
 using Debug = UnityEngine.Debug;
@@ -202,13 +203,21 @@ public class TrialHandler : NetworkBehaviour
         {
             // Assign spawn points: player 1 (closer to wall), player 2 (closer to centre)
             Transform targetSpawn = (i == 0) ? spawnPair.player1Spawn : spawnPair.player2Spawn;
+            // Set the spawn position y component explicitly to avoid floating
+            Vector3 spawnPos = targetSpawn.position;
+            spawnPos.y = 1.985f;
 
             if (networkClient.PlayerObject != null && targetSpawn != null)
             {
+                var controller = networkClient.PlayerObject.GetComponent<CharacterController>();
+                if (controller != null) controller.enabled = false;
+
                 networkClient.PlayerObject.transform.SetPositionAndRotation(
-                    targetSpawn.position,
+                    spawnPos,
                     targetSpawn.rotation
                 );
+
+                // if (controller != null) controller.enabled = true; // keep controller disabled for a time
             }
             i++;
         }
@@ -438,9 +447,29 @@ public class TrialHandler : NetworkBehaviour
 
         // Wait for the remainder of the ITI
         yield return new WaitForSeconds(ITIvalue - teleportDelay);
+        TogglePlayerControllers();
 
         // Start the next trial
         StartTrial();
+    }
+
+    private void TogglePlayerControllers()
+    {   
+        // repeat for each player in the network session
+        int i = 0;
+        foreach (var networkClient in NetworkManager.Singleton.ConnectedClientsList)
+        {
+            if (networkClient.PlayerObject != null)
+            {   
+                // get the player controller and and toggle its enabled state
+                var controller = networkClient.PlayerObject.GetComponent<CharacterController>();
+                if (controller != null)
+                {
+                    controller.enabled = !controller.enabled;
+                }
+            }
+            i++;
+        }
     }
 
 
