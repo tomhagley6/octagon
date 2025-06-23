@@ -111,6 +111,10 @@ public class AssignCamera : NetworkBehaviour
         // Player objects are created by NetworkManager (set in Inspector)
         // Wait for this object to exist before attempting to attach the player camera
         yield return new WaitUntil(() => networkManager.LocalClient.PlayerObject != null);
+
+        // Set the player for the camera to follow
+        player = networkManager.LocalClient.PlayerObject.transform;
+
         
         Debug.Log("CreateCamera WaitUntil finished");
 
@@ -119,13 +123,15 @@ public class AssignCamera : NetworkBehaviour
         camera = Resources.Load<GameObject>(prefabName);
 
         // Create client-side instance of PlayerCamera
-        if (camera != null) camInstance = Instantiate(camera);
-        else 
+        if (camera != null)
+        {
+            camInstance = Instantiate(camera);
+        }
+
+        else
         {
             Debug.Log("Camera prefab was returned as null");
         }
-        // Set the player for the camera to follow
-        player = networkManager.LocalClient.PlayerObject.transform;
 
         Debug.Log("CreateCamera ran successfully");
 

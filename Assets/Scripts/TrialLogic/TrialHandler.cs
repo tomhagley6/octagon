@@ -21,6 +21,7 @@ public class TrialHandler : NetworkBehaviour
     GameManager gameManager;
     IdentityManager identityManager;
     public WallSpawnPoints wallSpawnPoints;
+    public MouseLook mouseLook;
     Color defaultWallColour;
     bool isTrialEnderClient = false; // flag to check if current trial was 
                                      // ended by this clientId
@@ -85,10 +86,42 @@ public class TrialHandler : NetworkBehaviour
                 Debug.Log("Current player is NOT a client");
             }
         }
+
+        // Assign the local player's MouseLook script to TrialHandler
+        if (mouseLook == null)
+        {
+            GameObject cam = GameObject.FindGameObjectWithTag("MainCamera");
+            if (cam != null)
+            {
+                mouseLook = cam.GetComponent<MouseLook>();
+                if (mouseLook != null)
+                    Debug.Log("MouseLook assigned via tag search.");
+            }
+        }
     }
 
+
+void TryAssignMouseLook()
+{
+    if (mouseLook == null)
+    {
+        GameObject cam = GameObject.FindGameObjectWithTag("MainCamera");
+        if (cam != null)
+        {
+            mouseLook = cam.GetComponent<MouseLook>();
+            if (mouseLook != null)
+                Debug.Log("MouseLook assigned via tag search.");
+        }
+    }
+}
     public void Update()
     {
+        // Try to assign mouseLook if not already assigned
+        if (mouseLook == null)
+        {
+            TryAssignMouseLook();
+
+        }
         if (Input.GetKeyUp(General.startTrials))
         {
             StartFirstTrialManual();
@@ -442,12 +475,15 @@ public class TrialHandler : NetworkBehaviour
         yield return new WaitForSeconds(teleportDelay);
 
         // Teleport players partway through ITI
+        mouseLook.SetCameraLocked(true); // Lock camera until trail start
         TeleportPlayersToRandomWall();
         Debug.Log($"TeleportPlayersToRandomWall() called after {teleportDelay} seconds of ITI");
 
         // Wait for the remainder of the ITI
         yield return new WaitForSeconds(ITIvalue - teleportDelay);
-        TogglePlayerControllers();
+        TogglePlayerControllers(); // Re-enable player controllers (which were disabled at teleport)
+        mouseLook.SetCameraLocked(false); // Unlock camera at trail start
+
 
         // Start the next trial
         StartTrial();
