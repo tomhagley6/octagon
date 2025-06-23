@@ -202,7 +202,7 @@ public class TrialHandler : NetworkBehaviour
         foreach (var networkClient in NetworkManager.Singleton.ConnectedClientsList)
         {
             // Assign spawn points: player 1 (closer to wall), player 2 (closer to centre)
-            Transform targetSpawn = (i == 0) ? spawnPair.player1Spawn : spawnPair.player2Spawn;
+            Transform targetSpawn = (i == 0) ? spawnPair.playerSpawnOuter : spawnPair.playerSpawnInner;
             // Set the spawn position y component explicitly to avoid floating
             Vector3 spawnPos = targetSpawn.position;
             spawnPos.y = 1.985f;

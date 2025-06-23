@@ -3,8 +3,8 @@ using UnityEngine;
 [System.Serializable]
 public class WallSpawnPair
 {
-    public Transform player1Spawn; // Closer to wall
-    public Transform player2Spawn; // Closer to centre
+    public Transform playerSpawnOuter; // Closer to wall
+    public Transform playerSpawnInner; // Closer to centre
 }
 
 public class WallSpawnPoints : MonoBehaviour
