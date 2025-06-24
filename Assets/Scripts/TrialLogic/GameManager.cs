@@ -920,13 +920,6 @@ public class GameManager : SingletonNetwork<GameManager>
         // Not implemented
     }
 
-    [ClientRpc]
-    public void LockCameraClientRPC()
-    {
-        var cameraController = FindObjectOfType<MouseLook>()
-    }
-    
-
 
 }
 

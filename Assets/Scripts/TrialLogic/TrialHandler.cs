@@ -475,14 +475,16 @@ public class TrialHandler : NetworkBehaviour
         yield return new WaitForSeconds(teleportDelay);
 
         // Teleport players partway through ITI
-        mouseLook.SetCameraLocked(true); // Lock camera until trail start
+        // mouseLook.SetCameraLocked(true); // Lock camera until trial start
+        LockCameraClientRPC(true); // Lock camera until trial start
         TeleportPlayersToRandomWall();
         Debug.Log($"TeleportPlayersToRandomWall() called after {teleportDelay} seconds of ITI");
 
         // Wait for the remainder of the ITI
         yield return new WaitForSeconds(ITIvalue - teleportDelay);
+        LockCameraClientRPC(false); // Unlock camera at trial start
         TogglePlayerControllers(); // Re-enable player controllers (which were disabled at teleport)
-        mouseLook.SetCameraLocked(false); // Unlock camera at trail start
+        // mouseLook.SetCameraLocked(false); // Unlock camera at trail start
 
 
         // Start the next trial
@@ -509,9 +511,9 @@ public class TrialHandler : NetworkBehaviour
     }
 
     [ClientRpc]
-        public void LockCameraClientRPC()
+    public void LockCameraClientRPC(bool locked)
     {
-        mouseLook.SetCameraLocked(true);
+        if (mouseLook != null) mouseLook.SetCameraLocked(locked);
     }
 
 
