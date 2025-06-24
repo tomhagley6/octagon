@@ -226,42 +226,6 @@ public class TrialHandler : NetworkBehaviour
         sliceOnset?.Invoke();
     }
 
-    public void TeleportPlayersToRandomWall()
-    {
-        int wallIndex = Random.Range(0, wallSpawnPoints.wallSpawns.Length);
-        WallSpawnPair spawnPair = wallSpawnPoints.wallSpawns[wallIndex];
-
-        int i = 0;
-        foreach (var networkClient in NetworkManager.Singleton.ConnectedClientsList)
-        {
-            // Assign spawn points: player 1 (closer to wall), player 2 (closer to centre)
-            Transform targetSpawn = (i == 0) ? spawnPair.playerSpawnOuter : spawnPair.playerSpawnInner;
-            // Set the spawn position y component explicitly to avoid floating
-            Vector3 spawnPos = targetSpawn.position;
-            spawnPos.y = 1.985f;
-
-            if (networkClient.PlayerObject != null && targetSpawn != null)
-            {
-                var controller = networkClient.PlayerObject.GetComponent<CharacterController>();
-                if (controller != null) controller.enabled = false;
-
-                networkClient.PlayerObject.transform.SetPositionAndRotation(
-                    spawnPos,
-                    targetSpawn.rotation
-                );
-
-                // if (controller != null) controller.enabled = true; // keep controller disabled for a time
-            }
-            i++;
-        }
-
-        // // Assume you have references to your player GameObjects:
-        // player1.transform.position = spawnPair.player1Spawn.position;
-        // player1.transform.rotation = spawnPair.player1Spawn.rotation;
-
-        // player2.transform.position = spawnPair.player2Spawn.position;
-        // player2.transform.rotation = spawnPair.player2Spawn.rotation;
-    }
 
 
     // When GameManager is ready, have the server begin the first trial
@@ -491,6 +455,57 @@ public class TrialHandler : NetworkBehaviour
         // Start the next trial
         StartTrial();
     }
+
+        public void TeleportPlayersToRandomWall()
+    {
+        int wallIndex = Random.Range(0, wallSpawnPoints.wallSpawns.Length);
+        WallSpawnPair spawnPair = wallSpawnPoints.wallSpawns[wallIndex];
+
+        int i = 0;
+        Debug.Log($"Connected clients count: {NetworkManager.Singleton.ConnectedClientsList.Count}");
+        foreach (var networkClient in NetworkManager.Singleton.ConnectedClientsList)
+        {
+            if (networkClient.PlayerObject == null)
+            {
+                Debug.LogWarning($"PlayerObject is null for client ID: {networkClient.ClientId}");
+                continue;
+            }
+            Debug.Log($"Client ID: {networkClient.ClientId}, PlayerObject: {networkClient.PlayerObject}");
+            // Assign spawn points: player 1 (closer to wall), player 2 (closer to centre)
+            Transform targetSpawn = (i == 0) ? spawnPair.playerSpawnOuter : spawnPair.playerSpawnInner;
+            // Set the spawn position y component explicitly to avoid floating
+            Vector3 spawnPos = targetSpawn.position;
+            spawnPos.y = 1.985f;
+
+            if (targetSpawn == null)
+            {
+                Debug.LogError($"Target spawn is null for client index {i}");
+                continue;
+            }
+
+            if (networkClient.PlayerObject != null && targetSpawn != null)
+            {
+                var controller = networkClient.PlayerObject.GetComponent<CharacterController>();
+                if (controller != null) controller.enabled = false;
+
+                networkClient.PlayerObject.transform.SetPositionAndRotation(
+                    spawnPos,
+                    targetSpawn.rotation
+                );
+
+                // if (controller != null) controller.enabled = true; // keep controller disabled for a time
+            }
+            i++;
+        }
+
+        // // Assume you have references to your player GameObjects:
+        // player1.transform.position = spawnPair.player1Spawn.position;
+        // player1.transform.rotation = spawnPair.player1Spawn.rotation;
+
+        // player2.transform.position = spawnPair.player2Spawn.position;
+        // player2.transform.rotation = spawnPair.player2Spawn.rotation;
+    }
+
 
     private void TogglePlayerControllers()
     {
