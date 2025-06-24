@@ -101,19 +101,19 @@ public class TrialHandler : NetworkBehaviour
     }
 
 
-void TryAssignMouseLook()
-{
-    if (mouseLook == null)
+    void TryAssignMouseLook()
     {
-        GameObject cam = GameObject.FindGameObjectWithTag("MainCamera");
-        if (cam != null)
+        if (mouseLook == null)
         {
-            mouseLook = cam.GetComponent<MouseLook>();
-            if (mouseLook != null)
-                Debug.Log("MouseLook assigned via tag search.");
+            GameObject cam = GameObject.FindGameObjectWithTag("MainCamera");
+            if (cam != null)
+            {
+                mouseLook = cam.GetComponent<MouseLook>();
+                if (mouseLook != null)
+                    Debug.Log("MouseLook assigned via tag search.");
+            }
         }
     }
-}
     public void Update()
     {
         // Try to assign mouseLook if not already assigned
@@ -467,7 +467,7 @@ void TryAssignMouseLook()
         Debug.Log($"ITI duration for this trial: {ITIvalue}");
     }
 
-    private IEnumerator ITICoroutine(float ITIvalue)
+    public IEnumerator ITICoroutine(float ITIvalue)
     {
         if (!IsServer) { yield break; }
 
@@ -490,13 +490,13 @@ void TryAssignMouseLook()
     }
 
     private void TogglePlayerControllers()
-    {   
+    {
         // repeat for each player in the network session
         int i = 0;
         foreach (var networkClient in NetworkManager.Singleton.ConnectedClientsList)
         {
             if (networkClient.PlayerObject != null)
-            {   
+            {
                 // get the player controller and and toggle its enabled state
                 var controller = networkClient.PlayerObject.GetComponent<CharacterController>();
                 if (controller != null)
@@ -506,6 +506,12 @@ void TryAssignMouseLook()
             }
             i++;
         }
+    }
+
+    [ClientRpc]
+        public void LockCameraClientRPC()
+    {
+        mouseLook.SetCameraLocked(true);
     }
 
 
