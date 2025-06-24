@@ -442,7 +442,7 @@ public class TrialHandler : NetworkBehaviour
         // Teleport players partway through ITI
         // mouseLook.SetCameraLocked(true); // Lock camera until trial start
         LockCameraClientRPC(true); // Lock camera until trial start
-        TeleportPlayersToRandomWall();
+        TeleportPlayerClientRPC(); // Teleport players to random wall
         Debug.Log($"TeleportPlayersToRandomWall() called after {teleportDelay} seconds of ITI");
 
         // Wait for the remainder of the ITI
@@ -456,7 +456,7 @@ public class TrialHandler : NetworkBehaviour
         StartTrial();
     }
 
-        public void TeleportPlayersToRandomWall()
+    public void TeleportPlayersToRandomWall()
     {
         int wallIndex = Random.Range(0, wallSpawnPoints.wallSpawns.Length);
         WallSpawnPair spawnPair = wallSpawnPoints.wallSpawns[wallIndex];
@@ -491,20 +491,32 @@ public class TrialHandler : NetworkBehaviour
                 networkClient.PlayerObject.transform.SetPositionAndRotation(
                     spawnPos,
                     targetSpawn.rotation
+
                 );
+                Debug.Log($"Teleporting client {networkClient.ClientId} to position {spawnPos} with rotation {targetSpawn.rotation}.");
+
 
                 // if (controller != null) controller.enabled = true; // keep controller disabled for a time
             }
             i++;
         }
-
-        // // Assume you have references to your player GameObjects:
-        // player1.transform.position = spawnPair.player1Spawn.position;
-        // player1.transform.rotation = spawnPair.player1Spawn.rotation;
-
-        // player2.transform.position = spawnPair.player2Spawn.position;
-        // player2.transform.rotation = spawnPair.player2Spawn.rotation;
     }
+
+    public void TeleportPlayer(int wallIndex)
+    {
+        // int wallIndex = Random.Range(0, wallSpawnPoints.wallSpawns.Length);
+        WallSpawnPair spawnPair = wallSpawnPoints.wallSpawns[wallIndex];
+
+        var localPlayer = NetworkManager.Singleton.LocalClient.PlayerObject;
+        var controller = localPlayer.GetComponent<CharacterController>();
+        if (controller != null) controller.enabled = false;
+        Debug.Log($"Teleporting local player to wall spawn {wallIndex} at position {spawnPair.playerSpawnOuter.position}");
+        localPlayer.transform.SetPositionAndRotation(
+            spawnPair.playerSpawnOuter.position,
+            spawnPair.playerSpawnOuter.rotation
+        );
+    }
+
 
 
     private void TogglePlayerControllers()
@@ -530,6 +542,13 @@ public class TrialHandler : NetworkBehaviour
     public void LockCameraClientRPC(bool locked)
     {
         if (mouseLook != null) mouseLook.SetCameraLocked(locked);
+    }
+    
+    [ClientRpc]
+    public void TeleportPlayerClientRPC()
+    {
+        int wallIndex = Random.Range(0, wallSpawnPoints.wallSpawns.Length);
+        TeleportPlayer(wallIndex);
     }
 
 
