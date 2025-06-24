@@ -443,12 +443,12 @@ public class TrialHandler : NetworkBehaviour
         // mouseLook.SetCameraLocked(true); // Lock camera until trial start
         LockCameraClientRPC(true); // Lock camera until trial start
         TeleportPlayerClientRPC(); // Teleport players to random wall
-        Debug.Log($"TeleportPlayersToRandomWall() called after {teleportDelay} seconds of ITI");
+        Debug.Log($"Teleport called after {teleportDelay} seconds of ITI");
 
         // Wait for the remainder of the ITI
         yield return new WaitForSeconds(ITIvalue - teleportDelay);
         LockCameraClientRPC(false); // Unlock camera at trial start
-        TogglePlayerControllers(); // Re-enable player controllers (which were disabled at teleport)
+        gameManager.SetEnabledPlayerControllersServerRPC(true); // Re-enable player controllers (which were disabled at teleport)
         // mouseLook.SetCameraLocked(false); // Unlock camera at trail start
 
 
@@ -517,9 +517,7 @@ public class TrialHandler : NetworkBehaviour
         );
     }
 
-
-
-    private void TogglePlayerControllers()
+    public void SetEnabledPlayerControllers(bool locked)
     {
         // repeat for each player in the network session
         int i = 0;
@@ -531,7 +529,7 @@ public class TrialHandler : NetworkBehaviour
                 var controller = networkClient.PlayerObject.GetComponent<CharacterController>();
                 if (controller != null)
                 {
-                    controller.enabled = !controller.enabled;
+                    controller.enabled = locked;
                 }
             }
             i++;
