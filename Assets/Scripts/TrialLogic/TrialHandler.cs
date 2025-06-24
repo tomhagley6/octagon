@@ -448,7 +448,7 @@ public class TrialHandler : NetworkBehaviour
         // Wait for the remainder of the ITI
         yield return new WaitForSeconds(ITIvalue - teleportDelay);
         LockCameraClientRPC(false); // Unlock camera at trial start
-        gameManager.SetEnabledPlayerControllersServerRPC(true); // Re-enable player controllers (which were disabled at teleport)
+        SetEnabledPlayerControllersClientRPC(true); // Re-enable player controllers (which were disabled at teleport)
         // mouseLook.SetCameraLocked(false); // Unlock camera at trail start
 
 
@@ -549,5 +549,20 @@ public class TrialHandler : NetworkBehaviour
         TeleportPlayer(wallIndex);
     }
 
+    [ClientRpc]
+    public void SetEnabledPlayerControllersClientRPC(bool locked)
+    {
+        // Lock or unlock player controllers on each client
+        var localPlayer = NetworkManager.Singleton.LocalClient.PlayerObject;
+        if (localPlayer != null)
+        {
+            var controller = localPlayer.GetComponent<CharacterController>();
+            if (controller != null)
+            {
+                controller.enabled = locked; // Set enable state for player controller
+            }
+        }
+        Debug.Log($"Called LockPlayerControllersClientRPC in GameManager with locked = {locked}");
+    }
 
 }

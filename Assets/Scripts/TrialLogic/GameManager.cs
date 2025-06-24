@@ -904,14 +904,7 @@ public class GameManager : SingletonNetwork<GameManager>
         Debug.Log("Called ITILogicServerRPC in GameManager");
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void SetEnabledPlayerControllersServerRPC(bool locked)
-    {
-        // Lock or unlock player controllers on the server
-        // This will run the locking logic for all clients, as it is a ServerRPC
-        trialHandler.SetEnabledPlayerControllers(locked);
-        Debug.Log($"Called LockPlayerControllersServerRPC in GameManager with locked = {locked}");
-    }
+
 
 
     /* ServerRPC to log data for all clients at slice onset,
