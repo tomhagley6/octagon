@@ -463,7 +463,8 @@ public class TrialHandler : NetworkBehaviour
         float ITIvalue = Random.Range(General.ITIMin, General.ITIMax);
         // Use Invoke to delay StartTrial until ITI has passed
         // NB no trial logic for the next trial is run until an ITI has ocurred
-        StartCoroutine(ITICoroutine(ITIvalue));
+        // StartCoroutine(ITICoroutine(ITIvalue));
+        gameManager.CallITILogicServerRPC(ITIvalue);
         Debug.Log($"ITI duration for this trial: {ITIvalue}");
     }
 
