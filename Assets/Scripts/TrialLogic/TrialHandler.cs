@@ -519,7 +519,7 @@ public class TrialHandler : NetworkBehaviour
     [ClientRpc]
     public void TeleportPlayerClientRPC(int wallIndex, int sideAssignment)
     {
-        TeleportPlayer(wallIndex, 0);
+        TeleportPlayer(wallIndex, sideAssignment);
     }
 
     [ClientRpc]
