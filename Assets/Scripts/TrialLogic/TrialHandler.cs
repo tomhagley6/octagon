@@ -442,7 +442,10 @@ public class TrialHandler : NetworkBehaviour
         // Teleport players partway through ITI
         // mouseLook.SetCameraLocked(true); // Lock camera until trial start
         LockCameraClientRPC(true); // Lock camera until trial start
-        TeleportPlayerClientRPC(); // Teleport players to random wall
+        int wallIndex = Random.Range(0, wallSpawnPoints.wallSpawns.Length);
+        int sideAssignment = Random.Range(0, 2); // 0 for outer, 1 for inner
+
+        TeleportPlayerClientRPC(wallIndex, sideAssignment); // Teleport players to random wall
         Debug.Log($"Teleport called after {teleportDelay} seconds of ITI");
 
         // Wait for the remainder of the ITI
@@ -456,65 +459,33 @@ public class TrialHandler : NetworkBehaviour
         StartTrial();
     }
 
-    public void TeleportPlayersToRandomWall()
-    {
-        int wallIndex = Random.Range(0, wallSpawnPoints.wallSpawns.Length);
-        WallSpawnPair spawnPair = wallSpawnPoints.wallSpawns[wallIndex];
 
-        int i = 0;
-        Debug.Log($"Connected clients count: {NetworkManager.Singleton.ConnectedClientsList.Count}");
-        foreach (var networkClient in NetworkManager.Singleton.ConnectedClientsList)
-        {
-            if (networkClient.PlayerObject == null)
-            {
-                Debug.LogWarning($"PlayerObject is null for client ID: {networkClient.ClientId}");
-                continue;
-            }
-            Debug.Log($"Client ID: {networkClient.ClientId}, PlayerObject: {networkClient.PlayerObject}");
-            // Assign spawn points: player 1 (closer to wall), player 2 (closer to centre)
-            Transform targetSpawn = (i == 0) ? spawnPair.playerSpawnOuter : spawnPair.playerSpawnInner;
-            // Set the spawn position y component explicitly to avoid floating
-            Vector3 spawnPos = targetSpawn.position;
-            spawnPos.y = 1.985f;
-
-            if (targetSpawn == null)
-            {
-                Debug.LogError($"Target spawn is null for client index {i}");
-                continue;
-            }
-
-            if (networkClient.PlayerObject != null && targetSpawn != null)
-            {
-                var controller = networkClient.PlayerObject.GetComponent<CharacterController>();
-                if (controller != null) controller.enabled = false;
-
-                networkClient.PlayerObject.transform.SetPositionAndRotation(
-                    spawnPos,
-                    targetSpawn.rotation
-
-                );
-                Debug.Log($"Teleporting client {networkClient.ClientId} to position {spawnPos} with rotation {targetSpawn.rotation}.");
-
-
-                // if (controller != null) controller.enabled = true; // keep controller disabled for a time
-            }
-            i++;
-        }
-    }
-
-    public void TeleportPlayer(int wallIndex)
+    public void TeleportPlayer(int wallIndex, int sideAssignment)
     {
         // int wallIndex = Random.Range(0, wallSpawnPoints.wallSpawns.Length);
         WallSpawnPair spawnPair = wallSpawnPoints.wallSpawns[wallIndex];
 
+        Transform playerSpawn;
         var localPlayer = NetworkManager.Singleton.LocalClient.PlayerObject;
         var controller = localPlayer.GetComponent<CharacterController>();
         if (controller != null) controller.enabled = false;
-        Debug.Log($"Teleporting local player to wall spawn {wallIndex} at position {spawnPair.playerSpawnOuter.position}");
+
+
+        if (IsServer)
+        {
+            playerSpawn = sideAssignment == 0 ? spawnPair.playerSpawnOuter : spawnPair.playerSpawnInner;
+        }
+        else
+        {
+            playerSpawn = sideAssignment == 0 ? spawnPair.playerSpawnInner : spawnPair.playerSpawnOuter; 
+        }
+
+        Debug.Log($"Teleporting local player to wall spawn {wallIndex} at position {playerSpawn.position}");
         localPlayer.transform.SetPositionAndRotation(
-            spawnPair.playerSpawnOuter.position,
-            spawnPair.playerSpawnOuter.rotation
+            playerSpawn.position,
+            playerSpawn.rotation
         );
+
     }
 
     public void SetEnabledPlayerControllers(bool locked)
@@ -543,10 +514,9 @@ public class TrialHandler : NetworkBehaviour
     }
     
     [ClientRpc]
-    public void TeleportPlayerClientRPC()
+    public void TeleportPlayerClientRPC(int wallIndex, int sideAssignment)
     {
-        int wallIndex = Random.Range(0, wallSpawnPoints.wallSpawns.Length);
-        TeleportPlayer(wallIndex);
+        TeleportPlayer(wallIndex, 0);
     }
 
     [ClientRpc]
