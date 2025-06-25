@@ -480,9 +480,12 @@ public class TrialHandler : NetworkBehaviour
             playerSpawn = sideAssignment == 0 ? spawnPair.playerSpawnInner : spawnPair.playerSpawnOuter; 
         }
 
+        Vector3 spawnPos  = playerSpawn.position;
+        spawnPos.y = 1.985f; // Ensure y position is set to player height
+
         Debug.Log($"Teleporting local player to wall spawn {wallIndex} at position {playerSpawn.position}");
         localPlayer.transform.SetPositionAndRotation(
-            playerSpawn.position,
+            spawnPos,
             playerSpawn.rotation
         );
 

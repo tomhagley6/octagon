@@ -797,8 +797,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wallSpawns:
-  - player1Spawn: {fileID: 7620698322821343762}
-    player2Spawn: {fileID: 7715446426479776246}
+  - playerSpawnOuter: {fileID: 0}
+    playerSpawnInner: {fileID: 0}
 --- !u!1 &3235089232709243826
 GameObject:
   m_ObjectHideFlags: 0
