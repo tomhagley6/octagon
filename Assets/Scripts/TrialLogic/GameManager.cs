@@ -874,6 +874,12 @@ public class GameManager : SingletonNetwork<GameManager>
         scores[(int)callerClientId] += increment; 
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    public void IlluminationHighServerRpc(bool isHigh)
+    {
+        // Call a client Rpc for all clients to set global illumination to isHigh
+        trialHandler.IlluminationHighClientRpc(isHigh);
+    }
 
     /* ServerRPC to log data for all clients at slice onset,
     including clientId, gameObject.transform.position, and 
@@ -882,7 +888,7 @@ public class GameManager : SingletonNetwork<GameManager>
     // Maybe first try just executing the logging only if this is the server? 
     // in a callback method for activeWalls.OnValueChanged, with
     // if (isServer)
-    [ServerRpc(RequireOwnership=false)]
+    [ServerRpc(RequireOwnership = false)]
     public void LogClientDataServerRPC()
     {
         // Not implemented
