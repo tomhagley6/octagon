@@ -34,19 +34,20 @@ namespace Globals
 
         // og risky choicee
         // public static List<int> trialTypeProbabilities = new List<int>{40, 40, 10, 10};
-        
+
         // solo sessions
-        public static List<int> trialTypeProbabilities = new List<int>{35, 35, 10, 10, 10};
+        //public static List<int> trialTypeProbabilities = new List<int>{35, 35, 10, 10, 10};
+        public static List<int> trialTypeProbabilities = new List<int>{30, 30};
 
         // socials
         // public static List<int> trialTypeProbabilities = new List<int>{50, 50};
 
         // og risky choice
         // public static List<int> wallSeparations = new List<int>{1,2,4};   // index difference between trial walls
-                                                                          // random choice within list
+        // random choice within list
 
         // solo sessions
-        public static List<int> wallSeparations = new List<int>{1,2}; 
+        public static List<int> wallSeparations = new List<int> { 1, 2 }; 
 
         // socials
         // public static List<int> wallSeparations = new List<int>{1,2};
