@@ -577,11 +577,8 @@ public class GameManager : SingletonNetwork<GameManager>
 
         if (roll < 0.6f)
         {
-            // Create weighted list of trial types to draw from 
-            WeightedList<string> trialTypeDist = new();
-            trialTypeDist.Add(General.trialTypes[0], General.trialTypeProbabilities[0]);
-            trialTypeDist.Add(General.trialTypes[1], General.trialTypeProbabilities[1]);
-            return trialTypeDist.Next();
+            int idx = Random.Range(0, 2);
+            return General.trialTypes[idx];
         }
 
         else
