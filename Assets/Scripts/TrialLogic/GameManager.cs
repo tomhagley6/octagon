@@ -573,15 +573,32 @@ public class GameManager : SingletonNetwork<GameManager>
     
     public string SelectTrial()
     {
-        // Create weighted list of trial types to draw from 
-        WeightedList<string> trialTypeDist = new();
-        for (int i = 0; i < General.trialTypes.Count; i++)
+        float roll = Random.Range(0f, 1f);
+
+        if (roll < 0.6f)
         {
-            trialTypeDist.Add(General.trialTypes[i], General.trialTypeProbabilities[i]);
+            // Create weighted list of trial types to draw from 
+            WeightedList<string> trialTypeDist = new();
+            trialTypeDist.Add(General.trialTypes[0], General.trialTypeProbabilities[0]);
+            trialTypeDist.Add(General.trialTypes[1], General.trialTypeProbabilities[1]);
+            return trialTypeDist.Next();
         }
+
+        else
+        {
+            int index = Random.Range(2, 5);
+            return General.trialTypes[index];
+        }
+        // Create weighted list of trial types to draw from 
+        //WeightedList<string> trialTypeDist = new();
+
+        //for (int i = 0; i < General.trialTypes.Count; i++)
+        //{
+            //trialTypeDist.Add(General.trialTypes[i], General.trialTypeProbabilities[i]);
+        //}
         
         // Return trial type for this trial
-        return trialTypeDist.Next();
+        //return trialTypeDist.Next();
     }
 
 
