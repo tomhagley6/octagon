@@ -16,9 +16,15 @@ public class MLAgent : Agent
     // public Agent agent;
     public Camera agentCamera;
 
-    public float moveSpeed = 0.5f;
-    public float turnSpeed = 1f;
-    private Rigidbody rb;
+    public float moveSpeed = 20f;
+    public float turnSpeed = 90f;
+    private float forwardInput;
+    private float strafeInput;
+    private float rotateInput;
+
+    public CharacterController controller;
+    //public Animator animator;
+
     public bool isTrialInProgress = false;
 
     // set counter to keep track of how many trials have been completed
@@ -47,27 +53,12 @@ public class MLAgent : Agent
         if (trialHandlerExtension == null) trialHandlerExtension = FindObjectOfType<TrialHandlerExtension>();
         if (wallTriggerExtension == null) wallTriggerExtension = FindObjectOfType<WallTriggerExtension>();
 
-        rb = GetComponent<Rigidbody>();
-        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-
     }
 
     public override void OnEpisodeBegin()
     {
         Debug.Log($"[Agent] Episode begin for {tag}");
 
-        rb.velocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
-
-        if (gameManagerExtension != null)
-        {
-            startPosition = gameManagerExtension.GetValidSpawnPosition();
-            Debug.Log($"[{tag}] Spawning at {startPosition}");
-        }
-
-        rb.transform.localPosition = CompareTag("OpponentAgent")
-            ? startPosition - 1f * Vector3.right
-            : startPosition;
 
         if (CompareTag("PlayerAgent"))
         {
@@ -78,7 +69,8 @@ public class MLAgent : Agent
 
             // relocating trial counter to trial handler extension
             trialHandlerExtension.trialCounter = 0;
-            RandomNumber = Random.Range(5, 10);
+            RandomNumber = Random.Range(2, 3); // temporarly capping to one trial per episode for association-learning
+            // RandomNumber = Random.Range(5, 10);
             // Debug.Log($"[Agent] Trial counter reset. Starting 0 of {RandomNumber}");
 
             // Start trial loop from TrialHandler
@@ -95,33 +87,40 @@ public class MLAgent : Agent
     }
 
 
-    public void MoveAgent(ActionBuffers actions)
+    public override void OnActionReceived(ActionBuffers actions)
     {
-        var dirToGo = Vector3.zero;
-        var rotateDir = Vector3.zero; 
 
         var continuousActions = actions.ContinuousActions;
 
-        var forward = Mathf.Clamp(continuousActions[0], -1f, 1f);
-        var right = Mathf.Clamp(continuousActions[1], -1f, 1f);
-        var rotate = Mathf.Clamp(continuousActions[2], -1f, 1f);
+        forwardInput = Mathf.Clamp(continuousActions[0], -1f, 1f);
+        strafeInput = Mathf.Clamp(continuousActions[1], -1f, 1f);
+        rotateInput = Mathf.Clamp(continuousActions[2], -1f, 1f);
 
-        dirToGo = transform.forward * forward;
-        dirToGo += transform.right * right;
-        rotateDir = -transform.up * rotate;
-
-        rb.velocity = new Vector3(dirToGo.x * moveSpeed, rb.velocity.y, dirToGo.z * moveSpeed);
-        transform.Rotate(rotateDir * turnSpeed * Time.deltaTime);
-
-        // AddReward(-0.001f); // Optional step penalty
-    }
-
-    public override void OnActionReceived(ActionBuffers actions)
-    {
-        MoveAgent(actions);
-        // Debug.Log($"[Agent] StepCount: {StepCount}")
+        AddReward(-0.0001f); // step penalty
     }
     
+    public void FixedUpdate()
+    {
+        if (controller == null) return;
+
+        //RequestDecision();
+
+        Vector3 targetDirection = transform.forward * forwardInput + transform.right * strafeInput;
+        if (targetDirection.magnitude > 1)
+            targetDirection.Normalize();
+
+        if (targetDirection.magnitude > 0.01f)
+            Debug.DrawRay(transform.position, targetDirection * 2f, Color.red, 0.1f);
+
+        controller.Move(targetDirection * moveSpeed * Time.fixedDeltaTime);
+
+        float targetYRotation = transform.eulerAngles.y + rotateInput * turnSpeed * Time.fixedDeltaTime;
+        transform.rotation = Quaternion.Euler(0f, targetYRotation, 0f);
+
+        //animator.SetBool("isRunning", targetDirection.magnitude > 0.05f);
+
+    }
+
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         var continuousActionsOut = actionsOut.ContinuousActions;
@@ -150,5 +149,6 @@ public class MLAgent : Agent
     }
 
 }
+
 
 
