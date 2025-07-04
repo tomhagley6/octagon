@@ -29,10 +29,6 @@ public class WallTriggerExtension : MonoBehaviour
 
 
 
-    Rigidbody opponentAgentRb;
-    Rigidbody playerAgentRb;
-
-
     public List<Collider> wallColliders;
     // public static string thisTrialType;  // trial type for this trial
     // public BoxCollider collider;
@@ -80,9 +76,6 @@ public class WallTriggerExtension : MonoBehaviour
         playerAgent = GameObject.FindWithTag("PlayerAgent").GetComponent<MLAgent>();
 
         // AssignActiveWalls();
-        
-        opponentAgentRb = opponentAgent.GetComponent<Rigidbody>();
-		playerAgentRb = playerAgent.GetComponent<Rigidbody>();
 
     }
 
