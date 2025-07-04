@@ -55,6 +55,31 @@ public class TrialHandlerExtension : MonoBehaviour
 
     public void StartTrial()
     {
+        Vector3 currentPosition = transform.position;
+        float y = currentPosition.y;
+        
+        Vector3 startPosition = new Vector3(Random.Range(0 - 2f, 0 + 2f), y, Random.Range(0 - 1f, 0 + 1f));
+
+        playerAgent.controller.enabled = false;
+        opponentAgent.controller.enabled = false;
+
+        playerAgent.transform.position = startPosition;
+
+        Vector3 shift = new Vector3(2f, 0f, 0f);
+
+        float random = Random.Range(0f, 1f);
+        if (random < 0.05f)
+        {
+            opponentAgent.transform.position = startPosition - shift;
+        }
+        else
+        {
+            opponentAgent.transform.position = startPosition + shift;
+        }
+
+        playerAgent.controller.enabled = true;
+        opponentAgent.controller.enabled = true;
+        
         // set trial state to in progress
         if (!playerAgent.isTrialInProgress)
         {
