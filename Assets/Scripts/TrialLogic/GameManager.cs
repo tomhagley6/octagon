@@ -141,9 +141,11 @@ public class GameManager : SingletonNetwork<GameManager>
     public NetworkVariable<ushort> trialNum = new NetworkVariable<ushort>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     public NetworkVariable<bool> firstTriggerActivationThisTrial = new NetworkVariable<bool>(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     public NetworkVariable<FixedString32Bytes> trialType = new NetworkVariable<FixedString32Bytes>("", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    public NetworkVariable<int> winnerScoreChange = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     public NetworkList<ulong> connectedClientIds;
     public NetworkList<int> scores;
+
 
 
     // // Methods
@@ -612,6 +614,27 @@ public class GameManager : SingletonNetwork<GameManager>
         else Debug.Log("No conditions met for WallInteraction");
     }
 
+    // helper method for riskyChoice and forcedRisky trials
+    // float probability = General.probabilityRisky;
+    // bool EvaluateRisk() => UnityEngine.Random.value < probability;
+
+    // (int score, string rewardType) AssignRiskyReward(int triggerID, int highWallTriggerID, int lowWallTriggerID)
+    // {
+        // float probability = General.probabilityRisky;
+        // bool isRiskyWin = UnityEngine.Random.value < probability;
+
+        // if (triggerID == highWallTriggerID)
+        // {
+            // int score = isRiskyWin ? General.highScore : 0;
+            // string rewardType = isRiskyWin ? General.highScoreRewardType : General.zeroRewardType;
+            // return (score, rewardType);
+        // }
+        // else
+        // {
+            // return (General.lowScore, General.lowScoreRewardType);
+        // }
+    // }
+
 
     void TrialInteraction(int triggerID, int highWallTriggerID,
                                 int lowWallTriggerID, bool isTrialEnderClient)
@@ -622,6 +645,8 @@ public class GameManager : SingletonNetwork<GameManager>
         // LVs
         int score = 0;
         string rewardType = "";
+        // float probability = General.probabilityRisky;
+        // bool isRiskyWin = UnityEngine.Random.value < probability;
 
         switch (trialType.Value)
         {
@@ -630,7 +655,13 @@ public class GameManager : SingletonNetwork<GameManager>
             score = triggerID == highWallTriggerID ? General.highScore : General.lowScore;
             rewardType = triggerID == highWallTriggerID ? General.highScoreRewardType : General.lowScoreRewardType;
         
-           break;
+            break;
+
+            // case var value when value == General.riskyChoice:
+
+            // (score, rewardType) = AssignRiskyReward(triggerID, wallID1, wallID2);
+
+            // break;
 
             case var value when value == General.forcedHigh:
             
@@ -645,6 +676,14 @@ public class GameManager : SingletonNetwork<GameManager>
             rewardType = General.lowScoreRewardType;
 
             break;
+
+            // case var value when value == General.forcedRisky:
+
+            // score = isRiskyWin ? General.highScore : 0;
+            // rewardType = isRiskyWin ? General.highScoreRewardType : General.zeroRewardType; 
+
+            // break;
+
         }
 
         // Debug statement
@@ -660,6 +699,7 @@ public class GameManager : SingletonNetwork<GameManager>
         if (isTrialEnderClient) {
             // Debug.Log($"EndTrial inputs: {score}, {highWallTriggerID}, {lowWallTriggerID}"
             //             + $" {triggerID}, {rewardType}, {isTrialEnderClient}");
+            Debug.Log($"winnerScoreChange updated with score {winnerScoreChange.Value}");
             trialHandler.EndTrial(score, isTrialEnderClient);
         }
 
@@ -874,12 +914,13 @@ public class GameManager : SingletonNetwork<GameManager>
         scores[(int)callerClientId] += increment; 
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void IlluminationHighServerRpc(bool isHigh)
+    [ServerRpc(RequireOwnership=false)]
+    public void UpdateWinnerScoreChangeServerRPC(int winnerScoreChange)
     {
-        // Call a client Rpc for all clients to set global illumination to isHigh
-        trialHandler.IlluminationHighClientRpc(isHigh);
+        this.winnerScoreChange.Value = winnerScoreChange;
     }
+
+
 
     /* ServerRPC to log data for all clients at slice onset,
     including clientId, gameObject.transform.position, and 
@@ -888,7 +929,7 @@ public class GameManager : SingletonNetwork<GameManager>
     // Maybe first try just executing the logging only if this is the server? 
     // in a callback method for activeWalls.OnValueChanged, with
     // if (isServer)
-    [ServerRpc(RequireOwnership = false)]
+    [ServerRpc(RequireOwnership=false)]
     public void LogClientDataServerRPC()
     {
         // Not implemented

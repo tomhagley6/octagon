@@ -16,19 +16,23 @@ It then implements all of the logic that can be kept client-side, s.a.
 painting and washing walls, score adjust, etc. */
 public class TrialHandler : NetworkBehaviour
 {
+   
+   GameManager gameManager;
+   IdentityManager identityManager;
+   Color defaultWallColour;
+   bool isTrialEnderClient = false; // flag to check if current trial was 
+                                    // ended by this clientId
+   public event Action sliceOnset;  
+   public event Action<int> scoreChange;
 
-    GameManager gameManager;
-    IdentityManager identityManager;
-    Color defaultWallColour;
-    bool isTrialEnderClient = false; // flag to check if current trial was 
-                                     // ended by this clientId
-    public event Action sliceOnset;
-    public event Action<int> scoreChange;
-
+// private arrays of Material objects storing the original materials for the walls
+// for washing off visual stimuli
+   // private Material[] highWallOriginalMaterials;
+   // private Material[] lowWallOriginalMaterials;
 
     // Print current active walls for debugging purposes
     IEnumerator PrintWalls()
-    {
+    {   
         while (true)
         {
             yield return new WaitForSeconds(2f);
@@ -40,11 +44,11 @@ public class TrialHandler : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-
+        
         // // variables
         gameManager = FindObjectOfType<GameManager>();
         identityManager = FindObjectOfType<IdentityManager>();
-
+        
         // // subscriptions
         gameManager.activeWalls.OnValueChanged += ColourWallsOnChange;
         gameManager.OnReadyStateChanged += GameManager_OnReadyStateChangedHandler;
@@ -69,7 +73,7 @@ public class TrialHandler : NetworkBehaviour
             Debug.Log("activeWalls has a non-zero value and am client");
             // ColourWalls(gameManager.activeWalls.Value.wall1, gameManager.activeWalls.Value.wall2);
         }
-        else
+        else 
         {
             // Debug.Log("Either not IsClient or activeWalls has a 0 value now");
             if (IsClient)
@@ -92,26 +96,26 @@ public class TrialHandler : NetworkBehaviour
             StartFirstTrialManual();
         }
     }
-
+   
 
     // Due to walls and wall colours not being networked, any late-joining clients will 
     // need to run ColourWalls as they join
     IEnumerator DelayedColourWalls()
-    {
-
-        Color myColour = new Color(0, 0, 0, 0);
+    {   
+        
+        Color myColour = new Color(0,0,0,0);
         Debug.Log($"Current value of default wall color is {defaultWallColour}");
         // Debug.Log($"Outcome of myColour == defaultWallColour is {myColour == defaultWallColour}");
         Debug.Log($"DelayedColourWalls conditions are: {WallTrigger.setupComplete}"
                     + $", {gameManager.activeWalls.Value.wall1 != 0}"
                     + $", {defaultWallColour == myColour}");
-
+        
         // coroutine only needs to run while defaultWallColour is not initialised
         if (defaultWallColour != myColour) yield break;
 
         // Check that wallTriggers have set up, the first trial has started, 
         // and that walls are not already coloured (which implies host)
-        yield return new WaitUntil(() => WallTrigger.setupComplete == true
+        yield return new WaitUntil( () => WallTrigger.setupComplete == true 
                                     && gameManager.activeWalls.Value.wall1 != 0
                                     && defaultWallColour == myColour);
 
@@ -131,22 +135,21 @@ public class TrialHandler : NetworkBehaviour
 
 
     // Update the colour of walls following value change
-    private void ColourWallsOnChange(ActiveWalls previousValue, ActiveWalls newValue)
-    {
-
+    private void ColourWallsOnChange(ActiveWalls previousValue, ActiveWalls newValue) {
+        
         // We reset the value of activeWalls to 0 and 0 on each trial. Don't try and colour
         // the walls if they are 0
         if (gameManager.activeWalls.Value.wall1 != 0)
         {
             ColourWalls(gameManager.activeWalls.Value.wall1, gameManager.activeWalls.Value.wall2);
         }
-    }
-
+    }   
+    
     // Set wall colour for the current trial
     void ColourWalls(int wallID1, int wallID2)
     {
         // Access the actual game object through the ID:GameObject dict in IdentityManager
-        GameObject wall1Trigger = identityManager.GetObjectByIdentifier(wallID1);
+        GameObject wall1Trigger = identityManager.GetObjectByIdentifier(wallID1); 
         GameObject wall2Trigger = identityManager.GetObjectByIdentifier(wallID2);
 
         // Get the (parent) octagon wall of each trigger
@@ -160,23 +163,53 @@ public class TrialHandler : NetworkBehaviour
         Debug.Log($"Default wall colour is saved as {defaultWallColour}");
         Debug.Log($"ColourWalls() uses {wallID1} and {wallID2} as wall values");
 
+        // highWallOriginalMaterials = wall1.GetComponent<Renderer>().materials;
+        // lowWallOriginalMaterials = wall2.GetComponent<Renderer>().materials;
+
         // Assign colours to the walls dependent on trial type
         switch (gameManager.trialType.Value)
         {
             case var value when value == General.highLow:
                 wall1.GetComponent<Renderer>().materials[0].color = General.wallHighColour;
                 wall2.GetComponent<Renderer>().materials[0].color = General.wallLowColour;
+
+                // assigns materials for visual stimuli to the relevant walls
+                // wall1.GetComponent<Renderer>().material = General.wallHighMaterial;
+                // wall2.GetComponent<Renderer>().material = General.wallLowMaterial;
                 break;
+
+            // case var value when value == General.riskyChoice:
+                // wall1.GetComponent<Renderer>().materials[0].color = General.wallRiskyColour;
+                // wall2.GetComponent<Renderer>().materials[0].color = General.wallLowColour;
+
+                // wall1.GetComponent<Renderer>().material = General.wallRiskyMaterial;
+                // wall2.GetComponent<Renderer>().material = General.wallLowMaterial;
+               // break;
 
             case var value when value == General.forcedHigh:
                 wall1.GetComponent<Renderer>().materials[0].color = General.wallHighColour;
                 wall2.GetComponent<Renderer>().materials[0].color = General.wallHighColour;
+
+                // wall1.GetComponent<Renderer>().material = General.wallHighMaterial;
+                // wall2.GetComponent<Renderer>().material = General.wallHighMaterial;
                 break;
 
             case var value when value == General.forcedLow:
                 wall1.GetComponent<Renderer>().materials[0].color = General.wallLowColour;
                 wall2.GetComponent<Renderer>().materials[0].color = General.wallLowColour;
+            
+                // wall1.GetComponent<Renderer>().material = General.wallLowMaterial;
+                // wall2.GetComponent<Renderer>().material = General.wallLowMaterial;
                 break;
+            
+            // case var value when value == General.forcedRisky:
+                // wall1.GetComponent<Renderer>().materials[0].color = General.wallRiskyColour;
+                // wall2.GetComponent<Renderer>().materials[0].color = General.wallRiskyColour;
+
+                // wall1.GetComponent<Renderer>().material = General.wallRiskyMaterial;
+                // wall2.GetComponent<Renderer>().material = General.wallLowMaterial;
+                // break;
+
         }
 
         // NEW
@@ -193,9 +226,8 @@ public class TrialHandler : NetworkBehaviour
 
 
     // When GameManager is ready, have the server begin the first trial
-    public void GameManager_OnReadyStateChangedHandler(bool isReady)
-    {
-
+    public void GameManager_OnReadyStateChangedHandler(bool isReady) {
+                
         // Debug.Log($"IsServer returns as: {IsServer}");
         if (isReady && IsServer && General.automaticStartTrial)
         {
@@ -209,9 +241,9 @@ public class TrialHandler : NetworkBehaviour
     {
         yield return new WaitForSeconds(General.startFirstTrialDelay);
 
-        // Begin trials
-        isTrialEnderClient = true;
-        StartTrial();
+            // Begin trials
+            isTrialEnderClient = true;
+            StartTrial();
     }
 
     private void StartFirstTrialManual()
@@ -221,26 +253,29 @@ public class TrialHandler : NetworkBehaviour
             StartTrial();
         }
     }
+    
+ 
 
-
-
-    // Reset wall colour to default after a trial
-    public void WashWalls(int highWallTriggerID, int lowWallTriggerID)
+   // Reset wall colour to default after a trial
+   public void WashWalls(int highWallTriggerID, int lowWallTriggerID)
     {
         Debug.Log($"WashWalls receives high and low wall trigger IDs as: {highWallTriggerID} and {lowWallTriggerID}");
-
+        
         // Access the actual game object through the ID:GameObject dict in IdentityManager
         GameObject highWallTrigger = identityManager.GetObjectByIdentifier(highWallTriggerID);
         GameObject lowWallTrigger = identityManager.GetObjectByIdentifier(lowWallTriggerID);
 
         // Get the (parent) octagon wall of each trigger
         GameObject highWall = highWallTrigger.transform.parent.gameObject;
-        GameObject lowWall = lowWallTrigger.transform.parent.gameObject;
+        GameObject lowWall = lowWallTrigger.transform.parent.gameObject; 
 
         // Reset wall colours back to their previously-saved defaults
-        highWall.GetComponent<Renderer>().materials[0].color = defaultWallColour;
-        lowWall.GetComponent<Renderer>().materials[0].color = defaultWallColour;
+        highWall.GetComponent<Renderer>().materials[0].color = defaultWallColour; 
+        lowWall.GetComponent<Renderer>().materials[0].color = defaultWallColour;  
 
+        // Reset wall materials back to original
+        // highWall.GetComponent<Renderer>().materials = highWallOriginalMaterials;
+        // lowWall.GetComponent<Renderer>().materials = lowWallOriginalMaterials;
         // Reset interaction zone back to full transparency
         GameObject wall1Centre = highWall.transform.Find("InteractionZone").gameObject;
         GameObject wall2Centre = lowWall.transform.Find("InteractionZone").gameObject;
@@ -251,8 +286,8 @@ public class TrialHandler : NetworkBehaviour
 
 
     }
-
-
+    
+    
     // // Change the score variable, which is accessed by Score.cs to update the UI 
     //     public void AdjustScore(int increment = 0)
     // {
@@ -265,19 +300,19 @@ public class TrialHandler : NetworkBehaviour
     //     scoreChange?.Invoke();
     // }
 
-
+    
     // Run only by the client which ended the trial, pick new walls for the upcoming
     // trial and update their NetworkVariable
     void StartTrial()
-    {
+    {    
         StartCoroutine(StartTrialCoroutine());
     }
 
 
     public IEnumerator StartTrialCoroutine()
     {
-        if (!isTrialEnderClient) { yield return null; }
-
+        if (!isTrialEnderClient) {yield return null;}
+        
         Debug.Log("isTrialEnderClient is true, and StartTrial has been triggered");
 
         /* reset triggerActivation values to 0, in case the values between two updates
@@ -288,7 +323,7 @@ public class TrialHandler : NetworkBehaviour
         This is presumably a race condition, and I would need to lock the NetworkVariable
         until both clients had finished with WallTrialInteraction
         For now, this is an easier fix */
-        gameManager.UpdateTriggerActivation(0, 0);
+        gameManager.UpdateTriggerActivation(0,0);
 
         // Choose the current trial type (at the moment only forced-choice or high-low)
         // NB. This does not include slice separation
@@ -338,16 +373,16 @@ public class TrialHandler : NetworkBehaviour
 
         // // Begin StartTrial again with a random ITI
         // float ITIvalue = Random.Range(2f,5f);
-
+        
         // // Reset the activeWalls values to 0, to ensure that activeWalls *always*
         // // changes on a new trial
         // List<int> wallReset = new List<int>(){0,0};
         // gameManager.UpdateActiveWalls(wallReset);
         // Debug.Log("Walls now reset to 0 for this trial");
-
+        
         // // // reset triggerActivation values to 0, for the same reason
         // // gameManager.UpdateTriggerActivation(0,0);
-
+        
         // // Pause code block execution (while allowing other scripts to continue) by running "Invoke"
         // // NB no trial logic for the next trial is run until an ITI has ocurred
         // Invoke("StartTrial", ITIvalue);
@@ -361,28 +396,31 @@ public class TrialHandler : NetworkBehaviour
     // the ITI
     public IEnumerator EndTrialCoroutine(int increment, bool isTrialEnderClient)
     {
-
+        
         // Update score locally in Score.cs (and to the NetworkList?)
         // Score.cs uses this to update the score display on the canvas
         // Update the score popup text in ScorePopup.cs
         scoreChange?.Invoke(increment);
         gameManager.UpdateScoresServerRPC(increment, NetworkManager.Singleton.LocalClientId);
+        gameManager.UpdateWinnerScoreChangeServerRPC(increment);
+        Debug.Log($"winnerScoreChange updated with score {gameManager.winnerScoreChange.Value}");
 
+        
 
         // Record whether it was this client that ended the current trial
         this.isTrialEnderClient = isTrialEnderClient;
 
         // Reset the activeWalls values to 0, to ensure that activeWalls *always*
         // changes on a new trial
-        List<int> wallReset = new List<int>() { 0, 0 };
+        List<int> wallReset = new List<int>(){0,0};
         gameManager.UpdateActiveWalls(wallReset);
         Debug.Log("Walls now reset to 0 for this trial");
 
         // allow a short grace period before the trial ends 
         // Then update the trial active NetworkVaraible
-        yield return new WaitForSeconds(General.trialEndDuration);
+        yield return new WaitForSeconds(General.trialEndDuration); 
         gameManager.ToggleTrialActiveServerRPC();
-
+        
         // Decrease global illumimation
         var light = GameObject.Find("DirectionalLight").GetComponent<Light>();
         light.intensity = 0.6f;
@@ -393,20 +431,6 @@ public class TrialHandler : NetworkBehaviour
         // NB no trial logic for the next trial is run until an ITI has ocurred
         Invoke("StartTrial", ITIvalue);
         Debug.Log($"ITI duration for this trial: {ITIvalue}");
-    }
-
-    [ClientRpc]
-    public void IlluminationHighClientRpc(bool isHigh)
-    {
-        var light = GameObject.Find("DirectionalLight").GetComponent<Light>();
-        if (isHigh)
-        {
-            light.intensity = General.globalIlluminationHigh;
-        }
-        else
-        {
-            light.intensity = General.globalIlluminationLow;
-        }
     }
 
 
