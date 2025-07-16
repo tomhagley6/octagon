@@ -1,0 +1,47 @@
+behaviors:
+  MLAgent:
+    trainer_type: ppo
+    max_steps: 1000000
+    #max_steps: 0              # Total training steps
+    time_horizon: 32            # How many steps of experience per agent before updating
+    summary_freq: 10000          # How often stats are written to TensorBoard
+    #summary_freq: 1000           # temporarily lowered for checks
+    #summary_freq: 50000          # increasing summary frequency to see if it gets me a meaningful reward SD
+    keep_checkpoints: 5
+    checkpoint_interval: 50000
+
+    hyperparameters:
+      batch_size: 1024           # Number of experiences used per training batch
+      buffer_size: 10240         # How many total experiences are collected before training
+      learning_rate: 1.0e-4
+      #learning_rate: 5.0e-4      # temporarily increased - could be too aggressive
+      beta: 5.0e-3
+      #beta: 1.0e-2               # increasing entropy
+      #use_beta_schedule: linear
+      epsilon: 0.2
+      lambd: 0.95
+      num_epoch: 3
+
+    network_settings:
+      normalize: true           # Set true if your observations are not normalized (e.g. pixel/camera input)
+      hidden_units: 128          # Size of each hidden layer
+      num_layers: 2              # How deep the network is
+      #vis_encode_type: simple    # Visual encoder type: simple, nature_cnn, resnet
+      memory:
+        sequence_length: 32
+        memory_size: 128
+
+    reward_signals:
+      extrinsic:
+        gamma: 0.99
+        strength: 1.0
+
+    self_play:
+      window: 10
+      play_against_latest_model_rationale: 0.5
+      save_steps: 10000     # How often to save self-play models
+      swap_steps: 5000      # How often to swap self-play models
+      team_change: 5000  # How often to change teams in self-play
+
+    # Optional for camera input; auto-detected if CameraSensorComponent exists
+    # use_visual: true
