@@ -46,12 +46,13 @@ public class PlayerMovement : NetworkBehaviour
     
     }
     
+    // Instances of this script come into existence after a networked player has been created
     void Start()
     {   
         // variables
         gameManager = FindObjectOfType<GameManager>();
         networkManager = FindObjectOfType<NetworkManager>();
-        networkManager.LocalClient.PlayerObject.transform.position = new Vector3(0,10,0);
+        networkManager.LocalClient.PlayerObject.transform.position = new Vector3(0,10,0); // set initial position of player
         playerBody = gameObject.transform;
         canvas = GameObject.Find("Canvas");
         // animator = GetComponent<Animator>();
@@ -64,20 +65,21 @@ public class PlayerMovement : NetworkBehaviour
 
     void CreateCamera()
     {
-        // TODO
-        // Similar code to in AssignCamera
+        // Outdated. Camera creation and assignment is handled in Assets/Camera
+        // // TODO
+        // // Similar code to in AssignCamera
     }
 
 
     void UpdateMovement()
-    {   
+    {
         // Check if grounded
         /* This involves using a Transform-only child GO of FirstPersonPlayer
         and comparing the transform vector to the Ground layer (with a distance of groundDistance), 
         using Physics.CheckSphere
         Now you have a bool that will tell you whether groundCheck is within a distance radius of the ground */
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-        
+
         // Reset yAxisVelocity when grounded
         // Set this slightly negative to help with ground stickiness
         if (isGrounded && yAxisVelocity.y < 0)
@@ -107,7 +109,7 @@ public class PlayerMovement : NetworkBehaviour
         // smoothed values between 0 and 1 will be set to 1, replacing gradual slow down 
         // with sudden halt
         Vector3 planarMovement = transform.right * inputX + transform.forward * inputZ;
-        if (planarMovement.magnitude > 1) {planarMovement.Normalize();}
+        if (planarMovement.magnitude > 1) { planarMovement.Normalize(); }
 
         // Use Character Controller Move method to apply a translation defined by move Vector3
         controller.Move(planarMovement * speed * Time.deltaTime);
@@ -126,7 +128,7 @@ public class PlayerMovement : NetworkBehaviour
         // Apply gravity
         /* SUVAT equation for gravity: v = u + a*t
         n.b. that here Time.deltaTime is the 't' in the equation
-        it is NOT the term used to account for framerate differences */ 
+        it is NOT the term used to account for framerate differences */
         yAxisVelocity.y += -gravity * Time.deltaTime * gravityMultiplier;
 
         // Jumping
@@ -134,7 +136,7 @@ public class PlayerMovement : NetworkBehaviour
         {
             // Velocity change required for jump height equation
             // Source: Brackeys - First Person Movement in Unity
-            yAxisVelocity.y += Mathf.Sqrt(-2f * jumpHeight * -gravity); 
+            yAxisVelocity.y += Mathf.Sqrt(-2f * jumpHeight * -gravity);
             animator.SetBool("isJumping", true);
         }
         else
@@ -145,7 +147,8 @@ public class PlayerMovement : NetworkBehaviour
         // Now apply resultant y-axis velocity, account for framerate
         controller.Move(yAxisVelocity * Time.deltaTime);
 
-        // Animations
+        // // Animations
+        // Handled in PlayerMovementAnimations.cs
     
     }   
 
@@ -168,11 +171,11 @@ public class PlayerMovement : NetworkBehaviour
 
     void UpdateCameraPosition()
     {
-        // TODO
-
-        // set transform point of camera to be slightly ahead of player
-        // https://www.youtube.com/watch?v=naaVpEyr4RA
-        // possibly this only needs to be done once?
+        // Outdated. See Assets/Camera
+        // // TODO
+        // // set transform point of camera to be slightly ahead of player
+        // // https://www.youtube.com/watch?v=naaVpEyr4RA
+        // // possibly this only needs to be done once?
 
     }
 
