@@ -1,9 +1,6 @@
 using System;
 using Globals;
-using Unity.Mathematics;
 using Unity.Netcode;
-// using Unity.VisualScripting;
-// using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
 
 
@@ -13,7 +10,7 @@ public class PlayerMovement : NetworkBehaviour
 {
 
     // No need to directly assign Transform and Controller as this script attaches to 
-    // each new FirstPersonPlayer Network Prefab
+    // each new FirstPersonPlayer Network Prefab instance 
     public CharacterController controller; 
     public GameManager gameManager;
     public NetworkManager networkManager;
@@ -55,7 +52,6 @@ public class PlayerMovement : NetworkBehaviour
         networkManager.LocalClient.PlayerObject.transform.position = new Vector3(0,10,0); // set initial position of player
         playerBody = gameObject.transform;
         canvas = GameObject.Find("Canvas");
-        // animator = GetComponent<Animator>();
 
 
         togglePlayerVisible += TogglePlayerVisibleListener;
@@ -122,7 +118,7 @@ public class PlayerMovement : NetworkBehaviour
         else
         {
             animator.SetBool("isRunning", false);
-            // Debug.LogWarning("isRunning is false"); //
+            // Debug.LogWarning("isRunning is false"); 
         }
 
         // Apply gravity
@@ -157,7 +153,7 @@ public class PlayerMovement : NetworkBehaviour
         // Only move a player object that you own as client
         if (!IsOwner) return;
         
-        UpdateMovement();
+        UpdateMovement(); // Update player movement on each frame
 
         UpdateCameraPosition();
 
@@ -171,7 +167,8 @@ public class PlayerMovement : NetworkBehaviour
 
     void UpdateCameraPosition()
     {
-        // Outdated. See Assets/Camera
+        // Outdated. See Assets/Camera (we now make player models invisible 
+        // to self when in first-person)
         // // TODO
         // // set transform point of camera to be slightly ahead of player
         // // https://www.youtube.com/watch?v=naaVpEyr4RA

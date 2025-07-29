@@ -2,27 +2,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/* Class to report the horizontal field of view (FoV) of the player camera
+   based on the vertical FoV and aspect ratio
+   Unity unity vertical FoV by default  */
 public class ReportHorizontalFoV : MonoBehaviour
 {
     public Camera playerCamera;
 
 
-public void Start()
-{
-    playerCamera = gameObject.GetComponent<Camera>();
-}
+    public void Start()
+    {
+        playerCamera = gameObject.GetComponent<Camera>();
+    }
 
-public void Update()
-{
-    CalculateEffectiveFoVs();
-}
+    public void Update()
+    {
+        CalculateEffectiveFoVs();
+    }
 
-public void CalculateEffectiveFoVs()
-{
-    float verticalFoV = playerCamera.fieldOfView;
-    float aspectRatio = playerCamera.aspect;
-    float horizontalFoV = 2 * Mathf.Atan(Mathf.Tan(verticalFoV * Mathf.Deg2Rad / 2) * aspectRatio) * Mathf.Rad2Deg;
+    public void CalculateEffectiveFoVs()
+    {
+        float verticalFoV = playerCamera.fieldOfView;
+        float aspectRatio = playerCamera.aspect;
 
-    Debug.Log("Vertical FoV: " + verticalFoV + ", Horizontal FoV: " + horizontalFoV + ", aspect ratio: " + aspectRatio);
-}
+        // Equation to calculate horizontal FoV from vertical FoV and aspect ratio
+        float horizontalFoV = 2 * Mathf.Atan(Mathf.Tan(verticalFoV * Mathf.Deg2Rad / 2) * aspectRatio) * Mathf.Rad2Deg;
+
+        Debug.LogWarning("Vertical FoV: " + verticalFoV + ", Horizontal FoV: " + horizontalFoV + ", aspect ratio: " + aspectRatio);
+    }
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Numerics;
 using Unity.Netcode;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
@@ -20,16 +19,15 @@ public class MouseLook : NetworkBehaviour
 
     public void Start()
     {
-        
+        // This script is unattached from FirstPersonPlayer Object,
+        // so find FirstPersonPlayer through NetworkManager
         networkManager = FindObjectOfType<NetworkManager>();
-
-        // Script is unattached from FirstPersonPlayer Object, so find FirstPersonPlayer through NetworkManager
         playerBody = networkManager.LocalClient.PlayerObject.transform;
         Cursor.lockState = CursorLockMode.Locked;  // Lock cursor within game view
 
         // subscribe to a key-down-triggered event with mouse lock toggle method
         toggleMouseLock += ToggleMouseLockListener;
-        
+
 
     }
 
@@ -40,13 +38,12 @@ public class MouseLook : NetworkBehaviour
         unlockMouseTrigger = !unlockMouseTrigger;
         Cursor.lockState = unlockMouseTrigger ? CursorLockMode.None : CursorLockMode.Locked;
     }
-    
+
 
     void Update()
-    {   
+    {
         // No IsOwner checks here
-        // We do not need to own the camera on the server if it only exists client-side
-
+        // We do not need to check for ownership, because we are querying for the local client's player
         // Mouse X and Mouse Y axes report the movement along these axes in the current frame
         // only (i.e., not the overall position of the mouse along an axis, just velocity)
         float mouseX = Input.GetAxis("Mouse X") * General.mouseSensitivity * Time.deltaTime;
@@ -66,13 +63,13 @@ public class MouseLook : NetworkBehaviour
         Therefore we use Quaternion.Euler, which returns a rotation value that can be directly
         set for transform.localRotation, in contrast to transform.Rotate which changes the 
         rotation value by the amount specified (applies a rotation). */
-        
+
         // Clamp rotation around the x-axis to prevent neck-breaking
         xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, General.neckClampMin, General.neckClampMax);  
+        xRotation = Mathf.Clamp(xRotation, General.neckClampMin, General.neckClampMax);
 
         // Set rotation
-        transform.localRotation = UnityEngine.Quaternion.Euler(xRotation, 0f, 0f);
+        transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
 
         // Allow manual toggle of mouse lock state

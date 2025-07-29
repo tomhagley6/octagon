@@ -37,15 +37,20 @@ public class MouseSensitivity : MonoBehaviour
 
    void Update()
    {
-        mouseSensitivityDisplay.text = $"Current: {General.mouseSensitivity}";
+     //    mouseSensitivityDisplay.text = $"Current: {General.mouseSensitivity}";
    }
 
-   // change mouse sensitivity variable
+   // change mouse sensitivity variable in the Globals namespace, and update the display
    public void AdjustMouseSensitivity(string newMouseSensitivity)
    {
         if (float.TryParse(newMouseSensitivity, out float result))
         {
-            General.mouseSensitivity = result;
+               if (General.mouseSensitivity != result)
+               {
+                    General.mouseSensitivity = result;
+                    mouseSensitivityDisplay.text = $"Current: {General.mouseSensitivity}";
+
+               }
         }
         
    }

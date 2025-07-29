@@ -1,8 +1,8 @@
 using TMPro;
 using UnityEngine;
 
-// Attached to the scoreboard Canvas, will update the score for the game HUD
-// as recorded in GameManager
+/* Attached to the scoreboard Canvas, will update the score for the game HUD
+ as recorded in GameManager */
 public class Score : MonoBehaviour
 {
     public TextMeshProUGUI scoreText;
@@ -23,3 +23,6 @@ public class Score : MonoBehaviour
         score += increment;
     }
 }
+
+
+// TODO: Could add an opponent score

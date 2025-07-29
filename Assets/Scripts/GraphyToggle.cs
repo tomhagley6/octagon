@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using Globals;
 using UnityEngine;
 
+/* A small toggle class subscribed to by GameManager's toggleOverlay event
+   to use for toggling the Graphy overlay on and off */
+
 public class GraphyToggle : MonoBehaviour
 {
     bool graphyActive = false;
@@ -17,13 +20,13 @@ public class GraphyToggle : MonoBehaviour
     void ToggleOverlayGraphyListener()
     {
         if (graphyActive == true)
-            {
-                gameObject.SetActive(false);
-            }
-            else
-            {
-                gameObject.SetActive(true);
-            }
+        {
+            gameObject.SetActive(false);
+        }
+        else
+        {
+            gameObject.SetActive(true);
+        }
         graphyActive = !graphyActive;
     }
 }
