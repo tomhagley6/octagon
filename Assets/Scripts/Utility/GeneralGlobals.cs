@@ -70,6 +70,9 @@ namespace Globals
         public static Color wallInteractionZoneColour = new Color(1, 215/255f, 0, 129/255f);
         public static bool automaticStartTrial = false;
 
+        public static float globalIlluminationLow = 0.6f;
+        public static float globalIlluminationHigh = 0.8f;
+
         // timings
         public static float ITIMin = 2f;
         public static float ITIMax = 5f;
@@ -77,8 +80,6 @@ namespace Globals
         public static float trialStartDurationMin = 0.5f;
         public static float trialStartDurationMax = 1.5f; 
         public static float startFirstTrialDelay = 0.75f;
-        public static float globalIlluminationLow = 0.6f;
-        public static float globalIlluminationHigh = 0.8f;
 
 
         // movement
