@@ -5,6 +5,7 @@ using Unity.MLAgents;
 using UnityEngine;
 using System.IO;
 using System.Linq;
+using Unity.MLAgents.Actuators;
 
 public class SingleAgent : Agent
 {
@@ -25,6 +26,7 @@ public class SingleAgent : Agent
     public float moveSpeed = 20f;
     public float turnSpeed = 360f;
     public CharacterController controller;
+    public Animator animator;
 
     // octagon arena
     private Transform arenaRoot;
@@ -94,7 +96,7 @@ public class SingleAgent : Agent
 
             // missing logic
             // is a trial in process
-            // scratch random number logic - one trial per episode
+            // scratch random number/trial counter logic - one trial per episode
         }
     }
 
@@ -103,4 +105,65 @@ public class SingleAgent : Agent
     // visual observations are provided via CameraSensor (Agent component) which is assigned a camera (Agent's child)
     // Sensor component collects image information transforming it into a 3D tensor that can be fed into the CNN (in our case: resnet)
     // optionally add active wall flag as vector observation
+
+    public override void OnActionReceived(ActionBuffers actionBuffers)
+    {
+        // move action (W,S)
+        float moveAmount = 0;
+        if (actionBuffers.DiscreteActions[0] == 1)
+        {
+            moveAmount = moveSpeed; // move forwards
+        }
+        else if (actionBuffers.DiscreteActions[0] == 2)
+        {
+            moveAmount = moveSpeed * -1.0f; // move backwards
+        }
+        else if (actionBuffers.DiscreteActions[0] == 3)
+        {
+            moveAmount = 0; // don't move
+        }
+
+        // strafe action (A,D)
+        float strafeAmount = 0;
+        if (actionBuffers.DiscreteActions[1] == 1)
+        {
+            strafeAmount = moveSpeed; // move right
+        }
+        else if (actionBuffers.DiscreteActions[1] == 2)
+        {
+            strafeAmount = moveSpeed * -1.0f; // move left
+        }
+        else if (actionBuffers.DiscreteActions[1] == 3)
+        {
+            strafeAmount = 0; // don't move
+        }
+
+        // rotate action
+        float rotateAmount = 0;
+        if (actionBuffers.DiscreteActions[2] == 1)
+        {
+            rotateAmount = turnSpeed; // rotate cw
+        }
+        else if (actionBuffers.DiscreteActions[2] == 2)
+        {
+            rotateAmount = turnSpeed * -1.0f; // rotate ccw
+        }
+        else if (actionBuffers.DiscreteActions[2] == 3)
+        {
+            rotateAmount = 0; // don't rotate
+        }
+
+        // move agent
+        Vector3 targetDirection = transform.forward * moveAmount + transform.right * strafeAmount;
+        if (targetDirection.magnitude > 1)
+            targetDirection.Normalize();
+
+        controller.Move(targetDirection * moveSpeed * Time.fixedDeltaTime);
+
+        // rotate agent
+        float targetYRotation = transform.eulerAngles.y + rotateAmount * turnSpeed * Time.fixedDeltaTime;
+        transform.rotation = Quaternion.Euler(0f, targetYRotation, 0f);
+
+        animator.SetBool("isRunning", targetDirection.magnitude > 0.05f);
+    }
 }
