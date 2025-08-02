@@ -72,9 +72,11 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # Python/ML-Agents virtual environments
-ml-env/
+**/ml-env/
 env/
 venv/
+python-envs/
+**/ml-agents/
 
 # Python compiled files
 __pycache__/
