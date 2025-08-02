@@ -16,7 +16,8 @@ public class SingleAgent : Agent
     [SerializeField] public WallTrigger wallTrigger;
     [SerializeField] public GameManager gameManager;
     [SerializeField] public TrialHandler trialHandler;
-    [SerializeField] public TrialLogic trialLogic;
+    // uncomment once trial logic script is ready
+    //[SerializeField] public TrialLogic trialLogic;
     [SerializeField] public IdentityManager identityManager;
 
     // variables and objects
@@ -90,7 +91,9 @@ public class SingleAgent : Agent
     {
         // check that agent currently running this script is "PlayerAgent"
         // is this the agent assigned to playerAgent in TrialHandler? 
-        if (this == trialHandler.playerAgent)
+        //if (this == trialHandler.playerAgent)
+        // temporarily setting this directly to suppress error
+        if (this.tag == "PlayerAgent")
         {
             totalShapingReward = 0; // variable to track shaping rewards for agent
 
