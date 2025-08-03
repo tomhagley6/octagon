@@ -3212,6 +3212,7 @@ GameObject:
   - component: {fileID: 846055670}
   - component: {fileID: 846055671}
   - component: {fileID: 846055672}
+  - component: {fileID: 846055673}
   m_Layer: 0
   m_Name: PlayerAgent
   m_TagString: PlayerAgent
@@ -3323,7 +3324,7 @@ MonoBehaviour:
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 1
+  m_BehaviorType: 0
   m_BehaviorName: SingleAgent
   TeamId: 0
   m_UseChildSensors: 1
@@ -3380,6 +3381,21 @@ MonoBehaviour:
   allWallTriggers: []
   totalShapingReward: 0
   isTraining: 0
+--- !u!114 &846055673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 846055665}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 1
+  DecisionStep: 0
+  TakeActionsBetweenDecisions: 0
 --- !u!1 &867040846
 GameObject:
   m_ObjectHideFlags: 0
@@ -5749,7 +5765,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4845276930943762971, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000045776367
+      value: 0.000030517578
       objectReference: {fileID: 0}
     - target: {fileID: 4845637959249703711, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchorMax.y

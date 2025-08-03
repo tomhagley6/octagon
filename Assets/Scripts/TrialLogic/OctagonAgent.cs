@@ -7,6 +7,13 @@ using System.IO;
 using System.Linq;
 using Unity.MLAgents.Actuators;
 
+using System.Collections;
+using Unity.MLAgents.Sensors; // needed for .Select and .Where
+using Globals;
+using Unity.MLAgents.Policies;
+using Palmmedia.ReportGenerator.Core.Reporting.Builders;
+using Mono.CSharp;
+
 public class OctagonAgent : Agent
 {
     // scripts
@@ -118,44 +125,38 @@ public class OctagonAgent : Agent
     // Sensor component collects image information transforming it into a 3D tensor that can be fed into the CNN (in our case: resnet)
     // optionally add active wall flag as vector observation
 
-    public override void OnActionReceived(ActionBuffers actions)
+    public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        if (actions.IsEmpty())
-        {
-            Debug.LogError("Action buffers is empty");
-            return;
-        }
-        
-        var discreteActions = actions.DiscreteActions;
+        // Extract discrete actions for movement, strafe, and rotation
+        int moveAction = actionBuffers.DiscreteActions[0];  // Move (3 choices)
+        int strafeAction = actionBuffers.DiscreteActions[1];  // Strafe (3 choices)
+        int rotateAction = actionBuffers.DiscreteActions[2];  // Rotate (3 choices)
 
-        int forwardAct = discreteActions[0];
-        int strafeAct = discreteActions[1];
-        int rotateAct = discreteActions[2];
-
+        // Handle move action
         float moveAmount = 0;
-        float strafeAmount = 0;
-        float rotateAmount = 0;
-        
-        moveAmount = (forwardAct == 0) ? -1f : (forwardAct == 2 ? 1f : 0f);
-        strafeAmount = (strafeAct == 0) ? -1f : (strafeAct == 2 ? 1f : 0f);
-        rotateAmount = (rotateAct == 0) ? -1f : (rotateAct == 2 ? 1f : 0f);
+        if (moveAction == 1) moveAmount = moveSpeed;   // Move forward
+        else if (moveAction == 2) moveAmount = -moveSpeed; // Move backward
 
-        // move agent
+        // Handle strafe action
+        float strafeAmount = 0;
+        if (strafeAction == 1) strafeAmount = moveSpeed;  // Strafe right
+        else if (strafeAction == 2) strafeAmount = -moveSpeed; // Strafe left
+
+        // Handle rotate action
+        float rotateAmount = 0;
+        if (rotateAction == 1) rotateAmount = turnSpeed;  // Rotate clockwise
+        else if (rotateAction == 2) rotateAmount = -turnSpeed;  // Rotate counterclockwise
+
+        // Move and rotate agent using the values derived from actions
         Vector3 targetDirection = transform.forward * moveAmount + transform.right * strafeAmount;
         if (targetDirection.magnitude > 1)
             targetDirection.Normalize();
 
-        if (controller == null)
-        {
-            Debug.LogError("Controller is not assigned");
-            return;
-        }
-
         controller.Move(targetDirection * moveSpeed * Time.fixedDeltaTime);
 
-        // rotate agent
-        float targetYRotation = transform.eulerAngles.y + rotateAmount * turnSpeed * Time.fixedDeltaTime;
+        float targetYRotation = transform.eulerAngles.y + rotateAmount * Time.fixedDeltaTime;
         transform.rotation = Quaternion.Euler(0f, targetYRotation, 0f);
+
 
         if (animator == null)
         {
@@ -199,43 +200,7 @@ public class OctagonAgent : Agent
 
     }
 
-    public override void Heuristic(in ActionBuffers actionsOut)
-    {
-        var discreteActionsOut = actionsOut.DiscreteActions;
 
-        discreteActionsOut[0] = 0;
-        discreteActionsOut[1] = 0;
-        discreteActionsOut[2] = 0;
-
-        if (Input.GetKey(KeyCode.W))
-        {
-            discreteActionsOut[0] = 1;
-        }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            discreteActionsOut[0] = 2;
-        }
-
-
-        if (Input.GetKey(KeyCode.D))
-        {
-            discreteActionsOut[1] = 1;
-        }
-        else if (Input.GetKey(KeyCode.A))
-        {
-            discreteActionsOut[1] = 2;
-        }
-
-        if (Input.GetKey(KeyCode.E))
-        {
-            discreteActionsOut[2] = 1;
-        }
-        else if (Input.GetKey(KeyCode.Q))
-        {
-            discreteActionsOut[2] = 2;
-        }
-
-    }
 
     void OnApplicationQuit()
     {
