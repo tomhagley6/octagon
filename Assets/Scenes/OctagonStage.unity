@@ -3371,7 +3371,7 @@ MonoBehaviour:
   wall1Trigger: {fileID: 0}
   wall2Trigger: {fileID: 0}
   thisTrialType: 
-  octagonArea: {fileID: 0}
+  octagonArea: {fileID: 643279652}
   identityManager: {fileID: 1063991865}
   moveSpeed: 20
   turnSpeed: 360
@@ -5749,7 +5749,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4845276930943762971, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000030517578
+      value: 0.000045776367
       objectReference: {fileID: 0}
     - target: {fileID: 4845637959249703711, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchorMax.y
@@ -6843,6 +6843,14 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 1474794016
       objectReference: {fileID: 0}
+    - target: {fileID: 967424407711027974, guid: 84cba722e1a3f8a20aa07e8d8e23016a, type: 3}
+      propertyPath: m_TagString
+      value: Wall
+      objectReference: {fileID: 0}
+    - target: {fileID: 1310688059297171532, guid: 84cba722e1a3f8a20aa07e8d8e23016a, type: 3}
+      propertyPath: m_TagString
+      value: Wall
+      objectReference: {fileID: 0}
     - target: {fileID: 1339879864705107043, guid: 84cba722e1a3f8a20aa07e8d8e23016a, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 3209986368
@@ -6874,6 +6882,10 @@ PrefabInstance:
     - target: {fileID: 3599612771121692398, guid: 84cba722e1a3f8a20aa07e8d8e23016a, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 1775909375
+      objectReference: {fileID: 0}
+    - target: {fileID: 3888946094406689310, guid: 84cba722e1a3f8a20aa07e8d8e23016a, type: 3}
+      propertyPath: m_TagString
+      value: Wall
       objectReference: {fileID: 0}
     - target: {fileID: 3892847927974348978, guid: 84cba722e1a3f8a20aa07e8d8e23016a, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -6947,6 +6959,14 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 3149029107
       objectReference: {fileID: 0}
+    - target: {fileID: 6379036360614065959, guid: 84cba722e1a3f8a20aa07e8d8e23016a, type: 3}
+      propertyPath: m_TagString
+      value: Wall
+      objectReference: {fileID: 0}
+    - target: {fileID: 6443413450638336027, guid: 84cba722e1a3f8a20aa07e8d8e23016a, type: 3}
+      propertyPath: m_TagString
+      value: Wall
+      objectReference: {fileID: 0}
     - target: {fileID: 6668362811818224599, guid: 84cba722e1a3f8a20aa07e8d8e23016a, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 232917829
@@ -6955,9 +6975,17 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 2232460758
       objectReference: {fileID: 0}
+    - target: {fileID: 6878311558512869755, guid: 84cba722e1a3f8a20aa07e8d8e23016a, type: 3}
+      propertyPath: m_TagString
+      value: Wall
+      objectReference: {fileID: 0}
     - target: {fileID: 7214340148575722191, guid: 84cba722e1a3f8a20aa07e8d8e23016a, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 1911366646
+      objectReference: {fileID: 0}
+    - target: {fileID: 7950472621730216715, guid: 84cba722e1a3f8a20aa07e8d8e23016a, type: 3}
+      propertyPath: m_TagString
+      value: Wall
       objectReference: {fileID: 0}
     - target: {fileID: 8234909077831234745, guid: 84cba722e1a3f8a20aa07e8d8e23016a, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -6966,6 +6994,10 @@ PrefabInstance:
     - target: {fileID: 8881934796873810309, guid: 84cba722e1a3f8a20aa07e8d8e23016a, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 3905818987
+      objectReference: {fileID: 0}
+    - target: {fileID: 8929145854370713002, guid: 84cba722e1a3f8a20aa07e8d8e23016a, type: 3}
+      propertyPath: m_TagString
+      value: Wall
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 515459580951261890, guid: 84cba722e1a3f8a20aa07e8d8e23016a, type: 3}

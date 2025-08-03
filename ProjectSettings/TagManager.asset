@@ -10,6 +10,7 @@ TagManager:
   - ArmatureCamera
   - PlayerAgent
   - OpponentAgent
+  - Wall
   layers:
   - Default
   - TransparentFX
