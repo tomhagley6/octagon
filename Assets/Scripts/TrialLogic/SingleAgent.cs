@@ -115,7 +115,11 @@ public class SingleAgent : Agent
     {
         // move action (W,S)
         float moveAmount = 0;
-        if (actionBuffers.DiscreteActions[0] == 1)
+        if (actionBuffers.DiscreteActions[0] == 0)
+        {
+            moveAmount = 0; // don't move
+        }
+        else if (actionBuffers.DiscreteActions[0] == 1)
         {
             moveAmount = moveSpeed; // move forwards
         }
@@ -123,14 +127,14 @@ public class SingleAgent : Agent
         {
             moveAmount = moveSpeed * -1.0f; // move backwards
         }
-        else if (actionBuffers.DiscreteActions[0] == 3)
-        {
-            moveAmount = 0; // don't move
-        }
 
         // strafe action (A,D)
         float strafeAmount = 0;
-        if (actionBuffers.DiscreteActions[1] == 1)
+        if (actionBuffers.DiscreteActions[1] == 0)
+        {
+            strafeAmount = 0; // don't move
+        }
+        else if (actionBuffers.DiscreteActions[1] == 1)
         {
             strafeAmount = moveSpeed; // move right
         }
@@ -138,24 +142,20 @@ public class SingleAgent : Agent
         {
             strafeAmount = moveSpeed * -1.0f; // move left
         }
-        else if (actionBuffers.DiscreteActions[1] == 3)
-        {
-            strafeAmount = 0; // don't move
-        }
 
         // rotate action
         float rotateAmount = 0;
-        if (actionBuffers.DiscreteActions[2] == 1)
+        if (actionBuffers.DiscreteActions[2] == 0)
+        {
+            rotateAmount = 0; // don't rotate
+        }
+        else if (actionBuffers.DiscreteActions[2] == 1)
         {
             rotateAmount = turnSpeed; // rotate cw
         }
         else if (actionBuffers.DiscreteActions[2] == 2)
         {
             rotateAmount = turnSpeed * -1.0f; // rotate ccw
-        }
-        else if (actionBuffers.DiscreteActions[2] == 3)
-        {
-            rotateAmount = 0; // don't rotate
         }
 
         // move agent
@@ -175,7 +175,9 @@ public class SingleAgent : Agent
         AddReward(-0.0001f);
 
         // optional shaping rewards
+
         float fieldOfView = 80f;
+        // cosine for half of the field of view angle
         float fovThreshold = Mathf.Cos(fieldOfView * 0.5f * Mathf.Deg2Rad);
 
         if (wall1Trigger == null || wall2Trigger == null)
@@ -189,13 +191,54 @@ public class SingleAgent : Agent
         Vector3 toWall1 = (wall1TriggerCentre - transform.position).normalized;
         Vector3 toWall2 = (wall2TriggerCentre - transform.position).normalized;
 
+        // dot product of agent forward direction vector and direction to each wall
+        // dot product of two normalised vectors gives cosine of the angle between them
         float alignmentToWall1 = Vector3.Dot(transform.forward, toWall1);
         float alignmentToWall2 = Vector3.Dot(transform.forward, toWall2);
 
+        // check whether the alignment value for each wall is below the threshold
         // reward agent for rotating when neither wall is in view
-        if ((alignmentToWall1 < fovThreshold) && (alignmentToWall2 < fovThreshold) && rotateAmount > 0)
+        if ((alignmentToWall1 < fovThreshold) && (alignmentToWall2 < fovThreshold) && Mathf.Abs(rotateAmount) > 0)
         {
             AddReward(0.001f);
+        }
+
+    }
+
+    public override void Heuristic(in ActionBuffers actionsOut)
+    {
+        var discreteActionsOut = actionsOut.DiscreteActions;
+
+        discreteActionsOut[0] = 0;
+        discreteActionsOut[1] = 0;
+        discreteActionsOut[2] = 0;
+
+        if (Input.GetKey(KeyCode.W))
+        {
+            discreteActionsOut[0] = 1;
+        }
+        else if (Input.GetKey(KeyCode.S))
+        {
+            discreteActionsOut[0] = 2;
+        }
+
+
+        if (Input.GetKey(KeyCode.D))
+        {
+            discreteActionsOut[1] = 1;
+        }
+        else if (Input.GetKey(KeyCode.A))
+        {
+            discreteActionsOut[1] = 2;
+        }
+
+        if (Input.GetKey(KeyCode.E))
+        {
+            discreteActionsOut[2] = 1;
+        }
+        else if (Input.GetKey(KeyCode.Q))
+        {
+            discreteActionsOut[2] = 2;
         }
 
     }
