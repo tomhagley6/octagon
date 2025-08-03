@@ -75,7 +75,7 @@ public class OctagonAgent : Agent
     {
         arenaRoot = transform.parent;
 
-        if (octagonArea == null) octagonArea = arenaRoot.GetComponentInChildren<OctagonArena>();
+        if (octagonArea == null) octagonArea = arenaRoot.GetComponentInChildren<OctagonArea>();
 
     }
 
@@ -101,7 +101,7 @@ public class OctagonAgent : Agent
             totalShapingReward = 0; // variable to track shaping rewards for agent
 
             // disable wall triggers during ITI
-            OctagonArea.DisableTriggers();
+            octagonArea.DisableTriggers();
 
             // reset arena by washing off active wall colours
             octagonArea.ResetTrial();

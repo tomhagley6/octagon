@@ -1,3 +1,7 @@
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
 public class OctagonWallTrigger : MonoBehaviour
 {
     // assign parent arena
@@ -5,13 +9,14 @@ public class OctagonWallTrigger : MonoBehaviour
     // scripts
     [SerializeField] IdentityAssignment identityAssignment;
     [SerializeField] OctagonArea octagonArea;
-    [SerializeField] MLAgent playerAgent;
-    [SerializeField] MLAgent opponentAgent;
+    [SerializeField] OctagonAgent playerAgent;
+    [SerializeField] OctagonAgent opponentAgent;
     // variables
     public int triggerID;
     public int wallID1;
     public int wallID2;
     public List<int> wallIDs;
+    public List<Collider> wallColliders;
 
     void Awake()
     {
@@ -37,13 +42,13 @@ public class OctagonWallTrigger : MonoBehaviour
         {
             opponentAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
                 .FirstOrDefault(t => t.CompareTag("OpponentAgent"))
-                ?.GetComponent<MLAgent>();
+                ?.GetComponent<OctagonAgent>();
         }
         if (playerAgent == null)
         {
             playerAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
                 .FirstOrDefault(t => t.CompareTag("PlayerAgent"))
-                ?.GetComponent<MLAgent>();
+                ?.GetComponent<OctagonAgent>();
         }
 
     }
@@ -51,7 +56,7 @@ public class OctagonWallTrigger : MonoBehaviour
     void OnTriggerEnter(Collider interactingObject)
     {
         // if GameObject has an MLAgent component attached assign it to the agent variable
-        if (!interactingObject.TryGetComponent<MLAgent>(out var agent)) return;
+        if (!interactingObject.TryGetComponent<OctagonAgent>(out var agent)) return;
 
         wallID1 = octagonArea.activeWalls.wall1;
         wallID2 = octagonArea.activeWalls.wall2;
@@ -59,9 +64,8 @@ public class OctagonWallTrigger : MonoBehaviour
 
         if (wallIDs.Contains(triggerID))
         {
-            string winnerTag = agent.CompareTag("PlayerAgent") ? "PlayerAgent" : "OpponentAgent";
-            string loserTag = winnerTag == "PlayerAgent" ? "OpponentAgent" : "PlayerAgent";
-
+            string interactorTag = agent.CompareTag("PlayerAgent") ? "PlayerAgent" : "OpponentAgent";
+            
             HandleWallTrigger(triggerID, wallID1, wallID2, interactorTag);
         }
         else if (!wallIDs.Contains(triggerID))
@@ -72,18 +76,18 @@ public class OctagonWallTrigger : MonoBehaviour
         }
     }
 
-    public void HandHandleInactiveTrigger(int triggerID, string interactorTag)
+    public void HandleInactiveTrigger(int triggerID, string interactorTag)
     {
         float inactiveWallPenalty = -0.01f;
 
-        MLAgent interactor = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
+        OctagonAgent interactor = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
 
         interactor.AddReward(inactiveWallPenalty);
     }
 
     public void HandleWallTrigger(int triggerID, int wallID1, int wallID2, string interactorTag)
     {
-        MLAgent interactor = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
+        OctagonAgent interactor = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
 
         string thisTrialType = interactor.thisTrialType;
 
@@ -93,8 +97,8 @@ public class OctagonWallTrigger : MonoBehaviour
 
         if (!octagonArea.soloMode && opponentAgent != null)
         {
-            MLAgent winner = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
-            MLAgent loser = interactorTag == "PlayerAgent" ? opponentAgent : playerAgent;
+            OctagonAgent winner = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
+            OctagonAgent loser = interactorTag == "PlayerAgent" ? opponentAgent : playerAgent;
 
             winner.AddReward(scaledReward);
             loser.AddReward(-scaledReward);
@@ -106,7 +110,7 @@ public class OctagonWallTrigger : MonoBehaviour
         }
         else if (octagonArea.soloMode)
         {
-            MLAgent winner = playerAgent;
+            OctagonAgent winner = playerAgent;
             winner.AddReward(scaledReward);
             playerAgent.EndEpisode();
         }

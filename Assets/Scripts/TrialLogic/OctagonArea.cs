@@ -1,3 +1,11 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Globals;
+using KaimiraGames;
+using Unity.MLAgents;
+using UnityEngine;
+
 public class OctagonArea : MonoBehaviour
 {
     // octagon arena
@@ -8,12 +16,19 @@ public class OctagonArea : MonoBehaviour
     public ActiveWalls activeWalls;
     // collect all wall triggers
     public List<GameObject> allWallTriggers;
+    public int wallID1;
+    public int wallID2;
+    public GameObject wall1Trigger;
+    public GameObject wall2Trigger;
+    public string thisTrialType;
+    List<int> walls;
     // initial wall colour
     private Color defaultWallColour;
     // assign agents in inspector
-    [SerializeField] public MLAgent opponentAgent;
-    [SerializeField] public MLAgent playerAgent;
+    [SerializeField] public OctagonAgent opponentAgent;
+    [SerializeField] public OctagonAgent playerAgent;
     [SerializeField] public IdentityManager identityManager;
+
 
     void Awake()
     {
@@ -33,13 +48,13 @@ public class OctagonArea : MonoBehaviour
         {
             opponentAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
                 .FirstOrDefault(t => t.CompareTag("OpponentAgent"))
-                ?.GetComponent<MLAgent>();
+                ?.GetComponent<OctagonAgent>();
         }
         if (playerAgent == null)
         {
             playerAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
                 .FirstOrDefault(t => t.CompareTag("PlayerAgent"))
-                ?.GetComponent<MLAgent>();
+                ?.GetComponent<OctagonAgent>();
         }
     }
 
@@ -236,7 +251,7 @@ public class OctagonArea : MonoBehaviour
 
     public void ResetTrial()
     {
-        if (wallID1 != null && wallID2 != null)
+        if (wallID1 != 0 && wallID2 != 0)
         {
             WashWalls(wallID1, wallID2);
         }
