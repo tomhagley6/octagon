@@ -24,6 +24,7 @@ public class OctagonArea : MonoBehaviour
     List<int> walls;
     // initial wall colour
     private Color defaultWallColour;
+    private float iti;
     // assign agents in inspector
     //[SerializeField] public OctagonAgent opponentAgent;
     [SerializeField] public OctagonAgent playerAgent;
@@ -224,20 +225,35 @@ public class OctagonArea : MonoBehaviour
 
     }
 
-    public IEnumerator TrialLoop()
+    public IEnumerator ITI()
     {
-        yield return new WaitForSeconds(Random.Range(General.ITIMin, General.ITIMax));
+        //Debug.Log($"ITI range: {General.ITIMin} to {General.ITIMax}");
+        iti = Random.Range(General.ITIMin, General.ITIMax);
+        Debug.Log($"Waiting for ITI: {iti}");
+        //yield return new WaitForSeconds(iti);
 
+        while (iti > 0)
+        {
+            iti -= Time.deltaTime;  // Decrease timer based on real time (affected by time scale)
+            yield return null;           // Wait for next frame
+        }
+
+
+        Debug.Log("Trial loop started.");
+
+        Debug.Log("About to enable triggers.");
         // ensures that triggers are enabled only after ITI has passed
         EnableTriggers();
 
         Debug.Log("ITI ended. Triggers re-enabled. Trial now starting.");
 
         StartTrial();
+
     }
 
     public void EnableTriggers()
     {
+        Debug.Log("Enabling triggers");
         foreach (var trigger in allWallTriggers)
         {
             if (trigger.TryGetComponent<BoxCollider>(out var collider))
@@ -249,6 +265,7 @@ public class OctagonArea : MonoBehaviour
 
     public void DisableTriggers()
     {
+        Debug.Log("Disabling triggers.");
         foreach (var trigger in allWallTriggers)
         {
             if (trigger.TryGetComponent<BoxCollider>(out var collider))
@@ -265,6 +282,11 @@ public class OctagonArea : MonoBehaviour
             WashWalls(wallID1, wallID2);
 
             Debug.Log("Walls have now been washed");
+        }
+
+        else if (wallID1 == 0 && wallID2 == 0)
+        {
+            Debug.Log("First episode. Walls yet to be assigned, nothing to reset.");
         }
     }
 

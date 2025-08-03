@@ -92,6 +92,10 @@ public class OctagonAgent : Agent
             .Where(t => t.CompareTag("WallTrigger")) // children with tag "WallTrigger"
             .Select(t => t.gameObject) // select the associated game object
             .ToList(); // store in list
+        if (octagonArea != null)
+        {
+            Debug.Log("Octagon area located.");
+        }
     }
 
     public override void OnEpisodeBegin()
@@ -113,7 +117,8 @@ public class OctagonAgent : Agent
             octagonArea.ResetTrial();
 
             // start trial ITI and active wall colouring logic
-            StartCoroutine(octagonArea.TrialLoop());
+            StartCoroutine(octagonArea.ITI());
+
 
         }
     }
