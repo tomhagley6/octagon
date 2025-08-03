@@ -60,6 +60,7 @@ public class OctagonArea : MonoBehaviour
 
     public void StartTrial()
     {
+        Debug.Log("[StartTrial] calling arena set-up method");
         SetUpArena();
     }
 
@@ -71,6 +72,8 @@ public class OctagonArea : MonoBehaviour
 
     public void SetUpArena()
     {
+        Debug.Log("[SetUpArena] arena set-up process initiated.");
+
         AssignNewWalls();
         wallID1 = activeWalls.wall1;
         wallID2 = activeWalls.wall2;
@@ -100,6 +103,8 @@ public class OctagonArea : MonoBehaviour
         List<int> newWalls = SelectNewWalls();
         activeWalls.wall1 = newWalls[0];
         activeWalls.wall2 = newWalls[1];
+
+        Debug.Log("[AssignNewWalls] New walls for this trial are assigned.");
     }
 
     public List<int> SelectNewWalls()
@@ -215,6 +220,8 @@ public class OctagonArea : MonoBehaviour
         wall1Centre.GetComponent<Renderer>().materials[0].color = zoneColor;
         wall2Centre.GetComponent<Renderer>().materials[0].color = zoneColor;
 
+        Debug.Log("[ColourWalls] New trial walls are coloured.");
+
     }
 
     public IEnumerator TrialLoop()
@@ -223,6 +230,8 @@ public class OctagonArea : MonoBehaviour
 
         // ensures that triggers are enabled only after ITI has passed
         EnableTriggers();
+
+        Debug.Log("ITI ended. Triggers re-enabled. Trial now starting.");
 
         StartTrial();
     }
@@ -254,6 +263,8 @@ public class OctagonArea : MonoBehaviour
         if (wallID1 != 0 && wallID2 != 0)
         {
             WashWalls(wallID1, wallID2);
+
+            Debug.Log("Walls have now been washed");
         }
     }
 

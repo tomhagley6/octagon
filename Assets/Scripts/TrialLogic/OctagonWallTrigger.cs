@@ -10,7 +10,7 @@ public class OctagonWallTrigger : MonoBehaviour
     IdentityAssignment identityAssignment;
     [SerializeField] OctagonArea octagonArea;
     [SerializeField] OctagonAgent playerAgent;
-    [SerializeField] OctagonAgent opponentAgent;
+    //[SerializeField] OctagonAgent opponentAgent;
     // variables
     public int triggerID;
     public int wallID1;
@@ -38,12 +38,12 @@ public class OctagonWallTrigger : MonoBehaviour
 
     void Start()
     {
-        if (!octagonArea.soloMode && opponentAgent == null)
-        {
-            opponentAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
-                .FirstOrDefault(t => t.CompareTag("OpponentAgent"))
-                ?.GetComponent<OctagonAgent>();
-        }
+        //if (!octagonArea.soloMode && opponentAgent == null)
+        //{
+            //opponentAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
+                //.FirstOrDefault(t => t.CompareTag("OpponentAgent"))
+                //?.GetComponent<OctagonAgent>();
+        //}
         if (playerAgent == null)
         {
             playerAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
@@ -80,8 +80,8 @@ public class OctagonWallTrigger : MonoBehaviour
     {
         float inactiveWallPenalty = -0.01f;
 
-        OctagonAgent interactor = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
-
+        //OctagonAgent interactor = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
+        OctagonAgent interactor = playerAgent;
         interactor.AddReward(inactiveWallPenalty);
     }
 

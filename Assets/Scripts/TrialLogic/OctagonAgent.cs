@@ -96,12 +96,14 @@ public class OctagonAgent : Agent
 
     public override void OnEpisodeBegin()
     {
+        Debug.Log("OnEpisodeBegin is called");
         // check that agent currently running this script is "PlayerAgent"
         // is this the agent assigned to playerAgent in TrialHandler? 
         //if (this == trialHandler.playerAgent)
         // temporarily setting this directly to suppress error
         if (this.tag == "PlayerAgent")
         {
+            Debug.Log("PlayerAgent found, starting episode");
             totalShapingReward = 0; // variable to track shaping rewards for agent
 
             // disable wall triggers during ITI
