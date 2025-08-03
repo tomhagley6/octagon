@@ -14,6 +14,8 @@ public class SingleAgent : Agent
     // assigned in inspector 
     // each arena has its own copy of each script
     [SerializeField] public WallTrigger wallTrigger;
+    public GameObject wall1Trigger;
+    public GameObject wall2Trigger;
     [SerializeField] public GameManager gameManager;
     [SerializeField] public TrialHandler trialHandler;
     // uncomment once trial logic script is ready
@@ -168,5 +170,33 @@ public class SingleAgent : Agent
         transform.rotation = Quaternion.Euler(0f, targetYRotation, 0f);
 
         animator.SetBool("isRunning", targetDirection.magnitude > 0.05f);
+
+        // step penalty
+        AddReward(-0.0001f);
+
+        // optional shaping rewards
+        float fieldOfView = 80f;
+        float fovThreshold = Mathf.Cos(fieldOfView * 0.5f * Mathf.Deg2Rad);
+
+        if (wall1Trigger == null || wall2Trigger == null)
+        {
+            return;
+        }
+
+        Vector3 wall1TriggerCentre = wall1Trigger.GetComponent<Collider>().bounds.center;
+        Vector3 wall2TriggerCentre = wall2Trigger.GetComponent<Collider>().bounds.center;
+
+        Vector3 toWall1 = (wall1TriggerCentre - transform.position).normalized;
+        Vector3 toWall2 = (wall2TriggerCentre - transform.position).normalized;
+
+        float alignmentToWall1 = Vector3.Dot(transform.forward, toWall1);
+        float alignmentToWall2 = Vector3.Dot(transform.forward, toWall2);
+
+        // reward agent for rotating when neither wall is in view
+        if ((alignmentToWall1 < fovThreshold) && (alignmentToWall2 < fovThreshold) && rotateAmount > 0)
+        {
+            AddReward(0.001f);
+        }
+
     }
 }
