@@ -20,13 +20,11 @@ public class OctagonArea : MonoBehaviour
     {
         arenaRoot = transform.parent;
 
-        // find scripts
+        if (identityManager == null) identityManager = arenaRoot.GetComponentInChildren<IdentityManager>();
     }
 
     void Start()
     {
-        arenaRoot = transform.parent;
-
         allWallTriggers = arenaRoot.GetComponentsInChildren<Transform>(true)
             .Where(t => t.CompareTag("WallTrigger"))
             .Select(t => t.gameObject)

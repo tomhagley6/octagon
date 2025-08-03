@@ -16,8 +16,6 @@ public class SingleAgent : Agent
     [SerializeField] public WallTrigger wallTrigger;
     public GameObject wall1Trigger;
     public GameObject wall2Trigger;
-    [SerializeField] public GameManager gameManager;
-    [SerializeField] public TrialHandler trialHandler;
     [SerializeField] public OctagonArea octagonArea;
     // uncomment once trial logic script is ready
     //[SerializeField] public TrialLogic trialLogic;
@@ -47,6 +45,7 @@ public class SingleAgent : Agent
     string logPath;
     // StreamWriter instance used to write agent logs to the file
     StreamWriter logWriter;
+
     public override void Initialize()
     {
         // checks whether communicator (which allows interaction with python process) is on
@@ -73,15 +72,15 @@ public class SingleAgent : Agent
     // use to intialise references
     protected override void Awake()
     {
-        // base.Awake() 
-        // empty
+        arenaRoot = transform.parent;
+
+        if (octagonArea == null) octagonArea = arenaRoot.GetComponentInChildren<OctagonArena>();
+
     }
 
     void Start()
     {
         // find all wall triggers from the parent of this script (the agent)
-
-        arenaRoot = transform.parent;
 
         // searches children of the arena (including inactive ones)
         allWallTriggers = arenaRoot.GetComponentsInChildren<Transform>(true)
