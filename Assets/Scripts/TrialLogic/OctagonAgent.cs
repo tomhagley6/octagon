@@ -120,7 +120,12 @@ public class OctagonAgent : Agent
 
     public override void OnActionReceived(ActionBuffers actions)
     {
-
+        if (actions.IsEmpty())
+        {
+            Debug.LogError("Action buffers is empty");
+            return;
+        }
+        
         var discreteActions = actions.DiscreteActions;
 
         int forwardAct = discreteActions[0];
@@ -140,11 +145,23 @@ public class OctagonAgent : Agent
         if (targetDirection.magnitude > 1)
             targetDirection.Normalize();
 
+        if (controller == null)
+        {
+            Debug.LogError("Controller is not assigned");
+            return;
+        }
+
         controller.Move(targetDirection * moveSpeed * Time.fixedDeltaTime);
 
         // rotate agent
         float targetYRotation = transform.eulerAngles.y + rotateAmount * turnSpeed * Time.fixedDeltaTime;
         transform.rotation = Quaternion.Euler(0f, targetYRotation, 0f);
+
+        if (animator == null)
+        {
+            Debug.LogError("Animator is not assigned");
+            return;
+        }
 
         animator.SetBool("isRunning", targetDirection.magnitude > 0.05f);
 
