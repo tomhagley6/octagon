@@ -7,7 +7,7 @@ public class OctagonWallTrigger : MonoBehaviour
     // assign parent arena
     private Transform arenaRoot;
     // scripts
-    [SerializeField] IdentityAssignment identityAssignment;
+    IdentityAssignment identityAssignment;
     [SerializeField] OctagonArea octagonArea;
     [SerializeField] OctagonAgent playerAgent;
     [SerializeField] OctagonAgent opponentAgent;
@@ -20,7 +20,7 @@ public class OctagonWallTrigger : MonoBehaviour
 
     void Awake()
     {
-
+        identityAssignment = gameObject.GetComponent<IdentityAssignment>();
         if (identityAssignment != null)
         {
             triggerID = identityAssignment.customID;
