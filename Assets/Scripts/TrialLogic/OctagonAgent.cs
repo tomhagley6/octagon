@@ -118,52 +118,22 @@ public class OctagonAgent : Agent
     // Sensor component collects image information transforming it into a 3D tensor that can be fed into the CNN (in our case: resnet)
     // optionally add active wall flag as vector observation
 
-    public override void OnActionReceived(ActionBuffers actionBuffers)
+    public override void OnActionReceived(ActionBuffers actions)
     {
-        // move action (W,S)
+
+        var discreteActions = actions.DiscreteActions;
+
+        int forwardAct = discreteActions[0];
+        int strafeAct = discreteActions[1];
+        int rotateAct = discreteActions[2];
+
         float moveAmount = 0;
-        if (actionBuffers.DiscreteActions[0] == 0)
-        {
-            moveAmount = 0; // don't move
-        }
-        else if (actionBuffers.DiscreteActions[0] == 1)
-        {
-            moveAmount = moveSpeed; // move forwards
-        }
-        else if (actionBuffers.DiscreteActions[0] == 2)
-        {
-            moveAmount = moveSpeed * -1.0f; // move backwards
-        }
-
-        // strafe action (A,D)
         float strafeAmount = 0;
-        if (actionBuffers.DiscreteActions[1] == 0)
-        {
-            strafeAmount = 0; // don't move
-        }
-        else if (actionBuffers.DiscreteActions[1] == 1)
-        {
-            strafeAmount = moveSpeed; // move right
-        }
-        else if (actionBuffers.DiscreteActions[1] == 2)
-        {
-            strafeAmount = moveSpeed * -1.0f; // move left
-        }
-
-        // rotate action
         float rotateAmount = 0;
-        if (actionBuffers.DiscreteActions[2] == 0)
-        {
-            rotateAmount = 0; // don't rotate
-        }
-        else if (actionBuffers.DiscreteActions[2] == 1)
-        {
-            rotateAmount = turnSpeed; // rotate cw
-        }
-        else if (actionBuffers.DiscreteActions[2] == 2)
-        {
-            rotateAmount = turnSpeed * -1.0f; // rotate ccw
-        }
+        
+        moveAmount = (forwardAct == 0) ? -1f : (forwardAct == 2 ? 1f : 0f);
+        strafeAmount = (strafeAct == 0) ? -1f : (strafeAct == 2 ? 1f : 0f);
+        rotateAmount = (rotateAct == 0) ? -1f : (rotateAct == 2 ? 1f : 0f);
 
         // move agent
         Vector3 targetDirection = transform.forward * moveAmount + transform.right * strafeAmount;
