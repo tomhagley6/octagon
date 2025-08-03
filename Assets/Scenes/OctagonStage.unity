@@ -2279,7 +2279,6 @@ MonoBehaviour:
   wall1Trigger: {fileID: 0}
   wall2Trigger: {fileID: 0}
   thisTrialType: 
-  opponentAgent: {fileID: 0}
   playerAgent: {fileID: 846055672}
   identityManager: {fileID: 1063991865}
 --- !u!1 &705507993
@@ -3324,8 +3323,8 @@ MonoBehaviour:
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 0
-  m_BehaviorName: SingleAgent
+  m_BehaviorType: 1
+  m_BehaviorName: OctagonAgent
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -3367,8 +3366,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
-  wallTrigger: {fileID: 0}
+  MaxStep: 500
   wall1Trigger: {fileID: 0}
   wall2Trigger: {fileID: 0}
   thisTrialType: 
@@ -3381,6 +3379,7 @@ MonoBehaviour:
   allWallTriggers: []
   totalShapingReward: 0
   isTraining: 0
+  isInference: 0
 --- !u!114 &846055673
 MonoBehaviour:
   m_ObjectHideFlags: 0

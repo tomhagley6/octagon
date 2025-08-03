@@ -25,7 +25,7 @@ public class OctagonArea : MonoBehaviour
     // initial wall colour
     private Color defaultWallColour;
     // assign agents in inspector
-    [SerializeField] public OctagonAgent opponentAgent;
+    //[SerializeField] public OctagonAgent opponentAgent;
     [SerializeField] public OctagonAgent playerAgent;
     [SerializeField] public IdentityManager identityManager;
 
@@ -44,12 +44,12 @@ public class OctagonArea : MonoBehaviour
             .Select(t => t.gameObject)
             .ToList();
 
-        if (!soloMode && opponentAgent == null)
-        {
-            opponentAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
-                .FirstOrDefault(t => t.CompareTag("OpponentAgent"))
-                ?.GetComponent<OctagonAgent>();
-        }
+        //if (!soloMode && opponentAgent == null)
+        //{
+            //pponentAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
+                //.FirstOrDefault(t => t.CompareTag("OpponentAgent"))
+                //?.GetComponent<OctagonAgent>();
+        //}
         if (playerAgent == null)
         {
             playerAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
@@ -80,12 +80,12 @@ public class OctagonArea : MonoBehaviour
         thisTrialType = SelectTrial();
 
         // feed wall trigger IDs to agent script
-        if (!soloMode)
-        {
-            opponentAgent.wall1Trigger = wall1Trigger;
-            opponentAgent.wall2Trigger = wall2Trigger;
-            opponentAgent.thisTrialType = thisTrialType;
-        }
+        //if (!soloMode)
+        //{
+            //opponentAgent.wall1Trigger = wall1Trigger;
+            //opponentAgent.wall2Trigger = wall2Trigger;
+            //opponentAgent.thisTrialType = thisTrialType;
+        //}
 
         playerAgent.wall1Trigger = wall1Trigger;
         playerAgent.wall2Trigger = wall2Trigger;

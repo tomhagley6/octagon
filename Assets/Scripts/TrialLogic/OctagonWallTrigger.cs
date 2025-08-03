@@ -87,7 +87,8 @@ public class OctagonWallTrigger : MonoBehaviour
 
     public void HandleWallTrigger(int triggerID, int wallID1, int wallID2, string interactorTag)
     {
-        OctagonAgent interactor = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
+        //OctagonAgent interactor = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
+        OctagonAgent interactor = playerAgent;
 
         string thisTrialType = interactor.thisTrialType;
 
@@ -95,24 +96,24 @@ public class OctagonWallTrigger : MonoBehaviour
 
         float scaledReward = score / 10f;
 
-        if (!octagonArea.soloMode && opponentAgent != null)
-        {
-            OctagonAgent winner = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
-            OctagonAgent loser = interactorTag == "PlayerAgent" ? opponentAgent : playerAgent;
+        //if (!octagonArea.soloMode && opponentAgent != null)
+        //{
+            //OctagonAgent winner = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
+            //OctagonAgent loser = interactorTag == "PlayerAgent" ? opponentAgent : playerAgent;
 
-            winner.AddReward(scaledReward);
-            loser.AddReward(-scaledReward);
+            //winner.AddReward(scaledReward);
+            //loser.AddReward(-scaledReward);
 
-            octagonArea.DisableTriggers();
+            //octagonArea.DisableTriggers();
 
-            playerAgent.EndEpisode();
-            opponentAgent.EndEpisode();
-        }
-        else if (octagonArea.soloMode)
-        {
-            OctagonAgent winner = playerAgent;
-            winner.AddReward(scaledReward);
-            playerAgent.EndEpisode();
-        }
+            //playerAgent.EndEpisode();
+            //opponentAgent.EndEpisode();
+        //}
+        //else if (octagonArea.soloMode)
+        //{
+        OctagonAgent winner = playerAgent;
+        winner.AddReward(scaledReward);
+        playerAgent.EndEpisode();
+        //}
     }
 }

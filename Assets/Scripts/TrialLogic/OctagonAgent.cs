@@ -6,13 +6,7 @@ using UnityEngine;
 using System.IO;
 using System.Linq;
 using Unity.MLAgents.Actuators;
-
-using System.Collections;
-using Unity.MLAgents.Sensors; // needed for .Select and .Where
-using Globals;
 using Unity.MLAgents.Policies;
-using Palmmedia.ReportGenerator.Core.Reporting.Builders;
-using Mono.CSharp;
 
 public class OctagonAgent : Agent
 {
@@ -20,7 +14,6 @@ public class OctagonAgent : Agent
 
     // assigned in inspector 
     // each arena has its own copy of each script
-    [SerializeField] public WallTrigger wallTrigger;
     public GameObject wall1Trigger;
     public GameObject wall2Trigger;
     public string thisTrialType;
@@ -49,6 +42,8 @@ public class OctagonAgent : Agent
 
     // bool flag to check whether agent is currently being trained
     public bool isTraining = false;
+    // flag to check whether behaviour is set to inferene
+    public bool isInference = false;
     // path to log file where agent data will be saved
     string logPath;
     // StreamWriter instance used to write agent logs to the file
@@ -59,9 +54,11 @@ public class OctagonAgent : Agent
         // checks whether communicator (which allows interaction with python process) is on
         // if off, agent is in inference/heuristic mode
         isTraining = Academy.Instance.IsCommunicatorOn;
+        isInference = GetComponent<BehaviorParameters>().BehaviorType == BehaviorType.InferenceOnly;
+
 
         // if communicator is off
-        if (!isTraining)
+        if (!isTraining && isInference)
         {
             // get agent tag (PlayerAgent or OpponentAgent)
             string agentTag = this.tag;
@@ -200,6 +197,44 @@ public class OctagonAgent : Agent
 
     }
 
+
+    public override void Heuristic(in ActionBuffers actionsOut)
+    {
+        var discreteActionsOut = actionsOut.DiscreteActions;
+
+        discreteActionsOut[0] = 0;
+        discreteActionsOut[1] = 0;
+        discreteActionsOut[2] = 0;
+
+        if (Input.GetKey(KeyCode.W))
+        {
+            discreteActionsOut[0] = 1;
+        }
+        else if (Input.GetKey(KeyCode.S))
+        {
+            discreteActionsOut[0] = 2;
+        }
+
+
+        if (Input.GetKey(KeyCode.D))
+        {
+            discreteActionsOut[1] = 1;
+        }
+        else if (Input.GetKey(KeyCode.A))
+        {
+            discreteActionsOut[1] = 2;
+        }
+
+        if (Input.GetKey(KeyCode.E))
+        {
+            discreteActionsOut[2] = 1;
+        }
+        else if (Input.GetKey(KeyCode.Q))
+        {
+            discreteActionsOut[2] = 2;
+        }
+
+    }
 
 
     void OnApplicationQuit()
