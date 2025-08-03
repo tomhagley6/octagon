@@ -1,6 +1,3 @@
-using Unity.MLAgents;
-
-
 public class OctagonArea : MonoBehaviour
 {
     // octagon arena

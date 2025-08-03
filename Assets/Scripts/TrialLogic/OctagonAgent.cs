@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using Unity.MLAgents.Actuators;
 
-public class SingleAgent : Agent
+public class OctagonAgent : Agent
 {
     // scripts
 
@@ -16,6 +16,7 @@ public class SingleAgent : Agent
     [SerializeField] public WallTrigger wallTrigger;
     public GameObject wall1Trigger;
     public GameObject wall2Trigger;
+    public string thisTrialType;
     [SerializeField] public OctagonArea octagonArea;
     // uncomment once trial logic script is ready
     //[SerializeField] public TrialLogic trialLogic;
@@ -106,7 +107,7 @@ public class SingleAgent : Agent
             octagonArea.ResetTrial();
 
             // start trial ITI and active wall colouring logic
-            StartCoroutine(OctagonArea.TrialLoop());
+            StartCoroutine(octagonArea.TrialLoop());
 
         }
     }
