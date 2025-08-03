@@ -1,3 +1,4 @@
+using Unity.MLAgents;
 
 
 public class OctagonArea : MonoBehaviour
@@ -8,6 +9,8 @@ public class OctagonArea : MonoBehaviour
     public bool soloMode;
     // active walls
     public ActiveWalls activeWalls;
+    // collect all wall triggers
+    public List<GameObject> allWallTriggers;
     // assign agents in inspector
     [SerializeField] public MLAgent opponentAgent;
     [SerializeField] public MLAgent playerAgent;
@@ -22,6 +25,13 @@ public class OctagonArea : MonoBehaviour
 
     void Start()
     {
+        arenaRoot = transform.parent;
+
+        allWallTriggers = arenaRoot.GetComponentsInChildren<Transform>(true)
+            .Where(t => t.CompareTag("WallTrigger"))
+            .Select(t => t.gameObject)
+            .ToList();
+
         if (!soloMode && opponentAgent == null)
         {
             opponentAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
@@ -153,11 +163,11 @@ public class OctagonArea : MonoBehaviour
                 break;
 
             // case var value when value == General.riskyChoice:
-                // wall1.GetComponent<Renderer>().materials[0].color = General.wallRiskyColour;
-                // wall2.GetComponent<Renderer>().materials[0].color = General.wallLowColour;
+            // wall1.GetComponent<Renderer>().materials[0].color = General.wallRiskyColour;
+            // wall2.GetComponent<Renderer>().materials[0].color = General.wallLowColour;
 
-                // break;
-            
+            // break;
+
             case var value when value == General.forcedHigh:
                 wall1.GetComponent<Renderer>().materials[0].color = General.wallHighColour;
                 wall2.GetComponent<Renderer>().materials[0].color = General.wallHighColour;
@@ -170,7 +180,7 @@ public class OctagonArea : MonoBehaviour
 
                 break;
 
-            // case var value when value == General.forcedRisky:
+                // case var value when value == General.forcedRisky:
                 // wall1.GetComponent<Renderer>().materials[0].color = General.wallRiskyColour;
                 // wall2.GetComponent<Renderer>().materials[0].color = General.wallRiskyColour;
 
@@ -188,4 +198,70 @@ public class OctagonArea : MonoBehaviour
         wall2Centre.GetComponent<Renderer>().materials[0].color = zoneColor;
 
     }
+
+    public IEnumerator TrialLoop()
+    {
+        yield return new WaitForSeconds(Random.Range(General.ITIMin, General.ITIMax));
+
+        // ensures that triggers are enabled only after ITI has passed
+        EnableTriggers();
+
+        StartTrial();
+    }
+
+    public void EnableTriggers()
+    {
+        foreach (var trigger in allWallTriggers)
+        {
+            if (trigger.TryGetComponent<BoxCollider>(out var collider))
+            {
+                collider.enabled = true;
+            }
+        }
+    }
+
+    public void DisableTriggers()
+    {
+        foreach (var trigger in allWallTriggers)
+        {
+            if (trigger.TryGetComponent<BoxCollider>(out var collider))
+            {
+                collider.enabled = false;
+            }
+        }
+    }
+
+    public void ResetTrial()
+    {
+        if (wallID1 != null && wallID2 != null)
+        {
+            WashWalls(wallID1, wallID2);
+        }
+    }
+
+    public void WashWalls(int highWallTriggerID, int lowWallTriggerID)
+    {        
+        // access the actual game object through the ID:GameObject dict in IdentityManager
+        GameObject highWallTrigger = identityManager.GetObjectByIdentifier(highWallTriggerID);
+        GameObject lowWallTrigger = identityManager.GetObjectByIdentifier(lowWallTriggerID);
+
+        // get the (parent) octagon wall of each trigger
+        GameObject highWall = highWallTrigger.transform.parent.gameObject;
+        GameObject lowWall = lowWallTrigger.transform.parent.gameObject; 
+
+        // reset wall colours back to their previously-saved defaults
+        highWall.GetComponent<Renderer>().materials[0].color = defaultWallColour; 
+        lowWall.GetComponent<Renderer>().materials[0].color = defaultWallColour;  
+
+        // reset interaction zone back to full transparency
+        GameObject wall1Centre = highWall.transform.Find("InteractionZone").gameObject;
+        GameObject wall2Centre = lowWall.transform.Find("InteractionZone").gameObject;
+        
+        Color wallCentreColor = wall1Centre.GetComponent<Renderer>().materials[0].color;
+        wallCentreColor.a = 0f;
+        wall1Centre.GetComponent<Renderer>().materials[0].color = wallCentreColor;
+        wall2Centre.GetComponent<Renderer>().materials[0].color = wallCentreColor;
+
+    }
+
 }

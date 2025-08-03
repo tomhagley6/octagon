@@ -18,6 +18,7 @@ public class SingleAgent : Agent
     public GameObject wall2Trigger;
     [SerializeField] public GameManager gameManager;
     [SerializeField] public TrialHandler trialHandler;
+    [SerializeField] public OctagonArea octagonArea;
     // uncomment once trial logic script is ready
     //[SerializeField] public TrialLogic trialLogic;
     [SerializeField] public IdentityManager identityManager;
@@ -99,9 +100,15 @@ public class SingleAgent : Agent
         {
             totalShapingReward = 0; // variable to track shaping rewards for agent
 
-            // missing logic
-            // is a trial in process
-            // scratch random number/trial counter logic - one trial per episode
+            // disable wall triggers during ITI
+            OctagonArea.DisableTriggers();
+
+            // reset arena by washing off active wall colours
+            octagonArea.ResetTrial();
+
+            // start trial ITI and active wall colouring logic
+            StartCoroutine(OctagonArea.TrialLoop());
+
         }
     }
 
