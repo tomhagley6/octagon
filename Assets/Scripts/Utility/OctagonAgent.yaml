@@ -1,5 +1,5 @@
 behaviors:
-  MLAgent:
+  SingleAgent:
     trainer_type: ppo
     max_steps: 20000000          # Total training steps
     time_horizon: 128            # How many steps of experience per agent before updating

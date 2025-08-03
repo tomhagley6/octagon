@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class CameraDebug : MonoBehaviour
 {
     void Update()
