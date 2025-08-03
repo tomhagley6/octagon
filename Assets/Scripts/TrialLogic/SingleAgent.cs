@@ -248,4 +248,13 @@ public class SingleAgent : Agent
         }
 
     }
+
+    void OnApplicationQuit()
+    {
+        if (logWriter != null && !isTraining)
+        {
+            logWriter.Flush();
+            logWriter.Close();
+        }
+    }
 }
