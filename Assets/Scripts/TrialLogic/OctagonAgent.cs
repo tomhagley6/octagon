@@ -33,6 +33,8 @@ public class OctagonAgent : Agent
     public Animator animator;
     public float previousDistanceHigh;
     public float previousDistanceLow;
+    private int episodeCount = 0;
+    private int stepCount = 0;
 
     // octagon arena
     private Transform arenaRoot;
@@ -71,7 +73,7 @@ public class OctagonAgent : Agent
             logPath = Application.dataPath + $"/AgentLogs/log_{agentTag}_{System.DateTime.Now:yyyyMMdd_HHmmss}.csv";
 
             logWriter = new StreamWriter(logPath, true); // class for writing text to files
-            logWriter.WriteLine("Episode,Step,Time,PosX,PosZ,Reward");
+            logWriter.WriteLine("Episode,Step,Wall1,Wall2,Time,PosX,PosY,PosZ,RotY,Reward");
 
         }
     }
@@ -136,6 +138,7 @@ public class OctagonAgent : Agent
 
             Debug.Log("Coroutine has started");
         }
+        episodeCount++;
 
         //previousDistanceHigh = Vector3.Distance(transform.position, wall1Trigger.transform.position);
         //previousDistanceLow = Vector3.Distance(transform.position, wall2Trigger.transform.position);
@@ -152,6 +155,22 @@ public class OctagonAgent : Agent
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
+
+        stepCount++;
+
+        // record the current time, position, and reward
+        float currentTime = Time.time;
+        float posX = transform.position.x;
+        float posY = transform.position.y;
+        float posZ = transform.position.z;
+        float rotY = transform.eulerAngles.y;
+        float reward = GetCumulativeReward(); 
+
+        // log this step's data to the CSV file
+        logWriter.WriteLine($"{episodeCount},{stepCount},{octagonArea.wallID1},{octagonArea.wallID2},{currentTime},{posX},{posY},{posZ},{rotY},{reward}");
+
+        // flush the writer to ensure data is written in real-time
+        logWriter.Flush();
         // Extract discrete actions for movement, strafe, and rotation
         int moveAction = actionBuffers.DiscreteActions[0];  // Move (3 choices)
         int strafeAction = actionBuffers.DiscreteActions[1];  // Strafe (3 choices)
@@ -298,6 +317,12 @@ public class OctagonAgent : Agent
 
     }
 
+    public void LogTriggerActivation(int triggerID, string wallType, string interactorTag)
+    {
+        float currentTime = Time.time;
+        logWriter.WriteLine($"{episodeCount},{stepCount},{currentTime},TriggerActivated,{triggerID},{wallType},{interactorTag}");
+        logWriter.Flush();
+    }
 
     void OnApplicationQuit()
     {
