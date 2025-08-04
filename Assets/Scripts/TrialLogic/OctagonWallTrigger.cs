@@ -10,7 +10,7 @@ public class OctagonWallTrigger : MonoBehaviour
     IdentityAssignment identityAssignment;
     [SerializeField] OctagonArea octagonArea;
     [SerializeField] OctagonAgent playerAgent;
-    //[SerializeField] OctagonAgent opponentAgent;
+    [SerializeField] OctagonAgent opponentAgent;
     // variables
     public int triggerID;
     public int wallID1;
@@ -38,12 +38,12 @@ public class OctagonWallTrigger : MonoBehaviour
 
     void Start()
     {
-        //if (!octagonArea.soloMode && opponentAgent == null)
-        //{
-            //opponentAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
-                //.FirstOrDefault(t => t.CompareTag("OpponentAgent"))
-                //?.GetComponent<OctagonAgent>();
-        //}
+        if (!octagonArea.soloMode && opponentAgent == null)
+        {
+            opponentAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
+                .FirstOrDefault(t => t.CompareTag("OpponentAgent"))
+                ?.GetComponent<OctagonAgent>();
+        }
         if (playerAgent == null)
         {
             playerAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
@@ -80,15 +80,13 @@ public class OctagonWallTrigger : MonoBehaviour
     {
         float inactiveWallPenalty = -0.01f;
 
-        //OctagonAgent interactor = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
-        OctagonAgent interactor = playerAgent;
+        OctagonAgent interactor = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
         interactor.AddReward(inactiveWallPenalty);
     }
 
     public void HandleWallTrigger(int triggerID, int wallID1, int wallID2, string interactorTag)
     {
-        //OctagonAgent interactor = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
-        OctagonAgent interactor = playerAgent;
+        OctagonAgent interactor = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
 
         string thisTrialType = interactor.thisTrialType;
 
@@ -96,26 +94,32 @@ public class OctagonWallTrigger : MonoBehaviour
 
         float scaledReward = score / 10f;
 
-        //if (!octagonArea.soloMode && opponentAgent != null)
-        //{
-            //OctagonAgent winner = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
-            //OctagonAgent loser = interactorTag == "PlayerAgent" ? opponentAgent : playerAgent;
+        if (!octagonArea.soloMode && opponentAgent != null)
+        {
+            OctagonAgent winner = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
+            OctagonAgent loser = interactorTag == "PlayerAgent" ? opponentAgent : playerAgent;
 
-            //winner.AddReward(scaledReward);
-            //loser.AddReward(-scaledReward);
+            winner.AddReward(scaledReward);
+            loser.AddReward(-scaledReward);
 
-            //octagonArea.DisableTriggers();
+            octagonArea.DisableTriggers();
+            float plCumulativeReward = playerAgent.GetCumulativeReward();
+            Debug.Log($"Player agent reward at the end of this episode is {plCumulativeReward}");
+            Debug.Log($"Player agent reward at the end of this episode is {plCumulativeReward}");
+            float oppCumulativeReward = playerAgent.GetCumulativeReward();
+            Debug.Log($"Player agent reward at the end of this episode is {oppCumulativeReward}");
+            Debug.Log($"Player agent reward at the end of this episode is {oppCumulativeReward}");
 
-            //playerAgent.EndEpisode();
-            //opponentAgent.EndEpisode();
-        //}
-        //else if (octagonArea.soloMode)
-        //{
-        OctagonAgent winner = playerAgent;
-        winner.AddReward(scaledReward);
-        float cumulativeReward = playerAgent.GetCumulativeReward();
-        Debug.Log($"Agent reward at the end of this episode is {cumulativeReward}");
-        playerAgent.EndEpisode();
-        //}
+            playerAgent.EndEpisode();
+            opponentAgent.EndEpisode();
+        }
+        else if (octagonArea.soloMode)
+        {
+            OctagonAgent winner = playerAgent;
+            winner.AddReward(scaledReward);
+            float cumulativeReward = playerAgent.GetCumulativeReward();
+            Debug.Log($"Agent reward at the end of this episode is {cumulativeReward}");
+            playerAgent.EndEpisode();
+        }
     }
 }

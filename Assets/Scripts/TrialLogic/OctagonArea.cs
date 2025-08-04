@@ -28,7 +28,7 @@ public class OctagonArea : MonoBehaviour
     private float iti;
     public bool isTrialLooping;
     // assign agents in inspector
-    //[SerializeField] public OctagonAgent opponentAgent;
+    [SerializeField] public OctagonAgent opponentAgent;
     [SerializeField] public OctagonAgent playerAgent;
     [SerializeField] public IdentityManager identityManager;
 
@@ -47,12 +47,12 @@ public class OctagonArea : MonoBehaviour
             .Select(t => t.gameObject)
             .ToList();
 
-        //if (!soloMode && opponentAgent == null)
-        //{
-            //pponentAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
-                //.FirstOrDefault(t => t.CompareTag("OpponentAgent"))
-                //?.GetComponent<OctagonAgent>();
-        //}
+        if (!soloMode && opponentAgent == null)
+        {
+            opponentAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
+                .FirstOrDefault(t => t.CompareTag("OpponentAgent"))
+                ?.GetComponent<OctagonAgent>();
+        }
         if (playerAgent == null)
         {
             playerAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
@@ -86,12 +86,12 @@ public class OctagonArea : MonoBehaviour
         thisTrialType = SelectTrial();
 
         // feed wall trigger IDs to agent script
-        //if (!soloMode)
-        //{
-        //opponentAgent.wall1Trigger = wall1Trigger;
-        //opponentAgent.wall2Trigger = wall2Trigger;
-        //opponentAgent.thisTrialType = thisTrialType;
-        //}
+        if (!soloMode)
+        {
+            opponentAgent.wall1Trigger = wall1Trigger;
+            opponentAgent.wall2Trigger = wall2Trigger;
+            opponentAgent.thisTrialType = thisTrialType;
+        }
 
         playerAgent.wall1Trigger = wall1Trigger;
         playerAgent.wall2Trigger = wall2Trigger;
@@ -249,13 +249,17 @@ public class OctagonArea : MonoBehaviour
 
         StartTrial();
 
-        float previousDistanceHigh = Vector3.Distance(playerAgent.transform.position, wall1Trigger.transform.position);
-        float previousDistanceLow = Vector3.Distance(playerAgent.transform.position, wall2Trigger.transform.position);
+        if (!soloMode)
+        {
+            opponentAgent.previousDistanceHigh = Vector3.Distance(opponentAgent.transform.position, wall1Trigger.transform.position);
+            opponentAgent.previousDistanceLow = Vector3.Distance(opponentAgent.transform.position, wall2Trigger.transform.position);
+        }
 
-        playerAgent.previousDistanceHigh = previousDistanceHigh;
-        playerAgent.previousDistanceLow = previousDistanceLow;
+        playerAgent.previousDistanceHigh = Vector3.Distance(playerAgent.transform.position, wall1Trigger.transform.position);
+        playerAgent.previousDistanceLow = Vector3.Distance(playerAgent.transform.position, wall2Trigger.transform.position);
 
-        Debug.Log($"[OctagonAgent] Agent {playerAgent.tag} starts with distance to {previousDistanceHigh} and distance to low {previousDistanceLow}.");
+        Debug.Log($"[OctagonAgent] Agent {playerAgent.tag} starts with distance to high {playerAgent.previousDistanceHigh} and distance to low {playerAgent.previousDistanceLow}.");
+        Debug.Log($"[OctagonAgent] Agent {opponentAgent.tag} starts with distance to high {opponentAgent.previousDistanceHigh} and distance to low {opponentAgent.previousDistanceLow}.");
 
     }
     public void EnableTriggers()
