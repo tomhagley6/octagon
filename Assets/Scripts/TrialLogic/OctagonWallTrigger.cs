@@ -105,10 +105,8 @@ public class OctagonWallTrigger : MonoBehaviour
             octagonArea.DisableTriggers();
             float plCumulativeReward = playerAgent.GetCumulativeReward();
             Debug.Log($"Player agent reward at the end of this episode is {plCumulativeReward}");
-            Debug.Log($"Player agent reward at the end of this episode is {plCumulativeReward}");
             float oppCumulativeReward = playerAgent.GetCumulativeReward();
-            Debug.Log($"Player agent reward at the end of this episode is {oppCumulativeReward}");
-            Debug.Log($"Player agent reward at the end of this episode is {oppCumulativeReward}");
+            Debug.Log($"Opponent agent reward at the end of this episode is {oppCumulativeReward}");
 
             playerAgent.EndEpisode();
             opponentAgent.EndEpisode();
