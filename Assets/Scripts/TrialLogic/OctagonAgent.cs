@@ -104,6 +104,13 @@ public class OctagonAgent : Agent
     public override void OnEpisodeBegin()
     {
         Debug.Log("OnEpisodeBegin is called");
+
+        Debug.Log("Time scale: " + Time.timeScale);
+        if (Time.timeScale == 0)
+        {
+            Time.timeScale = 1; // Resume normal time
+        }
+
         // check that agent currently running this script is "PlayerAgent"
         // is this the agent assigned to playerAgent in TrialHandler? 
         //if (this == trialHandler.playerAgent)
@@ -122,10 +129,14 @@ public class OctagonAgent : Agent
             // start trial ITI and active wall colouring logic
             //StartCoroutine(octagonArea.ITI());
 
-            StartCoroutine(octagonArea.ITI());
+            Debug.Log("Starting coroutine...");
 
+            octagonArea.TrialLoop();
+            //StartCoroutine(octagonArea.ITI());
 
+            Debug.Log("Coroutine has started");
         }
+
         previousDistanceHigh = Vector3.Distance(transform.position, wall1Trigger.transform.position);
         previousDistanceLow = Vector3.Distance(transform.position, wall2Trigger.transform.position);
 
@@ -247,7 +258,6 @@ public class OctagonAgent : Agent
         }
 
     }
-
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {

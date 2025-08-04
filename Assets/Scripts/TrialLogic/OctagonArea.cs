@@ -5,6 +5,7 @@ using Globals;
 using KaimiraGames;
 using Unity.MLAgents;
 using UnityEngine;
+using UnityEditor;
 
 public class OctagonArea : MonoBehaviour
 {
@@ -25,6 +26,7 @@ public class OctagonArea : MonoBehaviour
     // initial wall colour
     private Color defaultWallColour;
     private float iti;
+    public bool isTrialLooping;
     // assign agents in inspector
     //[SerializeField] public OctagonAgent opponentAgent;
     [SerializeField] public OctagonAgent playerAgent;
@@ -224,12 +226,17 @@ public class OctagonArea : MonoBehaviour
         Debug.Log("[ColourWalls] New trial walls are coloured.");
 
     }
+    public void TrialLoop()
+    {
+        StartCoroutine(ITI());
 
+    }
     public IEnumerator ITI()
     {
-        //Debug.Log($"ITI range: {General.ITIMin} to {General.ITIMax}");
+
+        Debug.Log($"ITI range: {General.ITIMin} to {General.ITIMax}");
         iti = Random.Range(General.ITIMin, General.ITIMax);
-        Debug.Log($"Waiting for ITI: {iti}");
+        //Debug.Log($"Waiting for ITI: {iti}");
         yield return new WaitForSeconds(iti);
 
         Debug.Log("Trial loop started.");
@@ -243,22 +250,6 @@ public class OctagonArea : MonoBehaviour
         StartTrial();
 
     }
-
-    public void TrialLoop()
-    {
-
-        Debug.Log("Trial loop started.");
-
-        Debug.Log("About to enable triggers.");
-        // ensures that triggers are enabled only after ITI has passed
-        EnableTriggers();
-
-        Debug.Log("ITI ended. Triggers re-enabled. Trial now starting.");
-
-        StartTrial();
-
-    }
-
     public void EnableTriggers()
     {
         Debug.Log("Enabling triggers");
