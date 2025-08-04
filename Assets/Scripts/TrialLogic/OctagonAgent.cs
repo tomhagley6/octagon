@@ -63,14 +63,14 @@ public class OctagonAgent : Agent
 
 
         // if communicator is off
-        if (!isTraining && isInference)
+        if (!isTraining)
         {
             // get agent tag (PlayerAgent or OpponentAgent)
             string agentTag = this.tag;
 
             // define path for agent log 
             // stores log in 'AgentLogs' folder in 'Assets' folder 
-            logPath = Application.dataPath + $"/AgentLogs/log_{agentTag}_{System.DateTime.Now:yyyyMMdd_HHmmss}.csv";
+            logPath = Application.dataPath + $"/VisAgentLogs/log_{agentTag}_{System.DateTime.Now:yyyyMMdd_HHmmss}.csv";
 
             logWriter = new StreamWriter(logPath, true); // class for writing text to files
             logWriter.WriteLine("Episode,Step,Wall1,Wall2,Time,PosX,PosY,PosZ,RotY,Reward");
@@ -171,6 +171,7 @@ public class OctagonAgent : Agent
 
         // flush the writer to ensure data is written in real-time
         logWriter.Flush();
+
         // Extract discrete actions for movement, strafe, and rotation
         int moveAction = actionBuffers.DiscreteActions[0];  // Move (3 choices)
         int strafeAction = actionBuffers.DiscreteActions[1];  // Strafe (3 choices)
