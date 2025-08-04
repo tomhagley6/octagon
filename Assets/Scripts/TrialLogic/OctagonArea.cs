@@ -88,9 +88,9 @@ public class OctagonArea : MonoBehaviour
         // feed wall trigger IDs to agent script
         //if (!soloMode)
         //{
-            //opponentAgent.wall1Trigger = wall1Trigger;
-            //opponentAgent.wall2Trigger = wall2Trigger;
-            //opponentAgent.thisTrialType = thisTrialType;
+        //opponentAgent.wall1Trigger = wall1Trigger;
+        //opponentAgent.wall2Trigger = wall2Trigger;
+        //opponentAgent.thisTrialType = thisTrialType;
         //}
 
         playerAgent.wall1Trigger = wall1Trigger;
@@ -248,6 +248,14 @@ public class OctagonArea : MonoBehaviour
         Debug.Log("ITI ended. Triggers re-enabled. Trial now starting.");
 
         StartTrial();
+
+        float previousDistanceHigh = Vector3.Distance(playerAgent.transform.position, wall1Trigger.transform.position);
+        float previousDistanceLow = Vector3.Distance(playerAgent.transform.position, wall2Trigger.transform.position);
+
+        playerAgent.previousDistanceHigh = previousDistanceHigh;
+        playerAgent.previousDistanceLow = previousDistanceLow;
+
+        Debug.Log($"[OctagonAgent] Agent {playerAgent.tag} starts with distance to {previousDistanceHigh} and distance to low {previousDistanceLow}.");
 
     }
     public void EnableTriggers()

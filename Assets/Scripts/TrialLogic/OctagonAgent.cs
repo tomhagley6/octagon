@@ -31,8 +31,8 @@ public class OctagonAgent : Agent
     public float turnSpeed = 360f;
     public CharacterController controller;
     public Animator animator;
-    private float previousDistanceHigh;
-    private float previousDistanceLow;
+    public float previousDistanceHigh;
+    public float previousDistanceLow;
 
     // octagon arena
     private Transform arenaRoot;
@@ -137,10 +137,10 @@ public class OctagonAgent : Agent
             Debug.Log("Coroutine has started");
         }
 
-        previousDistanceHigh = Vector3.Distance(transform.position, wall1Trigger.transform.position);
-        previousDistanceLow = Vector3.Distance(transform.position, wall2Trigger.transform.position);
+        //previousDistanceHigh = Vector3.Distance(transform.position, wall1Trigger.transform.position);
+        //previousDistanceLow = Vector3.Distance(transform.position, wall2Trigger.transform.position);
 
-        Debug.Log($"[OctagonAgent] Agent {this.tag} starts with distance to {previousDistanceHigh} and distance to low {previousDistanceLow}.");
+        //Debug.Log($"[OctagonAgent] Agent {this.tag} starts with distance to {previousDistanceHigh} and distance to low {previousDistanceLow}.");
 
     }
 
@@ -227,6 +227,7 @@ public class OctagonAgent : Agent
             //Debug.Log($"neither wall is visible. Alignments: to wall 1 {alignmentToWall1}, to wall 2 {alignmentToWall2}. Turn input is not 0: {rotateAmount}");
             //Debug.Log($"agent head direction vector is {transform.forward}. Dot product (alignment) between vector to wall 1 and head direction is {alignmentToWall1}");
         }
+
 
         if ((alignmentToWall1 > fovThreshold) && (alignmentToWall2 < alignmentToWall1))
         {
