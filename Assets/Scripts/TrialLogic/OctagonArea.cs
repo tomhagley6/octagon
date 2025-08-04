@@ -186,6 +186,10 @@ public class OctagonArea : MonoBehaviour
                 wall1.GetComponent<Renderer>().materials[0].color = General.wallHighColour;
                 wall2.GetComponent<Renderer>().materials[0].color = General.wallLowColour;
 
+                // set tags to high/low wall for raycasts
+                wall1.tag = "HighWall";
+                wall2.tag = "LowWall";
+                
                 break;
 
             // case var value when value == General.riskyChoice:
@@ -198,11 +202,19 @@ public class OctagonArea : MonoBehaviour
                 wall1.GetComponent<Renderer>().materials[0].color = General.wallHighColour;
                 wall2.GetComponent<Renderer>().materials[0].color = General.wallHighColour;
 
+                // set tags to high wall for raycasts
+                wall1.tag = "HighWall";
+                wall2.tag = "HighWall";
+
                 break;
 
             case var value when value == General.forcedLow:
                 wall1.GetComponent<Renderer>().materials[0].color = General.wallLowColour;
                 wall2.GetComponent<Renderer>().materials[0].color = General.wallLowColour;
+
+                // set tags to low wall for raycasts
+                wall1.tag = "LowWall";
+                wall2.tag = "LowWall";
 
                 break;
 
@@ -311,6 +323,10 @@ public class OctagonArea : MonoBehaviour
         GameObject highWall = highWallTrigger.transform.parent.gameObject;
         GameObject lowWall = lowWallTrigger.transform.parent.gameObject;
 
+        // reset wall tags
+        highWall.tag = "Wall";
+        lowWall.tag = "Wall";
+        
         // reset wall colours back to their previously-saved defaults
         highWall.GetComponent<Renderer>().materials[0].color = defaultWallColour;
         lowWall.GetComponent<Renderer>().materials[0].color = defaultWallColour;
