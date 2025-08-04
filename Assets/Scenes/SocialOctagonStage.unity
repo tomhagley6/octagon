@@ -1827,7 +1827,7 @@ MonoBehaviour:
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 1
-  m_BehaviorName: OctagonAgent
+  m_BehaviorName: OctagonAgentSolo
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -1879,6 +1879,8 @@ MonoBehaviour:
   turnSpeed: 360
   controller: {fileID: 846055669}
   animator: {fileID: 1930382392}
+  previousDistanceHigh: 0
+  previousDistanceLow: 0
   allWallTriggers: []
   totalShapingReward: 0
   isTraining: 0

@@ -1,5 +1,5 @@
 behaviors:
-  OctagonAgent:
+  OctagonAgentSolo:
     trainer_type: ppo
     max_steps: 20000000          # Total training steps
     time_horizon: 128            # How many steps of experience per agent before updating
@@ -36,3 +36,5 @@ behaviors:
         strength: 0.01 # if exploration is too low up to 0.1
         learning_rate: 0.0001
     
+    self_play: null
+    init_path: null
