@@ -983,7 +983,7 @@ MonoBehaviour:
   - HighWall
   - LowWall
   - Wall
-  - Player
+  - PlayerAgent
   m_RaysPerDirection: 4
   m_MaxRayDegrees: 80
   m_SphereCastRadius: 0
@@ -2023,7 +2023,7 @@ MonoBehaviour:
   - HighWall
   - LowWall
   - Wall
-  - Opponent
+  - OpponentAgent
   m_RaysPerDirection: 4
   m_MaxRayDegrees: 80
   m_SphereCastRadius: 0
