@@ -122,7 +122,7 @@ public class OctagonAgent : Agent
             // start trial ITI and active wall colouring logic
             //StartCoroutine(octagonArea.ITI());
 
-            octagonArea.TrialLoop();
+            StartCoroutine(octagonArea.ITI());
 
 
         }

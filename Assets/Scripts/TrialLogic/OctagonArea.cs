@@ -230,18 +230,8 @@ public class OctagonArea : MonoBehaviour
         //Debug.Log($"ITI range: {General.ITIMin} to {General.ITIMax}");
         iti = Random.Range(General.ITIMin, General.ITIMax);
         Debug.Log($"Waiting for ITI: {iti}");
-        //yield return new WaitForSeconds(iti);
+        yield return new WaitForSeconds(iti);
 
-        while (iti > 0)
-        {
-            iti -= Time.deltaTime;  // Decrease timer based on real time (affected by time scale)
-            yield return null;           // Wait for next frame
-        }
-
-    }
-
-    public void TrialLoop()
-    {
         Debug.Log("Trial loop started.");
 
         Debug.Log("About to enable triggers.");
@@ -251,6 +241,22 @@ public class OctagonArea : MonoBehaviour
         Debug.Log("ITI ended. Triggers re-enabled. Trial now starting.");
 
         StartTrial();
+
+    }
+
+    public void TrialLoop()
+    {
+
+        Debug.Log("Trial loop started.");
+
+        Debug.Log("About to enable triggers.");
+        // ensures that triggers are enabled only after ITI has passed
+        EnableTriggers();
+
+        Debug.Log("ITI ended. Triggers re-enabled. Trial now starting.");
+
+        StartTrial();
+
     }
 
     public void EnableTriggers()
