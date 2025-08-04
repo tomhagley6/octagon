@@ -117,7 +117,9 @@ public class OctagonAgent : Agent
             octagonArea.ResetTrial();
 
             // start trial ITI and active wall colouring logic
-            StartCoroutine(octagonArea.ITI());
+            //StartCoroutine(octagonArea.ITI());
+
+            octagonArea.TrialLoop();
 
 
         }

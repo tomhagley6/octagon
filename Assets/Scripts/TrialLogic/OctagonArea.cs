@@ -238,7 +238,10 @@ public class OctagonArea : MonoBehaviour
             yield return null;           // Wait for next frame
         }
 
+    }
 
+    public void TrialLoop()
+    {
         Debug.Log("Trial loop started.");
 
         Debug.Log("About to enable triggers.");
@@ -248,7 +251,6 @@ public class OctagonArea : MonoBehaviour
         Debug.Log("ITI ended. Triggers re-enabled. Trial now starting.");
 
         StartTrial();
-
     }
 
     public void EnableTriggers()
