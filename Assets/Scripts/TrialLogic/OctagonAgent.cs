@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
+//using System.Numerics;
 
 public class OctagonAgent : Agent
 {
@@ -193,8 +194,10 @@ public class OctagonAgent : Agent
             return;
         }
 
-        Vector3 wall1TriggerCentre = wall1Trigger.GetComponent<Collider>().bounds.center;
-        Vector3 wall2TriggerCentre = wall2Trigger.GetComponent<Collider>().bounds.center;
+        Vector3 wall1TriggerCentre = wall1Trigger.transform.position;
+        Vector3 wall2TriggerCentre = wall2Trigger.transform.position;
+        //Vector3 wall1TriggerCentre = wall1Trigger.GetComponent<Collider>().bounds.center;
+        //Vector3 wall2TriggerCentre = wall2Trigger.GetComponent<Collider>().bounds.center;
 
         Vector3 toWall1 = (wall1TriggerCentre - transform.position).normalized;
         Vector3 toWall2 = (wall2TriggerCentre - transform.position).normalized;
@@ -204,12 +207,14 @@ public class OctagonAgent : Agent
         float alignmentToWall1 = Vector3.Dot(transform.forward, toWall1);
         float alignmentToWall2 = Vector3.Dot(transform.forward, toWall2);
 
+
         // check whether the alignment value for each wall is below the threshold
         // reward agent for rotating when neither wall is in view
         if ((alignmentToWall1 < fovThreshold) && (alignmentToWall2 < fovThreshold) && Mathf.Abs(rotateAmount) > 0)
         {
             AddReward(0.001f);
-            Debug.Log($"neither wall is visible. Alignments: to wall 1 {alignmentToWall1}, to wall 2 {alignmentToWall2}. Turn input is not 0: {rotateAmount}");
+            //Debug.Log($"neither wall is visible. Alignments: to wall 1 {alignmentToWall1}, to wall 2 {alignmentToWall2}. Turn input is not 0: {rotateAmount}");
+            //Debug.Log($"agent head direction vector is {transform.forward}. Dot product (alignment) between vector to wall 1 and head direction is {alignmentToWall1}");
         }
 
         if ((alignmentToWall1 > fovThreshold) && (alignmentToWall2 < alignmentToWall1))
@@ -219,7 +224,7 @@ public class OctagonAgent : Agent
             if (currentDistanceHigh < previousDistanceHigh)
             {
                 AddReward(0.001f);
-                Debug.Log($"current distance to high is {currentDistanceHigh} and smaller than in previous step. Agent is rewarded.");
+                //Debug.Log($"current distance to high is {currentDistanceHigh} and smaller than in previous step. Agent is rewarded.");
             }
 
             previousDistanceHigh = currentDistanceHigh;
@@ -233,7 +238,7 @@ public class OctagonAgent : Agent
             if (currentDistanceLow < previousDistanceLow)
             {
                 AddReward(0.001f);
-                Debug.Log($"current distance to low is {currentDistanceLow} and smaller than in previous step. Agent is rewarded.");
+                //Debug.Log($"current distance to low is {currentDistanceLow} and smaller than in previous step. Agent is rewarded.");
 
             }
 

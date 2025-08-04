@@ -113,6 +113,8 @@ public class OctagonWallTrigger : MonoBehaviour
         //{
         OctagonAgent winner = playerAgent;
         winner.AddReward(scaledReward);
+        float cumulativeReward = playerAgent.GetCumulativeReward();
+        Debug.Log($"Agent reward at the end of this episode is {cumulativeReward}");
         playerAgent.EndEpisode();
         //}
     }
