@@ -99,6 +99,13 @@ public class OctagonArea : MonoBehaviour
 
         ColourWalls(wallID1, wallID2, thisTrialType);
 
+
+        // get the parent object (octagon wall) for each trigger
+        GameObject HW = wall1Trigger.transform.parent.gameObject;
+        GameObject LW = wall2Trigger.transform.parent.gameObject;
+
+        //Debug.Log($"Tags for high wall and low walls after colouring are {HW.tag} and {LW.tag}");
+
     }
 
     public void AssignNewWalls()
@@ -246,6 +253,7 @@ public class OctagonArea : MonoBehaviour
     public IEnumerator ITI()
     {
 
+
         Debug.Log($"ITI range: {General.ITIMin} to {General.ITIMax}");
         iti = Random.Range(General.ITIMin, General.ITIMax);
         //Debug.Log($"Waiting for ITI: {iti}");
@@ -271,7 +279,8 @@ public class OctagonArea : MonoBehaviour
         playerAgent.previousDistanceLow = Vector3.Distance(playerAgent.transform.position, wall2Trigger.transform.position);
 
         Debug.Log($"[OctagonAgent] Agent {playerAgent.tag} starts with distance to high {playerAgent.previousDistanceHigh} and distance to low {playerAgent.previousDistanceLow}.");
-        Debug.Log($"[OctagonAgent] Agent {opponentAgent.tag} starts with distance to high {opponentAgent.previousDistanceHigh} and distance to low {opponentAgent.previousDistanceLow}.");
+        if (!soloMode)
+        { Debug.Log($"[OctagonAgent] Agent {opponentAgent.tag} starts with distance to high {opponentAgent.previousDistanceHigh} and distance to low {opponentAgent.previousDistanceLow}."); }
 
     }
     public void EnableTriggers()
@@ -305,7 +314,18 @@ public class OctagonArea : MonoBehaviour
             WashWalls(wallID1, wallID2);
 
             Debug.Log("Walls have now been washed");
+
+            GameObject HWT = identityManager.GetObjectByIdentifier(wallID1);
+            GameObject LWT = identityManager.GetObjectByIdentifier(wallID2);
+
+            // get the (parent) octagon wall of each trigger
+            GameObject HW = HWT.transform.parent.gameObject;
+            GameObject LW = LWT.transform.parent.gameObject;
+
+            //Debug.Log($"Tags for high wall and low walls after washing are {HW.tag} and {LW.tag}");
+
         }
+
 
         else if (wallID1 == 0 && wallID2 == 0)
         {

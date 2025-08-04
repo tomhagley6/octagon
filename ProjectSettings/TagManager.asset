@@ -11,6 +11,8 @@ TagManager:
   - PlayerAgent
   - OpponentAgent
   - Wall
+  - HighWall
+  - LowWall
   layers:
   - Default
   - TransparentFX

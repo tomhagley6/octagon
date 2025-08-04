@@ -65,8 +65,14 @@ public class OctagonWallTrigger : MonoBehaviour
         if (wallIDs.Contains(triggerID))
         {
             string interactorTag = agent.CompareTag("PlayerAgent") ? "PlayerAgent" : "OpponentAgent";
-            
+
             HandleWallTrigger(triggerID, wallID1, wallID2, interactorTag);
+
+            string wallTag = triggerID == wallID1 ? "HighWall" : "LowWall";
+
+            playerAgent.LogTriggerActivation(wallID1, wallTag, interactorTag);
+            opponentAgent.LogTriggerActivation(wallID1, wallTag, interactorTag);
+
         }
         else if (!wallIDs.Contains(triggerID))
         {
