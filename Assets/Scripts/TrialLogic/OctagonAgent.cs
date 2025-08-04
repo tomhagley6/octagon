@@ -139,8 +139,9 @@ public class OctagonAgent : Agent
 
             Debug.Log("Coroutine has started");
 
-            episodeCount++;
         }
+
+        episodeCount++;
 
         //previousDistanceHigh = Vector3.Distance(transform.position, wall1Trigger.transform.position);
         //previousDistanceLow = Vector3.Distance(transform.position, wall2Trigger.transform.position);
@@ -157,7 +158,7 @@ public class OctagonAgent : Agent
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-            stepCount++;
+        stepCount++;
 
         // record the current time, position, and reward
         float currentTime = Time.time;
