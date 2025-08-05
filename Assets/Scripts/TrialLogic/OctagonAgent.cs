@@ -70,7 +70,14 @@ public class OctagonAgent : Agent
 
             // define path for agent log 
             // stores log in 'AgentLogs' folder in 'Assets' folder 
-            logPath = Application.dataPath + $"/VisAgentLogs/log_{agentTag}_{System.DateTime.Now:yyyyMMdd_HHmmss}.csv";
+            if (!octagonArea.soloMode)
+            {
+                logPath = Application.dataPath + $"/SocialVisualLogs/log_{agentTag}_{System.DateTime.Now:yyyyMMdd_HHmmss}.csv";
+            }
+            else
+            {
+                logPath = Application.dataPath + $"/SoloVisualLogs/log_{agentTag}_{System.DateTime.Now:yyyyMMdd_HHmmss}.csv";
+            }
 
             logWriter = new StreamWriter(logPath, true); // class for writing text to files
             logWriter.WriteLine("Episode,Step,Wall1,Wall2,Time,PosX,PosY,PosZ,RotY,Reward");

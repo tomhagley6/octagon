@@ -259,7 +259,11 @@ public class OctagonArea : MonoBehaviour
         playerAgent.previousDistanceLow = Vector3.Distance(playerAgent.transform.position, wall2Trigger.transform.position);
 
         Debug.Log($"[OctagonAgent] Agent {playerAgent.tag} starts with distance to high {playerAgent.previousDistanceHigh} and distance to low {playerAgent.previousDistanceLow}.");
-        Debug.Log($"[OctagonAgent] Agent {opponentAgent.tag} starts with distance to high {opponentAgent.previousDistanceHigh} and distance to low {opponentAgent.previousDistanceLow}.");
+
+        if (!soloMode)
+        {
+            Debug.Log($"[OctagonAgent] Agent {opponentAgent.tag} starts with distance to high {opponentAgent.previousDistanceHigh} and distance to low {opponentAgent.previousDistanceLow}.");
+        }
 
     }
     public void EnableTriggers()

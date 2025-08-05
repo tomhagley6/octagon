@@ -1062,7 +1062,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d55e3c354ce947fea30fe406089abf3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  soloMode: 0
+  soloMode: 1
   allWallTriggers: []
   wallID1: 0
   wallID2: 0
@@ -1070,6 +1070,7 @@ MonoBehaviour:
   wall2Trigger: {fileID: 0}
   thisTrialType: 
   isTrialLooping: 0
+  opponentAgent: {fileID: 0}
   playerAgent: {fileID: 846055672}
   identityManager: {fileID: 1063991865}
 --- !u!1 &705507993
@@ -3801,7 +3802,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4845276930943762971, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -0.000045776367
       objectReference: {fileID: 0}
     - target: {fileID: 4845637959249703711, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchorMax.y
@@ -3990,6 +3991,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   octagonArea: {fileID: 643279652}
   playerAgent: {fileID: 846055672}
+  opponentAgent: {fileID: 0}
   triggerID: 0
   wallID1: 0
   wallID2: 0
@@ -4009,6 +4011,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   octagonArea: {fileID: 643279652}
   playerAgent: {fileID: 846055672}
+  opponentAgent: {fileID: 0}
   triggerID: 0
   wallID1: 0
   wallID2: 0
@@ -4539,6 +4542,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   octagonArea: {fileID: 643279652}
   playerAgent: {fileID: 846055672}
+  opponentAgent: {fileID: 0}
   triggerID: 0
   wallID1: 0
   wallID2: 0
@@ -4593,6 +4597,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   octagonArea: {fileID: 643279652}
   playerAgent: {fileID: 846055672}
+  opponentAgent: {fileID: 0}
   triggerID: 0
   wallID1: 0
   wallID2: 0
@@ -4612,6 +4617,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   octagonArea: {fileID: 643279652}
   playerAgent: {fileID: 846055672}
+  opponentAgent: {fileID: 0}
   triggerID: 0
   wallID1: 0
   wallID2: 0
@@ -4631,6 +4637,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   octagonArea: {fileID: 643279652}
   playerAgent: {fileID: 846055672}
+  opponentAgent: {fileID: 0}
   triggerID: 0
   wallID1: 0
   wallID2: 0
@@ -4650,6 +4657,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   octagonArea: {fileID: 643279652}
   playerAgent: {fileID: 846055672}
+  opponentAgent: {fileID: 0}
   triggerID: 0
   wallID1: 0
   wallID2: 0
@@ -4669,6 +4677,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   octagonArea: {fileID: 643279652}
   playerAgent: {fileID: 846055672}
+  opponentAgent: {fileID: 0}
   triggerID: 0
   wallID1: 0
   wallID2: 0
