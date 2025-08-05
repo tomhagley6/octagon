@@ -123,9 +123,6 @@ public class OctagonAgent : Agent
         }
 
         // check that agent currently running this script is "PlayerAgent"
-        // is this the agent assigned to playerAgent in TrialHandler? 
-        //if (this == trialHandler.playerAgent)
-        // temporarily setting this directly to suppress error
         if (this.tag == "PlayerAgent")
         {
             Debug.Log("PlayerAgent found, starting episode");
@@ -269,7 +266,7 @@ public class OctagonAgent : Agent
             if (currentDistanceHigh < previousDistanceHigh)
             {
                 AddReward(0.001f);
-                //Debug.Log($"current distance to high is {currentDistanceHigh} and smaller than in previous step. Agent is rewarded.");
+                Debug.Log($"current distance to high is {currentDistanceHigh} and smaller than in previous step. Agent is rewarded.");
             }
 
             previousDistanceHigh = currentDistanceHigh;
@@ -283,7 +280,7 @@ public class OctagonAgent : Agent
             if (currentDistanceLow < previousDistanceLow)
             {
                 AddReward(0.001f);
-                //Debug.Log($"current distance to low is {currentDistanceLow} and smaller than in previous step. Agent is rewarded.");
+                Debug.Log($"current distance to low is {currentDistanceLow} and smaller than in previous step. Agent is rewarded.");
 
             }
 
@@ -336,6 +333,7 @@ public class OctagonAgent : Agent
         }
 
     }
+
     public void LogTriggerActivation(int triggerID, string wallType, string interactorTag)
     {
         if (logWriter != null && !isTraining)
@@ -345,6 +343,37 @@ public class OctagonAgent : Agent
             logWriter.Flush();
         }
     }
+
+    public void LogSliceOnsetEvent(int highWall, int lowWall, string trialType)
+    {
+        if (logWriter != null && !isTraining)
+        {
+            float currentTime = Time.time;
+            logWriter.WriteLine($"{episodeCount},{stepCount},{currentTime},SliceOnset,{highWall},{lowWall},{trialType}");
+            logWriter.Flush();
+        }
+    }
+
+    public void LogEpisodeBeginEvent()
+    {
+        if (logWriter != null && !isTraining)
+        {
+            float currentTime = Time.time;
+            logWriter.WriteLine($"{episodeCount},{stepCount},{currentTime},EpisodeBegin");
+            logWriter.Flush();
+        }
+    }
+
+    public void LogEpisodeEndEvent()
+    {
+        if (logWriter != null && !isTraining)
+        {
+            float currentTime = Time.time;
+            logWriter.WriteLine($"{episodeCount},{stepCount},{currentTime},EpisodeEnd");
+            logWriter.Flush();
+        }
+    }
+
     void OnApplicationQuit()
     {
         if (logWriter != null && !isTraining)

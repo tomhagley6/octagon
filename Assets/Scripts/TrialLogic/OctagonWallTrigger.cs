@@ -120,6 +120,10 @@ public class OctagonWallTrigger : MonoBehaviour
 
             playerAgent.EndEpisode();
             opponentAgent.EndEpisode();
+            //playerAgent.LogEpisodeEndEvent();
+            //opponentAgent.LogEpisodeEndEvent();
+
+
         }
         else if (octagonArea.soloMode)
         {
@@ -128,6 +132,7 @@ public class OctagonWallTrigger : MonoBehaviour
             float cumulativeReward = playerAgent.GetCumulativeReward();
             Debug.Log($"Agent reward at the end of this episode is {cumulativeReward}");
             playerAgent.EndEpisode();
+            //playerAgent.LogEpisodeEndEvent();
         }
     }
 }

@@ -199,7 +199,7 @@ public class OctagonArea : MonoBehaviour
 
                 wall1trigger.tag = "HighWallTrigger";
                 wall2trigger.tag = "LowWallTrigger";
-                
+
                 break;
 
             // case var value when value == General.riskyChoice:
@@ -252,19 +252,21 @@ public class OctagonArea : MonoBehaviour
         wall2Centre.GetComponent<Renderer>().materials[0].color = zoneColor;
 
         Debug.Log("[ColourWalls] New trial walls are coloured.");
+        playerAgent.LogSliceOnsetEvent(wallID1, wallID2, thisTrialType);
 
     }
     public void TrialLoop()
     {
+
         StartCoroutine(ITI());
 
     }
     public IEnumerator ITI()
     {
 
-
         Debug.Log($"ITI range: {General.ITIMin} to {General.ITIMax}");
         iti = Random.Range(General.ITIMin, General.ITIMax);
+
         //Debug.Log($"Waiting for ITI: {iti}");
         yield return new WaitForSeconds(iti);
 
