@@ -13,6 +13,8 @@ TagManager:
   - Wall
   - HighWall
   - LowWall
+  - HighWallTrigger
+  - LowWallTrigger
   layers:
   - Default
   - TransparentFX
