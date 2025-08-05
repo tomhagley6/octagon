@@ -984,6 +984,9 @@ MonoBehaviour:
   - LowWall
   - Wall
   - PlayerAgent
+  - HighWallTrigger
+  - LowWallTrigger
+  - WallTrigger
   m_RaysPerDirection: 4
   m_MaxRayDegrees: 80
   m_SphereCastRadius: 0
@@ -2024,6 +2027,9 @@ MonoBehaviour:
   - LowWall
   - Wall
   - OpponentAgent
+  - HighWallTrigger
+  - LowWallTrigger
+  - WallTrigger
   m_RaysPerDirection: 4
   m_MaxRayDegrees: 80
   m_SphereCastRadius: 0
@@ -4319,7 +4325,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4845276930943762971, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000015258789
+      value: -0.000045776367
       objectReference: {fileID: 0}
     - target: {fileID: 4845637959249703711, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchorMax.y

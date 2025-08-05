@@ -196,6 +196,9 @@ public class OctagonArea : MonoBehaviour
                 // set tags to high/low wall for raycasts
                 wall1.tag = "HighWall";
                 wall2.tag = "LowWall";
+
+                wall1trigger.tag = "HighWallTrigger";
+                wall2trigger.tag = "LowWallTrigger";
                 
                 break;
 
@@ -213,6 +216,9 @@ public class OctagonArea : MonoBehaviour
                 wall1.tag = "HighWall";
                 wall2.tag = "HighWall";
 
+                wall1trigger.tag = "HighWallTrigger";
+                wall2trigger.tag = "HighWallTrigger";
+
                 break;
 
             case var value when value == General.forcedLow:
@@ -222,6 +228,9 @@ public class OctagonArea : MonoBehaviour
                 // set tags to low wall for raycasts
                 wall1.tag = "LowWall";
                 wall2.tag = "LowWall";
+
+                wall1trigger.tag = "LowWallTrigger";
+                wall2trigger.tag = "LowWallTrigger";
 
                 break;
 
@@ -346,6 +355,9 @@ public class OctagonArea : MonoBehaviour
         // reset wall tags
         highWall.tag = "Wall";
         lowWall.tag = "Wall";
+
+        highWallTrigger.tag = "WallTrigger";
+        lowWallTrigger.tag = "WallTrigger";
         
         // reset wall colours back to their previously-saved defaults
         highWall.GetComponent<Renderer>().materials[0].color = defaultWallColour;
