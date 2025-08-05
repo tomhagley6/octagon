@@ -174,13 +174,16 @@ public class OctagonAgent : Agent
         float posY = transform.position.y;
         float posZ = transform.position.z;
         float rotY = transform.eulerAngles.y;
-        float reward = GetCumulativeReward(); 
+        float reward = GetCumulativeReward();
 
-        // log this step's data to the CSV file
-        logWriter.WriteLine($"{episodeCount},{stepCount},{octagonArea.wallID1},{octagonArea.wallID2},{currentTime},{posX},{posY},{posZ},{rotY},{reward}");
+        if (!isTraining)
+        {
+            // log this step's data to the CSV file
+            logWriter.WriteLine($"{episodeCount},{stepCount},{octagonArea.wallID1},{octagonArea.wallID2},{currentTime},{posX},{posY},{posZ},{rotY},{reward}");
 
-        // flush the writer to ensure data is written in real-time
-        logWriter.Flush();
+            // flush the writer to ensure data is written in real-time
+            logWriter.Flush();
+        }
 
         // Extract discrete actions for movement, strafe, and rotation
         int moveAction = actionBuffers.DiscreteActions[0];  // Move (3 choices)
@@ -335,9 +338,12 @@ public class OctagonAgent : Agent
     }
     public void LogTriggerActivation(int triggerID, string wallType, string interactorTag)
     {
-        float currentTime = Time.time;
-        logWriter.WriteLine($"{episodeCount},{stepCount},{currentTime},TriggerActivated,{triggerID},{wallType},{interactorTag}");
-        logWriter.Flush();
+        if (logWriter != null && !isTraining)
+        {
+            float currentTime = Time.time;
+            logWriter.WriteLine($"{episodeCount},{stepCount},{currentTime},TriggerActivated,{triggerID},{wallType},{interactorTag}");
+            logWriter.Flush();
+        }
     }
     void OnApplicationQuit()
     {
