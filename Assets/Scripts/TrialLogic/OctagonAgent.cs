@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
+using Unity.MLAgents.Sensors;
 //using System.Numerics;
 
 public class OctagonAgent : Agent
@@ -287,6 +288,12 @@ public class OctagonAgent : Agent
 
         }
 
+    }
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        // observe mode
+        sensor.AddObservation(octagonArea.soloMode ? 1 : 2);  // 1 for solo mode, 2 for social mode
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)

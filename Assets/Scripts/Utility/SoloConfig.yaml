@@ -21,7 +21,7 @@ behaviors:
       normalize: false
       hidden_units: 512         # Size of each hidden layer
       num_layers: 2              # How deep the network is
-      vis_encode_type: resnet    # Visual encoder type: simple, nature_cnn, resnet
+      #vis_encode_type: resnet    # Visual encoder type: simple, nature_cnn, resnet
       memory:
         sequence_length: 128
         memory_size: 512
