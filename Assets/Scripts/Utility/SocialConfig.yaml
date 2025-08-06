@@ -43,5 +43,5 @@ behaviors:
       swap_steps: 5000      # How often to swap self-play models
       team_change: 5000 
     
-    init_path: null # insert solo brain
+    init_path: "Assets/AgentBrains/SoloBrainRun0.onnx" # insert solo brain
     
