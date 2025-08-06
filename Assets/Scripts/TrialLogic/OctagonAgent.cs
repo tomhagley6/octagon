@@ -122,6 +122,8 @@ public class OctagonAgent : Agent
             Time.timeScale = 1; // Resume normal time
         }
 
+        octagonArea.isTrialLooping = false;
+
         // check that agent currently running this script is "PlayerAgent"
         if (this.tag == "PlayerAgent")
         {
@@ -251,7 +253,7 @@ public class OctagonAgent : Agent
 
         // check whether the alignment value for each wall is below the threshold
         // reward agent for rotating when neither wall is in view
-        if ((alignmentToWall1 < fovThreshold) && (alignmentToWall2 < fovThreshold) && Mathf.Abs(rotateAmount) > 0)
+        if ((octagonArea.isTrialLooping) && (alignmentToWall1 < fovThreshold) && (alignmentToWall2 < fovThreshold) && Mathf.Abs(rotateAmount) > 0)
         {
             AddReward(0.001f);
             //Debug.Log($"neither wall is visible. Alignments: to wall 1 {alignmentToWall1}, to wall 2 {alignmentToWall2}. Turn input is not 0: {rotateAmount}");
@@ -259,7 +261,7 @@ public class OctagonAgent : Agent
         }
 
 
-        if ((alignmentToWall1 > fovThreshold) && (alignmentToWall2 < alignmentToWall1))
+        if ((octagonArea.isTrialLooping) && (alignmentToWall1 > fovThreshold) && (alignmentToWall2 < alignmentToWall1))
         {
             float currentDistanceHigh = Vector3.Distance(transform.position, wall1Trigger.transform.position);
 
@@ -273,7 +275,7 @@ public class OctagonAgent : Agent
 
         }
 
-        if ((alignmentToWall2 > fovThreshold) && (alignmentToWall1 < alignmentToWall2))
+        if ((octagonArea.isTrialLooping) && (alignmentToWall2 > fovThreshold) && (alignmentToWall1 < alignmentToWall2))
         {
             float currentDistanceLow = Vector3.Distance(transform.position, wall2Trigger.transform.position);
 

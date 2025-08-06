@@ -26,7 +26,7 @@ public class OctagonArea : MonoBehaviour
     // initial wall colour
     private Color defaultWallColour;
     private float iti;
-    public bool isTrialLooping;
+    public bool isTrialLooping = false;
     // assign agents in inspector
     [SerializeField] public OctagonAgent opponentAgent;
     [SerializeField] public OctagonAgent playerAgent;
@@ -65,6 +65,7 @@ public class OctagonArea : MonoBehaviour
     {
         Debug.Log("[StartTrial] calling arena set-up method");
         SetUpArena();
+        isTrialLooping = true;
     }
 
     public struct ActiveWalls
