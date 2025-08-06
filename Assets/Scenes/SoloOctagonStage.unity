@@ -1809,19 +1809,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: RayPerceptionSensor
   m_DetectableTags:
-  - HighWall
-  - LowWall
   - Wall
-  - HighWallTrigger
-  - LowWallTrigger
   - WallTrigger
+  - LowWall
+  - LowWallTrigger
+  - HighWall
+  - HighWallTrigger
+  - OpponentAgent
   m_RaysPerDirection: 4
   m_MaxRayDegrees: 80
   m_SphereCastRadius: 0
   m_RayLength: 60
   m_RayLayerMask:
     serializedVersion: 2
-    m_Bits: 4294966920
+    m_Bits: 4294966984
   m_ObservationStacks: 1
   m_AlternatingRayOrder: 1
   m_UseBatchedRaycasts: 1
@@ -3731,7 +3732,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4845276930943762971, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000061035156
+      value: 0.000045776367
       objectReference: {fileID: 0}
     - target: {fileID: 4845637959249703711, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchorMax.y

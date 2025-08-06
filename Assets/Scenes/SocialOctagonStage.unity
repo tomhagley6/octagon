@@ -980,13 +980,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: RayPerceptionSensor
   m_DetectableTags:
-  - HighWall
-  - LowWall
   - Wall
-  - PlayerAgent
-  - HighWallTrigger
-  - LowWallTrigger
   - WallTrigger
+  - LowWall
+  - LowWallTrigger
+  - HighWall
+  - HighWallTrigger
+  - PlayerAgent
   m_RaysPerDirection: 4
   m_MaxRayDegrees: 80
   m_SphereCastRadius: 0
@@ -2008,7 +2008,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 1
   DecisionStep: 0
-  TakeActionsBetweenDecisions: 0
+  TakeActionsBetweenDecisions: 1
 --- !u!114 &846055674
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2023,13 +2023,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: RayPerceptionSensor
   m_DetectableTags:
-  - HighWall
-  - LowWall
   - Wall
-  - OpponentAgent
-  - HighWallTrigger
-  - LowWallTrigger
   - WallTrigger
+  - LowWall
+  - LowWallTrigger
+  - HighWall
+  - HighWallTrigger
+  - OpponentAgent
   m_RaysPerDirection: 4
   m_MaxRayDegrees: 80
   m_SphereCastRadius: 0
