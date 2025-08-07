@@ -89,6 +89,7 @@ results/
 summaries/
 models/
 checkpoints/
+AgentBrains/
 
 # ONNX exports (unless you want to version them explicitly)
 *.onnx

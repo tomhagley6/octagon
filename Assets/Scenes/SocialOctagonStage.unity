@@ -863,8 +863,8 @@ MonoBehaviour:
   thisTrialType: 
   octagonArea: {fileID: 643279652}
   identityManager: {fileID: 1063991865}
-  moveSpeed: 20
-  turnSpeed: 360
+  moveSpeed: 10
+  turnSpeed: 50
   controller: {fileID: 387446841}
   animator: {fileID: 1517532279}
   previousDistanceHigh: 0
@@ -1984,8 +1984,8 @@ MonoBehaviour:
   thisTrialType: 
   octagonArea: {fileID: 643279652}
   identityManager: {fileID: 1063991865}
-  moveSpeed: 20
-  turnSpeed: 360
+  moveSpeed: 10
+  turnSpeed: 50
   controller: {fileID: 846055669}
   animator: {fileID: 1930382392}
   previousDistanceHigh: 0
@@ -3650,15 +3650,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8c31f0f343da2264386bbc4172b3ca91, type: 3}
       propertyPath: m_LocalScale.x
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8c31f0f343da2264386bbc4172b3ca91, type: 3}
       propertyPath: m_LocalScale.y
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8c31f0f343da2264386bbc4172b3ca91, type: 3}
       propertyPath: m_LocalScale.z
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8c31f0f343da2264386bbc4172b3ca91, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4325,7 +4325,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4845276930943762971, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000030517578
+      value: -0.000030517578
       objectReference: {fileID: 0}
     - target: {fileID: 4845637959249703711, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchorMax.y
@@ -5364,15 +5364,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8c31f0f343da2264386bbc4172b3ca91, type: 3}
       propertyPath: m_LocalScale.x
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8c31f0f343da2264386bbc4172b3ca91, type: 3}
       propertyPath: m_LocalScale.y
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8c31f0f343da2264386bbc4172b3ca91, type: 3}
       propertyPath: m_LocalScale.z
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 8c31f0f343da2264386bbc4172b3ca91, type: 3}
       propertyPath: m_LocalPosition.x

@@ -28,8 +28,8 @@ public class OctagonAgent : Agent
 
     // agent actions
     // adjust agent speeds as appropriate
-    public float moveSpeed = 20f;
-    public float turnSpeed = 360f;
+    public float moveSpeed = 10f;
+    public float turnSpeed = 50f;
     public CharacterController controller;
     public Animator animator;
     public float previousDistanceHigh;
