@@ -268,7 +268,7 @@ public class OctagonAgent : Agent
             if (currentDistanceHigh < previousDistanceHigh)
             {
                 //AddReward(0.001f);
-                Debug.Log($"current distance to high is {currentDistanceHigh} and smaller than in previous step. Agent is rewarded.");
+                //Debug.Log($"current distance to high is {currentDistanceHigh} and smaller than in previous step. Agent is rewarded.");
             }
 
             previousDistanceHigh = currentDistanceHigh;
@@ -282,7 +282,7 @@ public class OctagonAgent : Agent
             if (currentDistanceLow < previousDistanceLow)
             {
                 //AddReward(0.001f);
-                Debug.Log($"current distance to low is {currentDistanceLow} and smaller than in previous step. Agent is rewarded.");
+                //Debug.Log($"current distance to low is {currentDistanceLow} and smaller than in previous step. Agent is rewarded.");
 
             }
 
