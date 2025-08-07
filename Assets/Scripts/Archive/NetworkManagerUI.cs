@@ -207,7 +207,7 @@ public class NetworkManagerUIArchived : NetworkBehaviour
     
         // Subscribe to the method handling IP Address field visibility toggle
         
-        GameManager.toggleOverlay += ToggleOverlayAddressListener;
+        GameManagerArchived.toggleOverlay += ToggleOverlayAddressListener;
     }
 
 
@@ -216,7 +216,7 @@ public class NetworkManagerUIArchived : NetworkBehaviour
     {
         if (Input.GetKeyDown(General.toggleOverlay))
         {
-            GameManager.ToggleOverlay();
+            GameManagerArchived.ToggleOverlay();
         }
     }
 

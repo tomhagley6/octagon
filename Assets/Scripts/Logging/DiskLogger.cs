@@ -69,6 +69,8 @@ public class DiskLogger : Logger
         // Debug.Log($"logEntries is: {logEntries[0]}");
     }
 
+    // Main logging coroutine
+    // Continuously log to file while loggerReady
     // We don't care about emptying the entire log buffer in a single Update frame
     // Spread this over multiple frames in a coroutine instead
     private IEnumerator LogToFile()
@@ -76,13 +78,13 @@ public class DiskLogger : Logger
         // Debug.Log("LogToFile Coroutine began");
         while (loggerReady)
         {
-            if (logEntries.Count != 0 )
+            if (logEntries.Count != 0)
             {
                 try
                 {
                     // Debug.Log($"{logEntries[0]} from LogToFile coroutine");
-                    EmptyBuffer();
-                    
+                    WriteToBuffer();
+
 
                 }
                 catch (Exception ex)
@@ -96,19 +98,19 @@ public class DiskLogger : Logger
         }
     }
 
-    //// Pretty sure this is writing TO the buffer, not emptying it!
-    //// Buffer emptying to the filestream should only occur on Flush() or Close()
-    //// Should I keep this code at all, or just write directly to buffer with Log()? 
-    // LogToFile helper method
-    private void EmptyBuffer()
+
+    // Write to streamwriter buffer
+    // Buffer emptying to the filestream occurs on Flush() or Close()
+    // Make sure to flush the buffer often to avoid loss of buffered data
+    private void WriteToBuffer()
     {
         if (loggerReady)
         {
-            lock(logEntries) // Prevent use of the logEntries list while writing to file
+            lock (logEntries) // Prevent use of the logEntries list while writing to file
             {
                 foreach (string item in logEntries)
                 {
-                    try 
+                    try
                     {
                         // // Check whether this is the most efficient way of doing things,
                         // // or whether this will hog resources
@@ -160,7 +162,7 @@ public class DiskLogger : Logger
         // For 20k bytes, will write every ~20000 chars, or roughly 150 lines
         sw = new StreamWriter(filePath, true, Encoding.UTF8, 20000)
         {
-            AutoFlush = false
+            AutoFlush = false // no flush after each WriteLine (for performance)
         };
 
         // Begin the file with a square bracket to conform to JSON formatting        
@@ -212,7 +214,7 @@ public class DiskLogger : Logger
         loggingEnded?.Invoke();
 
         // Clear the remaining buffer
-        EmptyBuffer();
+        WriteToBuffer();
 
         // Turn off logging access
         loggerReady = false;

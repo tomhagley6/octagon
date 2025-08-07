@@ -17,19 +17,33 @@ public class NetworkManagerScript : MonoBehaviour
 
     public GameManager gameManager;
 
+    private void Start()
+    {
+        // Subscribe to GameManager's ready state event
+        StartCoroutine(WaitForGameManagerAndSubscribe());
+    }
 
-    // It feels messy that I can't use any NetworkBehaviour fields here
-    // Consider moving this script to somewhere else?
-    public void ConnectionCallbackSubscriptions(bool isReady)
-    {   
-        try
+    private System.Collections.IEnumerator WaitForGameManagerAndSubscribe()
+    {
+        // Wait until GameManager is available and ready
+        while (gameManager == null)
         {
             gameManager = FindObjectOfType<GameManager>();
+            yield return null;
         }
-        catch (Exception e)
+
+        // Subscribe to the OnReadyStateChanged event
+        gameManager.OnReadyStateChanged += ConnectionCallbackSubscriptions;
+    }
+
+    // Method that handles GameManager ready state changes
+    public void ConnectionCallbackSubscriptions(bool isReady)
+    {   
+        // No need to find GameManager here since we already have the reference
+        if (gameManager == null)
         {
-            Debug.Log("gameManager could not be assigned in NetworkManagerScript.cs");
-            Debug.Log(e.Message);
+            Debug.LogError("GameManager reference is null in NetworkManagerScript.ConnectionCallbackSubscriptions");
+            return;
         }
         
         // Debug.LogWarning($"gameManager.IsServer is {gameManager.IsServer}, gameManager.IsHost is {gameManager.IsHost}");
@@ -41,8 +55,6 @@ public class NetworkManagerScript : MonoBehaviour
             // Debug.LogWarning($"gameManager.IsServer is {gameManager.IsServer}, adding RPCs to callback");
             // Debug.LogWarning($"gameManager.IsHost is {gameManager.IsHost}, adding RPCs to callback");
         }
-        
-
     }
 
     // // Think these just need to be ServerRPCs because clients cannot change a NetworkVariable/List

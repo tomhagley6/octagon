@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 using System.Text;
 
 /* // Class to handle logging data to file on the local machine */
-public class DiskLoggerArchive : Logger
+public class DiskLoggerArchived : Logger
 {   
     // paths
     private string filename;
@@ -35,7 +35,7 @@ public class DiskLoggerArchive : Logger
     public event Action loggingStarted;
     public event Action loggingEnded;
 
-    public DiskLoggerArchive()
+    public DiskLoggerArchived()
     {   // This is not needed if we have filename as a private variable
         // this.filename = filename;
     }

@@ -110,7 +110,7 @@ public class NetworkManagerUI : NetworkBehaviour
         networkManager = FindObjectOfType<NetworkManager>();
 
         // Subscribe to the method handling IP Address field visibility toggle
-        GameManager.toggleOverlay += ToggleOverlayAddressListener;
+        UIToggleListener.toggleOverlay += ToggleOverlayAddressListener;
     }
 
 

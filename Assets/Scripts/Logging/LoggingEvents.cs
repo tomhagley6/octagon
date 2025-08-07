@@ -4,19 +4,17 @@ using Unity.Netcode;
 using UnityEngine;
 using LoggingClasses;
 using Newtonsoft.Json;
-using Unity.Collections;
 using TriggerActivation = GameManager.TriggerActivation;
 using TriggerActivationAuthorised = GameManager.TriggerActivationAuthorised;
 using TriggerActivationIrrelevant = GameManager.TriggerActivationIrrelevant;
 using System;
 using Globals;
-using Unity.VisualScripting;
 
 
-//// Refactor repetitive sections as separate methods
 /* Script containing all log events that are triggered to write game data to the log file.
-Any writer is implemented by the Logger
-Classes used to represent the data in each of the log events are found in Logger/LogClasses.cs */
+    Classes used to represent the data in each of the log events are found in Logger/LogClasses.cs]
+    Each LoggingEvent method assembles an instance of a LogClasses class, and then calls the 
+    Log method of the active DiskLogger to write this data to the open file */
 public class LoggingEvents : NetworkBehaviour
 {
 
@@ -48,12 +46,12 @@ public class LoggingEvents : NetworkBehaviour
         
         /* Trigger activation authorised log events are triggered by a change in the 
            TriggerActivationAuthorised NetworkVariable, which occurs when a relevant trial wall
-           is triggered  for the first time this trial */
+           is triggered for the first time this trial */
         gameManager.triggerActivationAuthorised.OnValueChanged += TriggerActivationAuthorisedHandler_AuthorisedTriggerActivationLog;
 
         /* Trigger activation (irrelevant) log events are triggered by a change in the 
-           TriggerActivationIrrelevant NetworkVaraible, which occurs when any trial wall is
-           triggered outside of the first relevant trigger for this trial */ 
+           TriggerActivationIrrelevant NetworkVariable, which occurs when any trial wall is
+           triggered outside of the first relevant trigger for this trial */
         gameManager.triggerActivationIrrelevant.OnValueChanged += TriggerActivationIrrelevantHandler_IrrelevantTriggerActivationLog;
 
         // start and end events triggered when the DiskLogger starts or ends for this session
@@ -88,7 +86,6 @@ public class LoggingEvents : NetworkBehaviour
     // to true
     public void TrialActiveHandler_TrialStartLog()
     {
-        // TODO
         if (!IsServer) {Debug.Log("Not server, not running TrialActiveHandler_TrialStartLog()");
          return; }
 
@@ -157,25 +154,24 @@ public class LoggingEvents : NetworkBehaviour
         int wall2 = gameManager.activeWalls.Value.wall2;
         Dictionary<string,object> playerPosDict = new Dictionary<string,object>();
         
-        // For each connected client, create a player info class (defined in LoggingClasses)
-        // and add this class as the value for this clientId in a dictionary
+        // For each connected client, create an instance of the player info class (defined in LoggingClasses)
+        // and add this instance as the value for this clientId in a dictionary
         // Then, log to JSON format the full slice onset information
         // as defined in LoggingClasses.SliceOnsetLogEvent
         var players = NetworkManager.ConnectedClientsList;
         // Debug.Log($"ConnectedClientsList is {players.Count} items long");
         for (int i = 0; i < players.Count; i++)
         {
-            int clientId = i;
             NetworkClient networkClient = players[i];
-            Vector3 playerLocation = networkClient.PlayerObject.gameObject.transform.position;
-            PlayerLocation playerLocation2 = new PlayerLocation(playerLocation.x, playerLocation.y, playerLocation.z);
+            Vector3 playerLocationData = networkClient.PlayerObject.gameObject.transform.position;
+            PlayerLocation playerLocation = new PlayerLocation(playerLocationData.x, playerLocationData.y, playerLocationData.z);
 
-            Quaternion playerRotation = networkClient.PlayerObject.gameObject.transform.rotation;
+            Quaternion playerRotationData = networkClient.PlayerObject.gameObject.transform.rotation;
             float camXAxisRotation = Camera.main.transform.rotation.eulerAngles.x;
             float camZAxisRotation = Camera.main.transform.rotation.eulerAngles.z;
-            PlayerRotation playerRotation2 = new PlayerRotation(camXAxisRotation, playerRotation.eulerAngles.y, camZAxisRotation);
+            PlayerRotation playerRotation = new PlayerRotation(camXAxisRotation, playerRotationData.eulerAngles.y, camZAxisRotation);
 
-            PlayerPosition thisPlayerPosition = new PlayerPosition(networkClient.ClientId, playerLocation2, playerRotation2);
+            PlayerPosition thisPlayerPosition = new PlayerPosition(networkClient.ClientId, playerLocation, playerRotation);
 
             playerPosDict.Add(networkClient.ClientId.ToString(), thisPlayerPosition);
             // Debug.Log($"playerPosDict is {playerPosDict.Count} item long");
@@ -197,18 +193,21 @@ public class LoggingEvents : NetworkBehaviour
         diskLogger.Log(logEntry);
     }
 
-    
+
     // Write a trigger activation log event when the value of NetworkVariable TriggerActivation
     // changes
-    // CURRENTLY DISABLED, as any trigger activation is only recognised by the server if it is the first valid
-    // trigger activation for this trial
-    //  This could be changed so that any interaction with walls is recognised in the logger
+    // CURRENTLY DISABLED
+    // Although trigger activations are logged, they're separated into server-authorised and server-unauthorised 
+    // by the 2 methods below
     public void TriggerActivationHandler_TriggerActivationLog(TriggerActivation prevVal, TriggerActivation newVal)
     {
-        
-        if (newVal.triggerID == 0) {return; }
-        if (!IsServer) { Debug.Log("Not server, not running TriggerActivationHandler_TriggerActivationLog in LoggingEvents");
-         return; }
+
+        if (newVal.triggerID == 0) { return; }
+        if (!IsServer)
+        {
+            Debug.Log("Not server, not running TriggerActivationHandler_TriggerActivationLog in LoggingEvents");
+            return;
+        }
 
         Debug.Log("Is Server, so running TriggerActivationHandler_TriggerActivationLog in LoggingEvents");
 
@@ -216,11 +215,11 @@ public class LoggingEvents : NetworkBehaviour
         int wall2 = gameManager.activeWalls.Value.wall2;
         int wallTriggered = gameManager.triggerActivation.Value.triggerID;
         ulong triggerClientId = gameManager.triggerActivation.Value.activatorClientId;
-        Dictionary<string,object> playerPosDict = new Dictionary<string,object>();
+        Dictionary<string, object> playerPosDict = new Dictionary<string, object>();
 
         // Assemble data to log from each network client
         // Debug.Log($"ConnectedClientsList is {NetworkManager.ConnectedClientsList.Count} items long");
-        foreach(var networkClient in NetworkManager.ConnectedClientsList)
+        foreach (var networkClient in NetworkManager.ConnectedClientsList)
         {
             PlayerLocation playerLocation = new PlayerLocation(
                                                 networkClient.PlayerObject.transform.position.x,

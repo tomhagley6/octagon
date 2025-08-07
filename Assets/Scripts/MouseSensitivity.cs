@@ -32,7 +32,7 @@ public class MouseSensitivity : MonoBehaviour
           mouseSensitivityInput.onValueChanged.AddListener(AdjustMouseSensitivity);
 
           // Subscribe to the toggleOverlay event to toggle the mouse sensitivity UI
-          GameManager.toggleOverlay += ToggleOverlayMouseSensitivityListener;
+          UIToggleListener.toggleOverlay += ToggleOverlayMouseSensitivityListener;
    }
 
    void Update()

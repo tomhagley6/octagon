@@ -1,3 +1,8 @@
+// Script from 250804
+// Archiving GameManager to try and reduce bloat comments and outdated code
+// in the working copy. 
+// This is the most up-to-date archive of these cut comment sections
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,7 +18,7 @@ using Unity.Collections;
 values for trials
 NB: GameManager does not contain or trigger StartTrial or EndTrial
 methods */
-public class GameManager : SingletonNetwork<GameManager>
+public class GameManagerArchived : SingletonNetwork<GameManager>
 {
     // //  Variables
     public DiskLogger diskLogger;
@@ -730,7 +735,11 @@ public class GameManager : SingletonNetwork<GameManager>
         // Not implemented
     }
 
-
+    // Toggle UI overlay (move this to a different script?)
+    public static void ToggleOverlay()
+    {
+        toggleOverlay();
+    }
 
 
     // // Server RPCs
