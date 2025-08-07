@@ -1771,7 +1771,7 @@ MonoBehaviour:
   octagonArea: {fileID: 643279652}
   identityManager: {fileID: 1063991865}
   moveSpeed: 10
-  turnSpeed: 50
+  turnSpeed: 360
   controller: {fileID: 846055669}
   animator: {fileID: 1930382392}
   previousDistanceHigh: 0
@@ -3732,7 +3732,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4845276930943762971, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000015258789
+      value: -0.000091552734
       objectReference: {fileID: 0}
     - target: {fileID: 4845637959249703711, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchorMax.y
