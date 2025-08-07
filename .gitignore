@@ -90,6 +90,10 @@ summaries/
 models/
 checkpoints/
 AgentBrains/
+SoloRaycastLogs/
+SocialRaycastLogs/
+SoloVisualLogs/
+SocialVisualLogs/
 
 # ONNX exports (unless you want to version them explicitly)
 *.onnx
