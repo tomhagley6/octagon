@@ -255,7 +255,7 @@ public class OctagonAgent : Agent
         // reward agent for rotating when neither wall is in view
         if ((octagonArea.isTrialLooping) && (alignmentToWall1 < fovThreshold) && (alignmentToWall2 < fovThreshold) && Mathf.Abs(rotateAmount) > 0)
         {
-            AddReward(0.001f);
+            //AddReward(0.001f);
             //Debug.Log($"neither wall is visible. Alignments: to wall 1 {alignmentToWall1}, to wall 2 {alignmentToWall2}. Turn input is not 0: {rotateAmount}");
             //Debug.Log($"agent head direction vector is {transform.forward}. Dot product (alignment) between vector to wall 1 and head direction is {alignmentToWall1}");
         }
@@ -267,7 +267,7 @@ public class OctagonAgent : Agent
 
             if (currentDistanceHigh < previousDistanceHigh)
             {
-                AddReward(0.001f);
+                //AddReward(0.001f);
                 Debug.Log($"current distance to high is {currentDistanceHigh} and smaller than in previous step. Agent is rewarded.");
             }
 
@@ -281,7 +281,7 @@ public class OctagonAgent : Agent
 
             if (currentDistanceLow < previousDistanceLow)
             {
-                AddReward(0.001f);
+                //AddReward(0.001f);
                 Debug.Log($"current distance to low is {currentDistanceLow} and smaller than in previous step. Agent is rewarded.");
 
             }

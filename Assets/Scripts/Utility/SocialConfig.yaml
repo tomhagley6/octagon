@@ -36,7 +36,7 @@ behaviors:
         strength: 0.01 # if exploration is too low up to 0.1
         learning_rate: 0.0001
 
-    #init_path: "Assets/AgentBrains/SoloBrainRun0.onnx" # insert solo brain
+    init_path: results/Run0/OctagonAgentSolo/OctagonAgentSolo-86100.pt # insert solo brain
 
     self_play:
       window: 10
