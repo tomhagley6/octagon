@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using AmplifyShaderEditor;
 using Unity.Collections;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ namespace Globals
     {
 
         // // trial logic
+
         // scores
         public static int highScore = 50;
         public static int lowScore = 20;
@@ -38,6 +40,7 @@ namespace Globals
 
         public static float globalIlluminationLow = 0.6f;
         public static float globalIlluminationHigh = 0.8f;
+        public static int targetFrameRate = 144; 
 
 
         // // timings

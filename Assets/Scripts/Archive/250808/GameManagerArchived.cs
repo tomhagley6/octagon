@@ -22,7 +22,7 @@ public class GameManagerArchived : SingletonNetwork<GameManager>
 {
     // //  Variables
     public DiskLogger diskLogger;
-    public TrialHandler trialHandler;
+    public TrialHandlerArchived trialHandlerArchived;
     public IdentityManager identityManager;
 
     public bool isReady = false;
@@ -166,7 +166,7 @@ public class GameManagerArchived : SingletonNetwork<GameManager>
 
         // access other logic GameObjects in the scene 
         diskLogger = FindObjectOfType<DiskLogger>();
-        trialHandler = FindObjectOfType<TrialHandler>();
+        trialHandlerArchived = FindObjectOfType<TrialHandlerArchived>();
         identityManager = FindObjectOfType<IdentityManager>(); 
         // Debug.Log($"identityManager exists and its reference is {identityManager}");
         // Order identityManager's (populated) dictionary
@@ -223,7 +223,7 @@ public class GameManagerArchived : SingletonNetwork<GameManager>
         // Actually we don't need to do this if we're checking the NetworkList when it's needed
 
         // // Subscribe to the slice onset event that is triggered by running ColourWalls 
-        // trialHandler.sliceOnset += SliceOnsetHandler_SliceOnsetLogTrigger;
+        // trialHandlerArchived.sliceOnset += SliceOnsetHandler_SliceOnsetLogTrigger;
         
         // Subscribe to a change in trial active state
 
@@ -648,14 +648,14 @@ public class GameManagerArchived : SingletonNetwork<GameManager>
 
         // All clients wash their own walls, making use of the wall number NetworkObject
         // Bugs that prevent triggers triggering on other clients will prevent this code from running
-        trialHandler.WashWalls(wallID1, wallID2);
+        trialHandlerArchived.WashWalls(wallID1, wallID2);
 
         // Only call EndTrial if this client is the one that ended the trial
         // to prevent multiple calls in multiplayer
         if (isTrialEnderClient) {
             // Debug.Log($"EndTrial inputs: {score}, {highWallTriggerID}, {lowWallTriggerID}"
             //             + $" {triggerID}, {rewardType}, {isTrialEnderClient}");
-            trialHandler.EndTrial(score, isTrialEnderClient);
+            trialHandlerArchived.EndTrial(score, isTrialEnderClient);
         }
 
         Debug.Log($"{rewardType} score ({score}) triggered");
@@ -873,7 +873,7 @@ public class GameManagerArchived : SingletonNetwork<GameManager>
     public void IlluminationHighServerRpc(bool isHigh)
     {
         // Call a client Rpc for all clients to set global illumination to isHigh
-        trialHandler.IlluminationHighClientRpc(isHigh);
+        trialHandlerArchived.IlluminationHighClientRpc(isHigh);
     }
 
     /* ServerRPC to log data for all clients at slice onset,
