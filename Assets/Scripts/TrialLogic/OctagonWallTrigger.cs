@@ -64,6 +64,9 @@ public class OctagonWallTrigger : MonoBehaviour
 
         if (wallIDs.Contains(triggerID))
         {
+            octagonArea.isTrialLooping = false;
+            Debug.Log($"Wall trigger - trial looping: {octagonArea.isTrialLooping}");
+            
             string interactorTag = agent.CompareTag("PlayerAgent") ? "PlayerAgent" : "OpponentAgent";
 
             HandleWallTrigger(triggerID, wallID1, wallID2, interactorTag);
@@ -77,6 +80,7 @@ public class OctagonWallTrigger : MonoBehaviour
                 opponentAgent.LogTriggerActivation(wallID1, wallTag, interactorTag);
 
             }
+
         }
         else if (!wallIDs.Contains(triggerID))
         {

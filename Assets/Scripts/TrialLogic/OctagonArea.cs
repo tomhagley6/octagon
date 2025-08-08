@@ -65,7 +65,6 @@ public class OctagonArea : MonoBehaviour
     {
         Debug.Log("[StartTrial] calling arena set-up method");
         SetUpArena();
-        isTrialLooping = true;
     }
 
     public struct ActiveWalls
@@ -258,9 +257,9 @@ public class OctagonArea : MonoBehaviour
     }
     public void TrialLoop()
     {
+        isTrialLooping = true;
 
         StartCoroutine(ITI());
-
     }
     public IEnumerator ITI()
     {

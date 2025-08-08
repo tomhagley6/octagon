@@ -116,44 +116,53 @@ public class OctagonAgent : Agent
     {
         Debug.Log("OnEpisodeBegin is called");
 
+        Debug.Log($"OnEpisodeBegin - trial looping: {octagonArea.isTrialLooping}");
+
         Debug.Log("Time scale: " + Time.timeScale);
         if (Time.timeScale == 0)
         {
             Time.timeScale = 1; // Resume normal time
         }
 
-        octagonArea.isTrialLooping = false;
+        //octagonArea.isTrialLooping = false;
 
-        // check that agent currently running this script is "PlayerAgent"
-        if (this.tag == "PlayerAgent")
+        if (!octagonArea.isTrialLooping)
         {
-            Debug.Log("PlayerAgent found, starting episode");
-            totalShapingReward = 0; // variable to track shaping rewards for agent
+            // check that agent currently running this script is "PlayerAgent"
+            if (this.CompareTag("PlayerAgent"))
+            {
+                Debug.Log("PlayerAgent found, starting episode");
+                totalShapingReward = 0; // variable to track shaping rewards for agent
 
-            // disable wall triggers during ITI
-            octagonArea.DisableTriggers();
+                // disable wall triggers during ITI
+                octagonArea.DisableTriggers();
 
-            // reset arena by washing off active wall colours
-            octagonArea.ResetTrial();
+                // reset arena by washing off active wall colours
+                octagonArea.ResetTrial();
 
-            // start trial ITI and active wall colouring logic
-            //StartCoroutine(octagonArea.ITI());
+                // start trial ITI and active wall colouring logic
+                //StartCoroutine(octagonArea.ITI());
 
-            Debug.Log("Starting coroutine...");
+                Debug.Log("Starting coroutine...");
 
-            octagonArea.TrialLoop();
-            //StartCoroutine(octagonArea.ITI());
+                octagonArea.TrialLoop();
+                //StartCoroutine(octagonArea.ITI());
 
-            Debug.Log("Coroutine has started");
+                Debug.Log("Coroutine has started");
 
+            }
+
+            episodeCount++;
         }
-
-        episodeCount++;
-
+        else
+        {
+            Debug.Log("please wait for trial loop to be unlocked");
+            Debug.Log($"OnEpisodeBegin, Trial looping - Trial looping: {octagonArea.isTrialLooping}");
+        }
         //previousDistanceHigh = Vector3.Distance(transform.position, wall1Trigger.transform.position);
         //previousDistanceLow = Vector3.Distance(transform.position, wall2Trigger.transform.position);
 
-        //Debug.Log($"[OctagonAgent] Agent {this.tag} starts with distance to {previousDistanceHigh} and distance to low {previousDistanceLow}.");
+            //Debug.Log($"[OctagonAgent] Agent {this.tag} starts with distance to {previousDistanceHigh} and distance to low {previousDistanceLow}.");
 
     }
 

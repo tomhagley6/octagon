@@ -36,12 +36,12 @@ behaviors:
         strength: 0.01 # if exploration is too low up to 0.1
         learning_rate: 0.0001
 
-    init_path: results/PreTraining/OctagonAgentSolo/SoloPreTraining.pt
+    init_path: results/Solo1/OctagonAgentSolo/OctagonAgentSolo1.pt
     
     self_play:
       window: 10
       play_against_latest_model_rationale: 0.5
       save_steps: 20000     # How often to save self-play models
       swap_steps: 10000      # How often to swap self-play models
-      team_change: 500000 
+      team_change: 50000 
     
