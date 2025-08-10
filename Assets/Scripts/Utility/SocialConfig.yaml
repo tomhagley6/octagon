@@ -36,7 +36,7 @@ behaviors:
         strength: 0.01 # if exploration is too low up to 0.1
         learning_rate: 0.0001
 
-    init_path: results/Solo1/OctagonAgentSolo/OctagonAgentSolo1.pt
+    init_path: results/Solo12/OctagonAgentSolo/OctagonAgentSolo12.pt
     
     self_play:
       window: 10
