@@ -61,9 +61,9 @@ namespace Globals
         // socials
         public static List<int> wallSeparationsProbabilities = new List<int>{50,50};
 
-        public static Color wallHighColour = Color.magenta;
-        public static Color wallLowColour = Color.cyan;
-        public static Color wallRiskyColour = Color.yellow;
+        public static Color wallHighColour = Color.yellow;
+        public static Color wallLowColour = Color.magenta;
+        public static Color wallRiskyColour = Color.cyan;
         public static Material wallHighMaterial; // Material for high wall
         public static Material wallLowMaterial;  // Material for low wall
         public static Material wallRiskyMaterial; // Material for risky wall
