@@ -70,3 +70,31 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Python/ML-Agents virtual environments
+**/ml-env/
+env/
+venv/
+python-envs/
+**/ml-agents/
+
+# ML-Agents results and logs
+results/
+summaries/
+models/
+checkpoints/
+**/AgentBrains/
+SoloRaycastLogs/
+SocialRaycastLogs/
+SoloVisualLogs/
+SocialVisualLogs/
+AgentBrains.meta
+ML-Agents.meta
+SocialRaycastLogs.meta
+SocialVisualLogs.meta
+SoloRaycastLogs.meta
+SoloVisualLogs.meta
+
+# ONNX exports (unless you want to version them explicitly)
+*.onnx
+.fake
