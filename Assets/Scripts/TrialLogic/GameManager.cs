@@ -634,12 +634,14 @@ public class GameManager : SingletonNetwork<GameManager>
     // ServerRPC to update player scores on the server and not the client
     // Currently this is probably only attributing scores to the Host player because this method is run ON the server
     // hence LocalClientId will always be 0 
-    [ServerRpc(RequireOwnership=false)]
+    [ServerRpc(RequireOwnership = false)]
     public void UpdateScoresServerRPC(int increment, ulong callerClientId)
     {
-        scores[(int)callerClientId] += increment; 
+        scores[(int)callerClientId] += increment;
     }
 
+    // ServerRPC that calls a client RPC for all clients, to set global illumination (high or low)
+    // Calls to this RPC are found in TrialHandler.cs
     [ServerRpc(RequireOwnership = false)]
     public void IlluminationHighServerRPC(bool isHigh)
     {

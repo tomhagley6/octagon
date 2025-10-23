@@ -92,7 +92,7 @@ public class TrialHandler : NetworkBehaviour
     }
 
    // Run only by the client which ended the trial, pick new walls for the upcoming
-    // trial and update their NetworkVariable
+    // trial and request to update their NetworkVariable
     public void StartTrial()
     {
         StartCoroutine(StartTrialCoroutine());
@@ -128,8 +128,8 @@ public class TrialHandler : NetworkBehaviour
         // Change trialActive to true
         gameManager.ToggleTrialActiveServerRPC();
 
-        // Lights up
-        GameObject.Find("DirectionalLight").GetComponent<Light>().intensity = General.globalIlluminationHigh;
+        // Lights up - use ServerRPC to sync across all clients
+        gameManager.IlluminationHighServerRPC(true);
 
         // Variable delay period before slice onset
         var sliceOnsetDelay = Random.Range(General.trialStartDurationMin, General.trialStartDurationMax);
@@ -218,9 +218,8 @@ public class TrialHandler : NetworkBehaviour
         yield return new WaitForSeconds(General.trialEndDuration);
         gameManager.ToggleTrialActiveServerRPC();
 
-        // Decrease global illumimation
-        var light = GameObject.Find("DirectionalLight").GetComponent<Light>();
-        light.intensity = 0.6f;
+        // Decrease global illumination - use ServerRPC to sync across all clients
+        gameManager.IlluminationHighServerRPC(false);
 
         // Begin StartTrial again with a random ITI
         float ITIvalue = Random.Range(General.ITIMin, General.ITIMax);
@@ -278,7 +277,6 @@ public class TrialHandler : NetworkBehaviour
                 break;
         }
 
-        // NEW
         // Assign interaction colour to the centre of the wall
         Transform wall1Centre = wall1.transform.Find("InteractionZone");
         wall1Centre.GetComponent<Renderer>().materials[0].color = General.wallInteractionZoneColour;
@@ -361,7 +359,8 @@ public class TrialHandler : NetworkBehaviour
 
     }
 
- 
+    /* Client RPC called on all clients to adjust global illumination,
+     following al call to IlluminationHighServerRPC found in GameManager.cs */
     [ClientRpc]
     public void IlluminationHighClientRPC(bool isHigh)
     {
