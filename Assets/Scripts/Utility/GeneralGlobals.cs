@@ -1,6 +1,5 @@
 
 using System.Collections.Generic;
-using AmplifyShaderEditor;
 using Unity.Collections;
 using UnityEngine;
 
