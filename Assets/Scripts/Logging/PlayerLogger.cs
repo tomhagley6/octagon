@@ -1,17 +1,14 @@
-// Script from 250804
-// Intended to attach a logger to each player that spawns on the Network
-// This is not currently used because we only log data on the Host
-// This could be revisited if we ever want to log data on both players simultaneously
-
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using System;
 
-// Archived class - logging only occurs on the Host, and does not need to be attached to each player
 
 // Class to implement a DiskLogger, attached to each client's FirstPersonPlayer
-public class PlayerLoggerArchived : NetworkBehaviour
+/* This class is currently necessary to log game data on the Host by calling 
+disklogger.StartLogger(). It still needs to be checked why this behaviour is not 
+the same on the Client. */
+public class PlayerLogger : NetworkBehaviour
 {
 
 

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /* Class to report the horizontal field of view (FoV) of the player camera
-   based on the vertical FoV and aspect ratio
-   Unity unity vertical FoV by default  */
+based on the vertical FoV and aspect ratio (Unity uses vertical FoV by default) */
+/* This script's component on PlayerCamera is currently disabled. Re-enable
+to check FoV in the future */
 public class ReportHorizontalFoV : MonoBehaviour
 {
     public Camera playerCamera;
