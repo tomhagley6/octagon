@@ -234,20 +234,23 @@ public class DiskLogger : Logger
             // Read the content of the JSON file
             string jsonContent = File.ReadAllText(filePath);
 
-            // N.B. that the index of the comma to remove will depend on the OS filesystem
             if (!string.IsNullOrEmpty(jsonContent) && jsonContent.Length > 1)
             {
-                // Remove the comma of the last line to fit with JSON formatting
-                int indexToRemove;
-                // The index to remove at should be 2 for Linux, 3 for Windows
-                if (Application.platform == RuntimePlatform.LinuxEditor || Application.platform == RuntimePlatform.LinuxEditor)
+                // Find and remove the last comma in the file
+                // The file ends with: },\n (Linux) or },\r\n (Windows)
+                // We need to find the comma and remove it, leaving the closing brace intact
+                int lastCommaIndex = jsonContent.LastIndexOf(',');
+                
+                if (lastCommaIndex >= 0)
                 {
-                    indexToRemove = 2;
+                    // Remove the comma
+                    jsonContent = jsonContent.Remove(lastCommaIndex, 1);
+                    Debug.Log("Last comma of the JSON string has been removed");
                 }
-                else { indexToRemove = 3; }
-
-                jsonContent = jsonContent.Remove(jsonContent.Length - indexToRemove, 1);
-                Debug.Log("Last character of the JSON string has been removed");
+                else
+                {
+                    Debug.LogWarning("No comma found in JSON file to remove.");
+                }
 
                 // Write the modified content back to the file
                 File.WriteAllText(filePath, jsonContent);
