@@ -59,7 +59,7 @@ namespace Globals
                                                                                 // IsLocalPlayer
 
         // // Example logging method usage
-        //MiceUILogger.Instance.AddLogEntry(string.Format(Globals.LOG_CONTENT_FORMAT, 
+        // MiceUILogger.Instance.AddLogEntry(string.Format(Globals.LOG_CONTENT_FORMAT, 
         // Globals.LOG_ID_YIN, String.Format("{0} {1} {2} {3} {4} {5} {6} {7}", "trialNum", 
         // "trialType", "Y_num", "Y_ID", "prev_Y", "orientation", "rewLocation", "rewPresent")));
 

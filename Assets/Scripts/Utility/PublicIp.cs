@@ -6,11 +6,13 @@ using UnityEngine.Networking;
 using System;
 using System.Text.RegularExpressions;
 
+/* Query a web server to get the public IP address 
+   and store it in a string variable for later use */
 public class PublicIp : MonoBehaviour
 {
-    
+
     private const string IPIdentificationURL = "https://www.ipchicken.com/";
-    private string publicIp; 
+    private string publicIp;
 
 
     public string GetPublicIp()

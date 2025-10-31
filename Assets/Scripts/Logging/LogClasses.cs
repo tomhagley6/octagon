@@ -1,19 +1,15 @@
 using UnityEngine;
 using System;
-using System.IO;
-using System.Collections;
 using System.Collections.Generic;
 using Globals;
-using Unity.Netcode;
 using Unity.Collections;
 
+// Classes for the Logger's logging events 
+// Each event class specifies a local time, application time, and event description
+// Some classes also include a 'data' Dictionary, with inputs specified in the 
+// logging event parameters 
 namespace LoggingClasses
 {
-
-
-    
-
-    //// Create log classes
 
     // Log event for the beginning of the log file
     public class StartLoggingLogEvent
@@ -45,7 +41,7 @@ namespace LoggingClasses
         public string eventDescription;
         public Dictionary<string, object> data;
 
-        public TrialStartLogEvent(ushort trialNum, FixedString32Bytes trialType, Dictionary<string,object> playerPosDict)
+        public TrialStartLogEvent(ushort trialNum, FixedString32Bytes trialType, Dictionary<string, object> playerPosDict)
         {
             timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
             timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
@@ -53,7 +49,7 @@ namespace LoggingClasses
             data = new Dictionary<string, object>()
             {
                 {"trialNum", trialNum},
-                {"trialType", trialType.Value}, 
+                {"trialType", trialType.Value},
                 {"playerPosition", playerPosDict}
             };
         }
@@ -61,7 +57,7 @@ namespace LoggingClasses
     }
 
 
-    // Log event for every trial start, triggered by execution of ColourWalls on the server
+    // Log event for every trial start, triggered by execution of TrialHandler.ColourWalls on the server
     public class SliceOnsetLogEvent
     {
 
@@ -71,7 +67,7 @@ namespace LoggingClasses
         each associated with their respective clientIds, and containing position and rotation
         The dictionaries may not need a clientId field, if I'm adding them to the playerPosDict
         with clientId as the key. */
-        
+
         // time
         // description string
         // wall numbers
@@ -83,7 +79,7 @@ namespace LoggingClasses
         public string eventDescription;
         public Dictionary<string, object> data;
 
-        public SliceOnsetLogEvent(int wall1, int wall2, FixedString32Bytes trialType, Dictionary<string,object> playerPosDict)
+        public SliceOnsetLogEvent(int wall1, int wall2, FixedString32Bytes trialType, Dictionary<string, object> playerPosDict)
         {
             timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
             timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
@@ -115,7 +111,7 @@ namespace LoggingClasses
         public string eventDescription;
         public Dictionary<string, object> data;
 
-        public TriggerActivationLogEvent(int wall1, int wall2, int wallTriggered, ulong triggerClientId, Dictionary<string,object> playerPosDict)
+        public TriggerActivationLogEvent(int wall1, int wall2, int wallTriggered, ulong triggerClientId, Dictionary<string, object> playerPosDict)
         {
             timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
             timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
@@ -150,24 +146,24 @@ namespace LoggingClasses
         public string eventDescription;
         public Dictionary<string, object> data;
 
-        public TrialEndLogEvent(ushort trialNum, Dictionary<string, object> playerPosDict, Dictionary<string,object> playerScoresDict)
+        public TrialEndLogEvent(ushort trialNum, Dictionary<string, object> playerPosDict, Dictionary<string, object> playerScoresDict)
         {
             timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
             timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
             eventDescription = Logging.trialEnd;
             data = new Dictionary<string, object>()
-            {   
+            {
                 {"trialNum", trialNum},
                 {"playerScores", playerScoresDict},
                 {"playerPosition", playerPosDict}
-                
 
             };
         }
     }
 
-   public class TimeTriggeredLogEvent
-   {
+    // Triggered a defined time intervals (see Logging.loggingFrequency)
+    public class TimeTriggeredLogEvent
+    {
         // time
         // description string
         // positions
@@ -176,21 +172,21 @@ namespace LoggingClasses
         public string timeLocal;
         public string timeApplication;
         public string eventDescription;
-        public Dictionary<string,object> data;
+        public Dictionary<string, object> data;
 
-        public TimeTriggeredLogEvent(Dictionary<string,object> playerPosDict)
+        public TimeTriggeredLogEvent(Dictionary<string, object> playerPosDict)
         {
             timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
             timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
             eventDescription = Logging.timeTriggered;
-            data = new Dictionary<string,object>()
+            data = new Dictionary<string, object>()
             {
                 {"playerPosition", playerPosDict}
             };
         }
 
-   }
-   
+    }
+
     public class StopLoggingLogEvent
     {
         // time
@@ -208,7 +204,7 @@ namespace LoggingClasses
     }
 
     // // helper classes
-    
+
     // Helper class for assembling general player info
     public class PlayerPosition
     {
@@ -228,7 +224,7 @@ namespace LoggingClasses
     }
 
     // Helper class to allow logging of only Transform.position x/y/z values
-    public class PlayerLocation 
+    public class PlayerLocation
     {
         // player.position.x/y/z
         public double x;
@@ -241,7 +237,7 @@ namespace LoggingClasses
             y = _y;
             z = _z;
         }
-        
+
     }
 
     // Helper class to allow logging of only Transform.rotation euler angles

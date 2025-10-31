@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+// Network extension of the Logger Class
+// Currently unused while using Unity Relay
 public class NetworkLogger : Logger
 {
     private string ip;

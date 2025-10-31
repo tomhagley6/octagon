@@ -24,7 +24,7 @@ public class IdentityAssignment : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("IdentityManager not found in the scene"); 
+            Debug.LogWarning("IdentityManager not found in the scene by Awake of IdentityAssignment."); 
         }
     }
 }

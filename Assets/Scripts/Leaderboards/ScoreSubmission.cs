@@ -1,17 +1,15 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Globals;
-using QFSW.QC;
 using TMPro;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using Unity.Services.Leaderboards;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 using Button = UnityEngine.UI.Button;
 
+/* Handle score submission to Unity Leaderboards, display Leaderboard scores,
+   and listen for Leaderboard UI toggle */
+// This script can be updated to the new Input System (listening for UI toggle)
 public class ScoreSubmission : NetworkBehaviour
 {
    [SerializeField] private Button submitScoreButton;
@@ -19,15 +17,13 @@ public class ScoreSubmission : NetworkBehaviour
    [SerializeField] private Transform scoresContent;
    [SerializeField] private TMP_InputField playerName;
    private Score scoreInstance;
-   private GameManager gameManager;
    [SerializeField] private LeaderboardScoreView scoreViewPrefab;
    [SerializeField] private GameObject leaderboardsUI;
 
 
-    public override void OnNetworkSpawn()
-    {
+   public override void OnNetworkSpawn()
+   {
       scoreInstance = FindObjectOfType<Score>();
-      gameManager = FindObjectOfType<GameManager>();
 
       // subscribe to the score submission button
       submitScoreButton.onClick.AddListener(SubmitScoreAsync);
@@ -35,14 +31,14 @@ public class ScoreSubmission : NetworkBehaviour
 
       Debug.Log($"playername is {playerName.text}, type: {playerName.text.GetType()}, isnull: {playerName.text == null}, isemptystring: {playerName.text == ""}");
 
-    }
+   }
 
-    public void Start()
-    {
+   public void Start()
+   {
       // Initially hide the leaderboards UI
-      leaderboardsUI.transform.localScale = new Vector3(0,0,0);
+      leaderboardsUI.transform.localScale = new Vector3(0, 0, 0);
 
-    }
+   }
 
 
    // Submit player score to leaderboard on SubmitScore UI button press
@@ -60,7 +56,8 @@ public class ScoreSubmission : NetworkBehaviour
          await LeaderboardsService.Instance.AddPlayerScoreAsync(General.leaderboardId, score);
          Debug.Log($"{playerName.text}, score submitted!");
       }
-      catch (Exception e) {
+      catch (Exception e)
+      {
          Debug.Log($"Failed to submit score: {e}");
          throw;
       }
@@ -70,10 +67,10 @@ public class ScoreSubmission : NetworkBehaviour
    // Normalise score to number of trials
    // Currently unused
    private int NormaliseScore(ushort trialNum, int score)
-   {  
+   {
       // Setting max score equal to 10000
       // if score values change often, this could potentially be automated
-      return (int)Mathf.Round(score/trialNum*100*4);
+      return (int)Mathf.Round(score / trialNum * 100 * 4);
    }
 
 
@@ -101,14 +98,15 @@ public class ScoreSubmission : NetworkBehaviour
             {
                var scoreView = Instantiate(scoreViewPrefab, scoresContent);
                int leaderboardEntryRank = leaderboardEntry.Rank + 1; // remove rank 0
-               scoreView.Initialize(leaderboardEntryRank.ToString(), 
+               scoreView.Initialize(leaderboardEntryRank.ToString(),
                                     leaderboardEntry.PlayerName,
                                     leaderboardEntry.Score.ToString());
             }
             Debug.Log("Scores fetched!");
          }
       }
-      catch (Exception e) {
+      catch (Exception e)
+      {
          Debug.Log($"Failed to fetch scores: {e}");
          throw;
       }
@@ -122,20 +120,21 @@ public class ScoreSubmission : NetworkBehaviour
       }
    }
 
- private void ToggleButtons()
-    {   
+   // Toggle Leaderboards UI visibility
+   private void ToggleButtons()
+   {
       // var leaderboardsUI = GameObject.Find("LeaderboardsUI");
-      if (leaderboardsUI.transform.localScale == new Vector3(0,0,0))
+      if (leaderboardsUI.transform.localScale == new Vector3(0, 0, 0))
       {
-         leaderboardsUI.transform.localScale = new Vector3(1,1,1);
+         leaderboardsUI.transform.localScale = new Vector3(1, 1, 1);
       }
       else
       {
-         leaderboardsUI.transform.localScale = new Vector3(0,0,0);
+         leaderboardsUI.transform.localScale = new Vector3(0, 0, 0);
 
       }
 
-    }
+   }
 
 
 }

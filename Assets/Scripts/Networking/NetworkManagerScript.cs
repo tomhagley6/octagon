@@ -1,15 +1,15 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-
 
 /*
 On every client connection, the server will run the OnClientConnectedCallback
 event, and pass the clientId (so, as represented on the server), to subscribers
 of this event. 
-Here, we write a quick debug to show agreement between the server-side clientId
+Here, we subscribe two Server RPCs to this event (if running on the Host/Server),
+and use these to update a ulong NetworkList of connected clients, and an int
+NetworkList of scores.
+Debug statements are included confirm agreement between the server-side clientId
 and the local LocalClientId from NetworkManager 
 */
 public class NetworkManagerScript : MonoBehaviour
@@ -17,19 +17,33 @@ public class NetworkManagerScript : MonoBehaviour
 
     public GameManager gameManager;
 
+    private void Start()
+    {
+        // Subscribe to GameManager's ready state event
+        StartCoroutine(WaitForGameManagerAndSubscribe());
+    }
 
-    // It feels messy that I can't use any NetworkBehaviour fields here
-    // Consider moving this script to somewhere else?
-    public void ConnectionCallbackSubscriptions(bool isReady)
-    {   
-        try
+    private System.Collections.IEnumerator WaitForGameManagerAndSubscribe()
+    {
+        // Wait until GameManager is available and ready
+        while (gameManager == null)
         {
             gameManager = FindObjectOfType<GameManager>();
+            yield return null;
         }
-        catch (Exception e)
+
+        // Subscribe to the OnReadyStateChanged event
+        gameManager.OnReadyStateChanged += ConnectionCallbackSubscriptions;
+    }
+
+    // Method that handles GameManager ready state changes
+    public void ConnectionCallbackSubscriptions(bool isReady)
+    {   
+        // No need to find GameManager here since we already have the reference
+        if (gameManager == null)
         {
-            Debug.Log("gameManager could not be assigned in NetworkManagerScript.cs");
-            Debug.Log(e.Message);
+            Debug.LogError("GameManager reference is null in NetworkManagerScript.ConnectionCallbackSubscriptions");
+            return;
         }
         
         // Debug.LogWarning($"gameManager.IsServer is {gameManager.IsServer}, gameManager.IsHost is {gameManager.IsHost}");
@@ -41,8 +55,6 @@ public class NetworkManagerScript : MonoBehaviour
             // Debug.LogWarning($"gameManager.IsServer is {gameManager.IsServer}, adding RPCs to callback");
             // Debug.LogWarning($"gameManager.IsHost is {gameManager.IsHost}, adding RPCs to callback");
         }
-        
-
     }
 
     // // Think these just need to be ServerRPCs because clients cannot change a NetworkVariable/List
