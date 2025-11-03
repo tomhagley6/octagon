@@ -4,6 +4,8 @@ using Globals;
 using Unity.VisualScripting;
 using UnityEngine;
 
+/*  Play a sound effect for audio feedback after winning
+    a trial (varied dependent on score outcome) */
 public class ScoreSounds : MonoBehaviour
 {
     AudioSource audioSource;
@@ -32,9 +34,10 @@ public class ScoreSounds : MonoBehaviour
 
     public IEnumerator PlayStaggeredCoinsCoroutine(int increment)
     {
-        int coinRepeats = General.repeatsDict[increment];
+        // Retrieve the number of repeats for the coin sound effect
+        int coinRepeats = General.repeatsDict[increment]; 
         
-
+        // Play the sound for coinRepeats repeats with a short delay
         for (int i = 0; i < coinRepeats; i++)
         {
             audioSource.PlayOneShot(coins,1);

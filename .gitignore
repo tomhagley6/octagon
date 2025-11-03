@@ -71,6 +71,9 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
+# Unity package meta files
+*.unitypackage.meta
+
 # Python/ML-Agents virtual environments
 **/ml-env/
 env/

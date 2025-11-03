@@ -6,13 +6,16 @@ using UnityEditor;
 using UnityEngine;
 
 namespace Globals
+
+/* Static class in namespace Globals that stores global values for trial logic, trial timings, 
+   movement variables, leaderboard, keybindings, and fixedstrings */
 {
     public static class General
     {
 
-        // // vals
+        // // trial logic
 
-        // trial logic
+        // scores
         public static int highScore = 50;
         public static int lowScore = 20;
         public static Dictionary<int, int> repeatsDict = new Dictionary<int,int>{{highScore,3},
@@ -68,12 +71,17 @@ namespace Globals
         public static Material wallLowMaterial;  // Material for low wall
         public static Material wallRiskyMaterial; // Material for risky wall
         public static Color wallInteractionZoneColour = new Color(1, 215/255f, 0, 129/255f);
+
+        // misc
         public static bool automaticStartTrial = false;
+        public static float horizontalFoV = 110f; // horizontal field-of-view
 
         public static float globalIlluminationLow = 0.6f;
         public static float globalIlluminationHigh = 0.8f;
+        public static int targetFrameRate = 144; 
 
-        // timings
+
+        // // timings
         public static float ITIMin = 2f;
         public static float ITIMax = 5f;
         public static float trialEndDuration = 2f;
@@ -82,15 +90,17 @@ namespace Globals
         public static float startFirstTrialDelay = 0.75f;
 
 
-        // movement
+        // // movement
         public static float mouseSensitivity = 100f;
         public static float neckClampMin = -60f;
         public static float neckClampMax = 90f;
 
-        // leaderboards
+
+        // // leaderboards
         public static string leaderboardId = "Octagon";
+
         
-        // keys
+        // // keybindings
         public static KeyCode toggleMouse = KeyCode.F1;
         public static KeyCode toggleCamera = KeyCode.F2;
         public static KeyCode toggleLeaderboards = KeyCode.F3;
@@ -99,7 +109,8 @@ namespace Globals
         public static KeyCode startTrials = KeyCode.PageUp;
         public static KeyCode toggleRecording = KeyCode.PageDown;
 
-        // Fixedstring values
+
+        // // Fixedstring values
         public static FixedString32Bytes highLow = new("HighLow");
         public static FixedString32Bytes riskyChoice = new("RiskyChoice");
 

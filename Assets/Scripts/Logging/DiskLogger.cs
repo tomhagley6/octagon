@@ -8,7 +8,9 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Text;
 
-// Class to handle logging data to file on the local machine
+/*  Class to handle logging data to file on the local machine
+    Initialise the DiskLogger as a StreamWriter, trigger LoggingStart log events,
+    periodically log buffer contents to file, and handle logger object destruction  */
 public class DiskLogger : Logger
 {   
     // paths
@@ -18,11 +20,7 @@ public class DiskLogger : Logger
     
     private bool loggerReady = false;
     
-    // // TextWriter replaced with a StreamWriter
-    // private TextWriter tw;
     private StreamWriter sw; 
-    private bool isFirstLine = true;
-    private string firstLine;
     public Logger logger;
 
     
@@ -54,22 +52,6 @@ public class DiskLogger : Logger
     {
         if (loggerReady)
         {   
-            // string toLog = String.Format(Globals.logFormat, DateTime.Now.ToString(Globals.logTimeFormat),
-            //                              UnityEngine.Time.time.ToString("f3"), data);
-
-            // var logEntry = new
-            // {
-            //     LocalTime = DateTime.Now.ToString(Globals.logTimeFormat),
-            //     /* Using realtimeSinceStartup to allow to me later create a pause function without 
-            //     affecting this time measurement, which is taken as real time from the start of the
-            //     application */
-            //     ApplicationTime = UnityEngine.Time.realtimeSinceStartupAsDouble.ToString("f3"),
-            //     Event = eventDescription,
-            //     data
-            // };
-
-            // string toLog = JsonConvert.SerializeObject(logEntry);
-
             lock (logEntries) // prevent multiple threads from reaching this block simultaneously
             {
                 logEntries.Add(logEntry);
@@ -87,6 +69,8 @@ public class DiskLogger : Logger
         // Debug.Log($"logEntries is: {logEntries[0]}");
     }
 
+    // Main logging coroutine
+    // Continuously log to file while loggerReady
     // We don't care about emptying the entire log buffer in a single Update frame
     // Spread this over multiple frames in a coroutine instead
     private IEnumerator LogToFile()
@@ -94,13 +78,13 @@ public class DiskLogger : Logger
         // Debug.Log("LogToFile Coroutine began");
         while (loggerReady)
         {
-            if (logEntries.Count != 0 )
+            if (logEntries.Count != 0)
             {
                 try
                 {
                     // Debug.Log($"{logEntries[0]} from LogToFile coroutine");
-                    EmptyBuffer();
-                    
+                    WriteToBuffer();
+
 
                 }
                 catch (Exception ex)
@@ -114,33 +98,23 @@ public class DiskLogger : Logger
         }
     }
 
-    //// Pretty sure this is writing TO the buffer, not emptying it!
-    //// Buffer emptying to the filestream should only occur on Flush() or Close()
-    //// Should I keep this code at all, or just write directly to buffer with Log()? 
-    // LogToFile helper method
-    private void EmptyBuffer()
+
+    // Write to streamwriter buffer
+    // Buffer emptying to the filestream occurs on Flush() or Close()
+    // Make sure to flush the buffer often to avoid loss of buffered data
+    private void WriteToBuffer()
     {
         if (loggerReady)
         {
-            lock(logEntries)
+            lock (logEntries) // Prevent use of the logEntries list while writing to file
             {
                 foreach (string item in logEntries)
                 {
-                    // File.WriteAllText(item, filePath);
-                    try 
+                    try
                     {
                         // // Check whether this is the most efficient way of doing things,
                         // // or whether this will hog resources
-                        // firstLine = isFirstLine == true ? "[" : "";
                         sw.WriteLine(item + ",");
-                        // Debug.Log(item);
-
-                        // string item2 = JsonUtility.ToJson(
-                        //     new {
-                        //         Time = "now"
-                        //     }
-                        // );
-                        // sw.WriteLine(item2);
                     }
                     catch (Exception e)
                     {
@@ -162,15 +136,25 @@ public class DiskLogger : Logger
     {
         StopLogger();
     }
+    
 
     // Public API
+    // Create the first log event (which records time since application start)
     public void StartLogger()
     {
-        
+
         // Path
         filename = String.Concat(DateTime.Now.ToString(Logging.fileTimeFormat), ".json");
         filePath = Path.Combine(dataFolder, filename);
         Debug.Log("Logger created. Filename: " + filename);
+
+        // Content
+        Dictionary<string, object> firstLogEvent = new Dictionary<string, object>
+        {
+            { "Event", "Logging started (dict)" }
+        };
+        var toLog = JsonConvert.SerializeObject(firstLogEvent);
+
 
         // Initialise the instance of StreamWriter that we will use for this logging session
         // This instance will need to be flushed regularly to avoid data loss on application crash
@@ -178,49 +162,22 @@ public class DiskLogger : Logger
         // For 20k bytes, will write every ~20000 chars, or roughly 150 lines
         sw = new StreamWriter(filePath, true, Encoding.UTF8, 20000)
         {
-            AutoFlush = false
+            AutoFlush = false // no flush after each WriteLine (for performance)
         };
 
         // Begin the file with a square bracket to conform to JSON formatting        
         sw.WriteLine("[");
 
-        // // Setup StreamWriter with the current file
-        // sw = File.AppendText(filePath);
-
+        // Update the flag to show that the logger is ready to use
         loggerReady = true;
 
-        // Record beginning of logger process
-        var startEvent = new  
-        {
-            LocalTime = DateTime.Now.ToString(Logging.logTimeFormat),
-            /* Using realtimeSinceStartup to allow to me later create a pause function without 
-            affecting this time measurement, which is taken as real time from the start of the
-            application */
-            ApplicationTime = UnityEngine.Time.realtimeSinceStartupAsDouble.ToString("f3"),
-            Event = "Logging started"
-        };
-
-        string jsonString = JsonUtility.ToJson(startEvent);
-        
-        Dictionary<string,object> data = new Dictionary<string, object>
-        {
-            { "Event", "Logging started (dict)" }
-        };
-        var toLog = JsonConvert.SerializeObject(data);
-        // Log(toLog);
-
-        // FINAL VERSION
         // Trigger the StartLogging log event in LoggingEvents.cs on the Logger GameObject
-        // var logger = FindObjectOfType<Logger>().GetComponent<LoggingEvents>();
-        // logger.StartLogging();
         loggingStarted?.Invoke();
 
 
         StartLoggingLogEvent startLoggingLogEvent = new StartLoggingLogEvent();
         string jsonData = JsonUtility.ToJson(startLoggingLogEvent);
-        // Debug.Log("new attempt at json is "+ jsonData);
         StartLoggingLogEvent deserialized = JsonUtility.FromJson<StartLoggingLogEvent>(jsonData);
-        // Debug.Log("and deserialized is " + deserialized.eventDescription);
         if (deserialized.eventDescription == null)
         {
             Debug.Log("deserialized.Description is null");
@@ -230,13 +187,20 @@ public class DiskLogger : Logger
             Debug.Log("deserialized.Description is length 0");
         }
 
-        string jsonDataNewtonsoft = JsonConvert.SerializeObject(startLoggingLogEvent);
-        // Debug.Log($"Now trying Newtonsoft: " + jsonDataNewtonsoft);
-
+        // Record beginning of the logging process in the debug console
+        var startEvent = new
+        {
+            LocalTime = DateTime.Now.ToString(Logging.logTimeFormat),
+            /* Using realtimeSinceStartup to allow to me later create a pause function without 
+            affecting this time measurement, which is taken as real time from the start of the
+            application */
+            ApplicationTime = UnityEngine.Time.realtimeSinceStartupAsDouble.ToString("f3"),
+            Event = "Logging started"
+        };
         Debug.Log($"{startEvent.Event} - {startEvent.LocalTime} - {startEvent.ApplicationTime}");
-        
 
 
+        // Commit the log to file
         StartCoroutine(LogToFile());
         Debug.Log("Logging coroutine begun.");
     }
@@ -249,20 +213,22 @@ public class DiskLogger : Logger
         // Write a logging ended event to file to show that logging finished successfully
         loggingEnded?.Invoke();
 
-        EmptyBuffer();
+        // Clear the remaining buffer
+        WriteToBuffer();
 
+        // Turn off logging access
         loggerReady = false;
 
+        // Ensure all current logging actions are terminated
         StopAllCoroutines();
 
-        // Be careful to close the StreamWriter instance before the application exits
+        // Close the StreamWriter instance before the application exits
         if (sw != null)
         {
             sw.Close();         
         }
 
- 
-
+        // Correct the formatting of the file to fit JSON standards (remove final comma)
         if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
         {
             // Read the content of the JSON file
@@ -270,17 +236,21 @@ public class DiskLogger : Logger
 
             if (!string.IsNullOrEmpty(jsonContent) && jsonContent.Length > 1)
             {
-                // Remove the comma of the last line to fit with JSON formatting
-                int indexToRemove;
-                // The index to remove at should be 2 for Linux, 3 for Windows
-                if (Application.platform == RuntimePlatform.LinuxEditor || Application.platform == RuntimePlatform.LinuxEditor)
+                // Find and remove the last comma in the file
+                // The file ends with: },\n (Linux) or },\r\n (Windows)
+                // We need to find the comma and remove it, leaving the closing brace intact
+                int lastCommaIndex = jsonContent.LastIndexOf(',');
+                
+                if (lastCommaIndex >= 0)
                 {
-                    indexToRemove = 2;
+                    // Remove the comma
+                    jsonContent = jsonContent.Remove(lastCommaIndex, 1);
+                    Debug.Log("Last comma of the JSON string has been removed");
                 }
-                else {indexToRemove = 3;}
-
-                jsonContent = jsonContent.Remove(jsonContent.Length - indexToRemove, 1);
-                Debug.Log("Last character of the JSON string has been removed");
+                else
+                {
+                    Debug.LogWarning("No comma found in JSON file to remove.");
+                }
 
                 // Write the modified content back to the file
                 File.WriteAllText(filePath, jsonContent);

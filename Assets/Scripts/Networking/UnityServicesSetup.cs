@@ -1,10 +1,10 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using UnityEngine;
 
+/* Temporary session creation to access Unity Services 
+   (It should be clarified whether this is only required for Unity Leaderboards,
+   or whether Unity Relay also requries sign in */
 public class UnityServicesSetup : MonoBehaviour
 {
 
@@ -14,8 +14,6 @@ public class UnityServicesSetup : MonoBehaviour
         // Initialise the SDK and its dependencies
         await UnityServices.InitializeAsync();
 
-        // Anonyous authentication to create an anonymous account for the 
-        // player to upload their scores
 
         // subscribe to 3 event types with Debug statements
         AuthenticationService.Instance.SignedIn += () =>
@@ -27,7 +25,8 @@ public class UnityServicesSetup : MonoBehaviour
             Debug.Log("Sign in failed");
             Debug.Log(s);
         };
-        AuthenticationService.Instance.SignedOut += () => {
+        AuthenticationService.Instance.SignedOut += () =>
+        {
             Debug.Log("Player signed out.");
         };
 
@@ -38,7 +37,7 @@ public class UnityServicesSetup : MonoBehaviour
         {
             try
             {
-            AuthenticationService.Instance.ClearSessionToken();
+                AuthenticationService.Instance.ClearSessionToken();
             }
             catch (AuthenticationException e)
             {

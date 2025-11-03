@@ -1,27 +1,27 @@
 using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using Globals;
 using System;
-using ActiveWalls = GameManager.ActiveWalls;
-using LoggingClasses;
-using Newtonsoft.Json;
+
 
 // Class to implement a DiskLogger, attached to each client's FirstPersonPlayer
+/* This class is currently necessary to log game data on the Host by calling 
+disklogger.StartLogger(). It still needs to be checked why this behaviour is not 
+the same on the Client. */
 public class PlayerLogger : NetworkBehaviour
 {
 
 
-public DiskLogger diskLogger;
-public GameObject player;
-public Action<bool> playerSpawned;
-public GameManager gameManager;
-public LoggingEvents loggingEvents;
+    public DiskLogger diskLogger;
+    public GameObject player;
+    public Action<bool> playerSpawned;
+    public GameManager gameManager;
+    public LoggingEvents loggingEvents;
 
-    public override void OnNetworkSpawn() {
-            
-            
+    public override void OnNetworkSpawn()
+    {
+
+
         gameManager = FindObjectOfType<GameManager>();
         player = transform.parent.gameObject;           // Get this player
         diskLogger = FindObjectOfType<DiskLogger>();
@@ -41,12 +41,14 @@ public LoggingEvents loggingEvents;
         does not even need a player reference passed
         First line of OnNetworkSpawn can be to call a method in GameManager or LoggingEvents that subscribes to  */
         // Actually should not be necessary, as logging will only happen on the host
-        if (player.GetComponent<NetworkObject>().IsLocalPlayer && player != null) {
+        if (player.GetComponent<NetworkObject>().IsLocalPlayer && player != null)
+        {
             Debug.Log("Local player; beginning logging");
             diskLogger.StartLogger();
             StartCoroutine("LogPos");
         }
-        else {
+        else
+        {
             Debug.Log("NOT local player");
             if (player == null)
             {
@@ -64,14 +66,15 @@ public LoggingEvents loggingEvents;
             //                                                 Globals.player, 
             //                                                 player.transform.position.x,
             //                                                 player.transform.position.z));
-            
+
             yield return new WaitForSeconds(0.2f);
 
         }
     }
 
 
-    void LogEvent(int increment, int triggerID, string rewardType) {
+    void LogEvent(int increment, int triggerID, string rewardType)
+    {
 
         // Was event triggered by this player instance
         bool thisPlayer;

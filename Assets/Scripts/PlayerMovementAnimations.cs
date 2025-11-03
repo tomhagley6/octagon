@@ -1,8 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-// using AmplifyShaderEditor;
 using UnityEngine;
 
+/* Class to provide animator input for player movement animations
+   Identify the direction and magnitude of movement, and communicate to the animator
+   if the magnitude is above threshold */
 public class PlayerMovementAnimations : MonoBehaviour
 {
 
@@ -17,17 +17,15 @@ public class PlayerMovementAnimations : MonoBehaviour
         previousPosition = transform.position;
     }
 
-    // Update is called once per frame
     void Update()
-    {   
-        // calculate movement direction
+    {
+        // calculate current movement direction
         Vector3 worldMovementDirection = transform.position - previousPosition;
-
         // Debug.LogWarning(worldMovementDirection.magnitude);
+
         if (worldMovementDirection.magnitude > 1e-02)
         {
             smallDifference = false;
-            // Debug.LogWarning("smallDifference is false");
         }
         else
         {
@@ -50,12 +48,11 @@ public class PlayerMovementAnimations : MonoBehaviour
 
     void UpdateAnimation(Vector3 localMovement, bool smallDifference)
     {
-        // Calculate direction (forward, backward, diagonal, etc.)
+        // Communicate direction to the animator
         float horizontal = localMovement.x;
         float vertical = localMovement.z;
-
         // Debug.Log($"horizontal is: {horizontal}, vertical is {vertical}");
-        
+
         if (!smallDifference)
         {
             animator.SetFloat("Horizontal", horizontal);

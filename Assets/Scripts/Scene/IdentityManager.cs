@@ -42,12 +42,14 @@ public class IdentityManager : MonoBehaviour
         return new List<int>(wallDictionary.Keys);
     }
 
-    // From GPT - Using Linq to order my dictionary
+    // Using Linq to order my dictionary
     // Call this before using the dictionary
     public void OrderDictionary()
     {
         // Order by keys
-        /* Both OrderBy and ToDictionary expect a lambda expression as their input
+        /* Both OrderBy and ToDictionary expect a lambda expression as their input 
+        (or more generally, delegate function with a Source input and an output which
+         is the value to sort across) 
         and the compiler implicitly declares the variable 'pair' to represent each 
         collection element during the iteration.
         Therefore, we just need to specify either Key or Value in the lambda function

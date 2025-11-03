@@ -17,9 +17,9 @@ public class ScorePopup : MonoBehaviour
     {
         scorePopupText.text = $"+{increment} \n You Won!";
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(2f); // display for 2 seconds
 
-        scorePopupText.text = "";
+        scorePopupText.text = ""; // reset the text
     }
 
 

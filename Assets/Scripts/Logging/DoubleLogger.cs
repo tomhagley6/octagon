@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+// Currently unused
+
+
 // Logger that implements both a local DiskLogger and a NetworkLogger
 // Both classes run their Log functions when DoubleLogger.Log is called
 public class DoubleLogger : Logger
