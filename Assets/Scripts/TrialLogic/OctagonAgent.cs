@@ -260,6 +260,9 @@ public class OctagonAgent : Agent
         float alignmentToWall2 = Vector3.Dot(transform.forward, toWall2);
 
 
+        // // LOGIC FOR SHAPING REWARDS IS INCORRECT. REWRITE INSTEAD OF UNCOMMENTING
+
+
         // check whether the alignment value for each wall is below the threshold
         // reward agent for rotating when neither wall is in view
         if ((octagonArea.isTrialLooping) && (alignmentToWall1 < fovThreshold) && (alignmentToWall2 < fovThreshold) && Mathf.Abs(rotateAmount) > 0)
