@@ -226,24 +226,18 @@ public class OctagonAgent : Agent
         float targetYRotation = transform.eulerAngles.y + rotateAmount * Time.fixedDeltaTime;
         transform.rotation = Quaternion.Euler(0f, targetYRotation, 0f);
 
-
+        // Animate agent on movement
         if (animator == null)
         {
             Debug.LogError("Animator is not assigned");
             return;
         }
-
         animator.SetBool("isRunning", targetDirection.magnitude > 0.05f);
 
         // step penalty
         // Too small compared to final reward? How frequent is one step, and how long is one trial?
         AddReward(-0.0001f);
 
-        // optional shaping rewards
-
-        float fieldOfView = 80f;
-        // cosine for half of the field of view angle
-        float fovThreshold = Mathf.Cos(fieldOfView * 0.5f * Mathf.Deg2Rad);
 
         if (wall1Trigger == null || wall2Trigger == null)
         {
@@ -252,59 +246,16 @@ public class OctagonAgent : Agent
 
         Vector3 wall1TriggerCentre = wall1Trigger.transform.position;
         Vector3 wall2TriggerCentre = wall2Trigger.transform.position;
-        //Vector3 wall1TriggerCentre = wall1Trigger.GetComponent<Collider>().bounds.center;
-        //Vector3 wall2TriggerCentre = wall2Trigger.GetComponent<Collider>().bounds.center;
 
         Vector3 toWall1 = (wall1TriggerCentre - transform.position).normalized;
         Vector3 toWall2 = (wall2TriggerCentre - transform.position).normalized;
 
         // dot product of agent forward direction vector and direction to each wall
         // dot product of two normalised vectors gives cosine of the angle between them
+        // These could be used for shaping rewards based on alignment to walls
+        // But we might not need alongside curriculum and curiosity
         float alignmentToWall1 = Vector3.Dot(transform.forward, toWall1);
         float alignmentToWall2 = Vector3.Dot(transform.forward, toWall2);
-
-
-        // // LOGIC FOR SHAPING REWARDS IS INCORRECT. REWRITE INSTEAD OF UNCOMMENTING
-
-
-        // check whether the alignment value for each wall is below the threshold
-        // reward agent for rotating when neither wall is in view
-        if ((octagonArea.isTrialLooping) && (alignmentToWall1 < fovThreshold) && (alignmentToWall2 < fovThreshold) && Mathf.Abs(rotateAmount) > 0)
-        {
-            //AddReward(0.001f);
-            //Debug.Log($"neither wall is visible. Alignments: to wall 1 {alignmentToWall1}, to wall 2 {alignmentToWall2}. Turn input is not 0: {rotateAmount}");
-            //Debug.Log($"agent head direction vector is {transform.forward}. Dot product (alignment) between vector to wall 1 and head direction is {alignmentToWall1}");
-        }
-
-
-        if ((octagonArea.isTrialLooping) && (alignmentToWall1 > fovThreshold) && (alignmentToWall2 < alignmentToWall1))
-        {
-            float currentDistanceHigh = Vector3.Distance(transform.position, wall1Trigger.transform.position);
-
-            if (currentDistanceHigh < previousDistanceHigh)
-            {
-                //AddReward(0.001f);
-                //Debug.Log($"current distance to high is {currentDistanceHigh} and smaller than in previous step. Agent is rewarded.");
-            }
-
-            previousDistanceHigh = currentDistanceHigh;
-
-        }
-
-        if ((octagonArea.isTrialLooping) && (alignmentToWall2 > fovThreshold) && (alignmentToWall1 < alignmentToWall2))
-        {
-            float currentDistanceLow = Vector3.Distance(transform.position, wall2Trigger.transform.position);
-
-            if (currentDistanceLow < previousDistanceLow)
-            {
-                //AddReward(0.001f);
-                //Debug.Log($"current distance to low is {currentDistanceLow} and smaller than in previous step. Agent is rewarded.");
-
-            }
-
-            previousDistanceLow = currentDistanceLow;
-
-        }
 
     }
 
