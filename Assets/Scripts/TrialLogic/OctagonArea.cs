@@ -33,6 +33,7 @@ public class OctagonArea : MonoBehaviour
     [SerializeField] public IdentityManager identityManager;
 
 
+    // References for the arena and identity manager of the arena walls
     void Awake()
     {
         arenaRoot = transform.parent;
@@ -40,6 +41,7 @@ public class OctagonArea : MonoBehaviour
         if (identityManager == null) identityManager = arenaRoot.GetComponentInChildren<IdentityManager>();
     }
 
+    // Get a reference to all triggers and present agents
     void Start()
     {
         allWallTriggers = arenaRoot.GetComponentsInChildren<Transform>(true)
@@ -73,6 +75,7 @@ public class OctagonArea : MonoBehaviour
         public int wall2;
     }
 
+    // Assign and colour walls for the upcoming trials
     public void SetUpArena()
     {
         Debug.Log("[SetUpArena] arena set-up process initiated.");
@@ -242,6 +245,8 @@ public class OctagonArea : MonoBehaviour
 
         }
 
+
+        // // Why is this necessary? Shouldn't interaction zone always be consistently coloured? 
         // assign interaction colour to the centre of the wall
 
         Transform wall1Centre = wall1.transform.Find("InteractionZone");
@@ -255,12 +260,17 @@ public class OctagonArea : MonoBehaviour
         playerAgent.LogSliceOnsetEvent(wallID1, wallID2, thisTrialType);
 
     }
+
+    // Is there a loop to trials? Seems like it should be a discrete process with the next 
+    // iteration triggered 
     public void TrialLoop()
     {
         isTrialLooping = true;
 
         StartCoroutine(ITI());
     }
+
+    // Inititate the ITI and lead into Start Trial logic
     public IEnumerator ITI()
     {
 
@@ -294,6 +304,8 @@ public class OctagonArea : MonoBehaviour
         { Debug.Log($"[OctagonAgent] Agent {opponentAgent.tag} starts with distance to high {opponentAgent.previousDistanceHigh} and distance to low {opponentAgent.previousDistanceLow}."); }
 
     }
+
+    // Wall collider trigger enabling/disabling methods
     public void EnableTriggers()
     {
         Debug.Log("Enabling triggers");
@@ -305,7 +317,6 @@ public class OctagonArea : MonoBehaviour
             }
         }
     }
-
     public void DisableTriggers()
     {
         Debug.Log("Disabling triggers.");
@@ -318,6 +329,9 @@ public class OctagonArea : MonoBehaviour
         }
     }
 
+    // Currently only calls WashWalls on the trial active walls
+    // Only if octagonArena.IsTrialLooping is True, from within OnEpisodeBegin
+    // Would it make more sense to have this at the end the trial logic, after HandleTriggerEntry has begun?
     public void ResetTrial()
     {
         if (wallID1 != 0 && wallID2 != 0)
@@ -344,6 +358,7 @@ public class OctagonArea : MonoBehaviour
         }
     }
 
+    // Why are we changing interaction zone colour? Could this be removed
     public void WashWalls(int highWallTriggerID, int lowWallTriggerID)
     {
         // access the actual game object through the ID:GameObject dict in IdentityManager
@@ -360,7 +375,7 @@ public class OctagonArea : MonoBehaviour
 
         highWallTrigger.tag = "WallTrigger";
         lowWallTrigger.tag = "WallTrigger";
-        
+
         // reset wall colours back to their previously-saved defaults
         highWall.GetComponent<Renderer>().materials[0].color = defaultWallColour;
         lowWall.GetComponent<Renderer>().materials[0].color = defaultWallColour;
@@ -375,7 +390,9 @@ public class OctagonArea : MonoBehaviour
         wall2Centre.GetComponent<Renderer>().materials[0].color = wallCentreColor;
 
     }
+    
 
+    // Identify the outcome score dependent on activated trigger and current trial type
     public (int score, string rewardType) TrialInteraction(int triggerID, int highWallTriggerID, int lowWallTriggerID, string thisTrialType)
     {
         int score = 0;

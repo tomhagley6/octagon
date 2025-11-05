@@ -19,7 +19,8 @@ public class OctagonWallTrigger : MonoBehaviour
     public List<Collider> wallColliders;
 
     void Awake()
-    {
+    {   
+        // Get the custom ID assigned to this wall trigger
         identityAssignment = gameObject.GetComponent<IdentityAssignment>();
         if (identityAssignment != null)
         {
@@ -28,7 +29,7 @@ public class OctagonWallTrigger : MonoBehaviour
 
         arenaRoot = transform.parent;
 
-        // get colliders
+        // get all wall colliders
         wallColliders = arenaRoot.GetComponentsInChildren<Transform>(true)
             .Where(t => t.CompareTag("Wall"))
             .Select(t => t.GetComponent<Collider>())
@@ -36,6 +37,7 @@ public class OctagonWallTrigger : MonoBehaviour
             .ToList();
     }
 
+    // Get references to player and opponent agents 
     void Start()
     {
         if (!octagonArea.soloMode && opponentAgent == null)
@@ -53,9 +55,10 @@ public class OctagonWallTrigger : MonoBehaviour
 
     }
 
+    // Method called when another collider interacts with the trigger collider of the parent game object
     void OnTriggerEnter(Collider interactingObject)
     {
-        // if GameObject has an MLAgent component attached assign it to the agent variable
+        // if interacting GameObject has an ML-Agent component attached assign it to the agent variable
         if (!interactingObject.TryGetComponent<OctagonAgent>(out var agent)) return;
 
         wallID1 = octagonArea.activeWalls.wall1;
@@ -64,9 +67,10 @@ public class OctagonWallTrigger : MonoBehaviour
 
         if (wallIDs.Contains(triggerID))
         {
+            // What effect does this assignment have on trial logic? test without it
             octagonArea.isTrialLooping = false;
             Debug.Log($"Wall trigger - trial looping: {octagonArea.isTrialLooping}");
-            
+
             string interactorTag = agent.CompareTag("PlayerAgent") ? "PlayerAgent" : "OpponentAgent";
 
             HandleWallTrigger(triggerID, wallID1, wallID2, interactorTag);
@@ -90,6 +94,7 @@ public class OctagonWallTrigger : MonoBehaviour
         }
     }
 
+    // Assign a negative penalty for colliding with an inactive wall trigger
     public void HandleInactiveTrigger(int triggerID, string interactorTag)
     {
         float inactiveWallPenalty = -0.01f;
@@ -98,14 +103,18 @@ public class OctagonWallTrigger : MonoBehaviour
         interactor.AddReward(inactiveWallPenalty);
     }
 
+    // Assign reward and end the current episode, following relevant trigger collision 
     public void HandleWallTrigger(int triggerID, int wallID1, int wallID2, string interactorTag)
     {
         OctagonAgent interactor = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
 
         string thisTrialType = interactor.thisTrialType;
 
+        // Identify the outcome score dependent on activated trigger and current trial type
         var (score, rewardType) = octagonArea.TrialInteraction(triggerID, wallID1, wallID2, thisTrialType);
 
+        // Set reward at 1/10 point value for this trial outcome
+        // This might be way too high? Compared to other rewards
         float scaledReward = score / 10f;
 
         if (!octagonArea.soloMode && opponentAgent != null)
@@ -113,6 +122,7 @@ public class OctagonWallTrigger : MonoBehaviour
             OctagonAgent winner = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
             OctagonAgent loser = interactorTag == "PlayerAgent" ? opponentAgent : playerAgent;
 
+            // Equal and negative reward for the loser in competitive play
             winner.AddReward(scaledReward);
             loser.AddReward(-scaledReward);
 

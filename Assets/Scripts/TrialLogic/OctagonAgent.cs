@@ -1,5 +1,3 @@
-// dependencies
-
 using System.Collections.Generic;
 using Unity.MLAgents;
 using UnityEngine;
@@ -8,7 +6,6 @@ using System.Linq;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
-//using System.Numerics;
 
 public class OctagonAgent : Agent
 {
@@ -97,11 +94,11 @@ public class OctagonAgent : Agent
 
     }
 
+
+
     void Start()
     {
-        // find all wall triggers from the parent of this script (the agent)
-
-        // searches children of the arena (including inactive ones)
+        // Get references to all wall triggers in the arena
         allWallTriggers = arenaRoot.GetComponentsInChildren<Transform>(true)
             .Where(t => t.CompareTag("WallTrigger")) // children with tag "WallTrigger"
             .Select(t => t.gameObject) // select the associated game object
@@ -112,20 +109,26 @@ public class OctagonAgent : Agent
         }
     }
 
+
+    // We can put all reset code in OnEpisodeBegins, so that regardless of the reason for 
+    // EndEpisode, we reset the agent and arena the same way
+    // ITI Can be still be called here. I think it's needed to keep the trained task
+    // spiritually similar to the human task. However, in the curriculum we can move from
+    // low variability and low duration, up to the standard ITI
     public override void OnEpisodeBegin()
     {
         Debug.Log("OnEpisodeBegin is called");
 
         Debug.Log($"OnEpisodeBegin - trial looping: {octagonArea.isTrialLooping}");
 
+        // Why is this necessary?
         Debug.Log("Time scale: " + Time.timeScale);
         if (Time.timeScale == 0)
         {
             Time.timeScale = 1; // Resume normal time
         }
 
-        //octagonArea.isTrialLooping = false;
-
+        // This conditional should ideally be removed
         if (!octagonArea.isTrialLooping)
         {
             // check that agent currently running this script is "PlayerAgent"
@@ -162,7 +165,7 @@ public class OctagonAgent : Agent
         //previousDistanceHigh = Vector3.Distance(transform.position, wall1Trigger.transform.position);
         //previousDistanceLow = Vector3.Distance(transform.position, wall2Trigger.transform.position);
 
-            //Debug.Log($"[OctagonAgent] Agent {this.tag} starts with distance to {previousDistanceHigh} and distance to low {previousDistanceLow}.");
+        //Debug.Log($"[OctagonAgent] Agent {this.tag} starts with distance to {previousDistanceHigh} and distance to low {previousDistanceLow}.");
 
     }
 
@@ -233,6 +236,7 @@ public class OctagonAgent : Agent
         animator.SetBool("isRunning", targetDirection.magnitude > 0.05f);
 
         // step penalty
+        // Too small compared to final reward? How frequent is one step, and how long is one trial?
         AddReward(-0.0001f);
 
         // optional shaping rewards
@@ -304,12 +308,15 @@ public class OctagonAgent : Agent
 
     }
 
+    // Do we not have other observations? What about the raycast information, and distance to walls/opponent?
+    // ANS: No, we don't need to implement any code for observations taken from raycast.
     public override void CollectObservations(VectorSensor sensor)
     {
         // observe mode
         sensor.AddObservation(octagonArea.soloMode ? 1 : 2);  // 1 for solo mode, 2 for social mode
     }
 
+    // Manual agent control for testing
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         var discreteActionsOut = actionsOut.DiscreteActions;
