@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Octagon.sln"
+    "dotnet.defaultSolution": "octagon.sln"
 }

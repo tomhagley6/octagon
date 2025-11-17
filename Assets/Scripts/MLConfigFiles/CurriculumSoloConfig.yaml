@@ -1,0 +1,121 @@
+behaviors:
+  OctagonAgentCurriculumSolo:
+    trainer_type: ppo
+    hyperparameters:
+      batch_size: 512       # Number of experiences used per training batch
+      buffer_size: 2048     # Maximum number of experiences stored in the buffer
+      learning_rate: 3.0e-4  # Step size for updating the model
+      beta: 5.0e-3          # Entropy regularization coefficient
+      beta_schedule: linear  # Schedule for beta decay
+      epsilon: 0.2          # Clipping parameter for PPO
+      lambd: 0.95           # GAE lambda parameter
+      num_epoch: 3          # Number of epochs per training update
+      learning_rate_schedule: linear  # Learning rate decay schedule
+    
+    network_settings:
+      normalize: false        # Whether to normalize input observations
+      hidden_units: 256      # Size of each hidden layer
+      num_layers: 2            # How deep the network is
+      # vis_encode_type: resnet   # Visual encoder type: simple, nature_cnn, resnet
+
+      memory:
+        sequence_length: 128
+        memory_size: 512
+    
+    reward_signals:
+      extrinsic:
+        gamma: 0.99         # Discount factor for future rewards
+        strength: 1.0      # Scaling factor for extrinsic rewards
+
+      rnd:
+        gamma: 0.99         # Discount factor for future intrinsic rewards
+        strength: 0.01      # Scaling factor for intrinsic rewards (standard range is 0.01 to 0.1)
+        learning_rate: 1e-4  # Learning rate for the RND predictor network
+    
+    max_steps: 5.0e6        # Total training steps
+    time_horizon: 256    # How many steps of experience per agent before updating
+    summary_freq: 10000    # Frequency of summary logging
+    keep_checkpoints: 5
+    checkpoint_interval: 50000
+    
+    # CURRICULUM LEARNING CONFIGURATION
+    curriculum:
+      # Lesson 1: Small + Simple (arena + spatial)
+      - name: "small_simple"
+        completion_criteria:
+          measure: reward
+          threshold: 0.4
+          min_lesson_length: 150000
+        value:
+          arena_scale: 0.5
+          allow_sep_1: 1.0              # Adjacent only
+          allow_sep_2: 0.0
+          allow_sep_4: 0.0
+          trial_types: "forcedHigh,forcedLow"
+          iti_min: 0.5
+          iti_max: 0.5
+          solo_mode: 1.0
+
+      # Lesson 2: Medium arena + More separations (both spatial changes)
+      - name: "medium_spatial"
+        completion_criteria:
+          measure: reward
+          threshold: 0.5
+          min_lesson_length: 150000
+        value:
+          arena_scale: 0.7              # Scale up
+          allow_sep_1: 1.0
+          allow_sep_2: 1.0              # Add sep 2
+          allow_sep_4: 0.0
+          trial_types: "forcedHigh,forcedLow"  # Still forced
+          iti_min: 0.5
+          iti_max: 0.5
+          solo_mode: 1.0
+
+      # Lesson 3: Add choice trials + slight timing variability (decision complexity)
+      - name: "choice_trials"
+        completion_criteria:
+          measure: reward
+          threshold: 0.6
+          min_lesson_length: 200000
+        value:
+          arena_scale: 0.7
+          allow_sep_1: 1.0
+          allow_sep_2: 1.0
+          allow_sep_4: 0.0
+          trial_types: "highLow,forcedHigh,forcedLow"  # Add choices
+          iti_min: 0.5
+          iti_max: 1.5                  # Moderate variability
+          solo_mode: 1.0
+
+      # Lesson 4: Full arena + All separations (complete spatial)
+      - name: "full_spatial"
+        completion_criteria:
+          measure: reward
+          threshold: 0.65
+          min_lesson_length: 200000
+        value:
+          arena_scale: 1.0              # Full size
+          allow_sep_1: 1.0
+          allow_sep_2: 1.0
+          allow_sep_4: 1.0              # Max separation
+          trial_types: "highLow,forcedHigh,forcedLow"
+          iti_min: 0.5
+          iti_max: 1.5
+          solo_mode: 1.0
+
+      # Lesson 5: Full timing + Social (final complexity)
+      - name: "full_task"
+        completion_criteria:
+          measure: reward
+          threshold: 0.65
+          min_lesson_length: 300000
+        value:
+          arena_scale: 1.0
+          allow_sep_1: 1.0
+          allow_sep_2: 1.0
+          allow_sep_4: 1.0
+          trial_types: "highLow,forcedHigh,forcedLow"
+          iti_min: 1.5                  # Full ITI range
+          iti_max: 3.5
+          solo_mode: 0.0                # Add opponent
