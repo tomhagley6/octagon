@@ -15,6 +15,7 @@ TagManager:
   - LowWall
   - HighWallTrigger
   - LowWallTrigger
+  - Arena
   layers:
   - Default
   - TransparentFX

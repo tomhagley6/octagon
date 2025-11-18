@@ -6,8 +6,9 @@ using KaimiraGames;
 using Unity.MLAgents;
 using UnityEngine;
 using UnityEditor;
+// using System.Numerics;
 
-public class OctagonArea : MonoBehaviour
+public class OctagonArenaSettings : MonoBehaviour
 {
     // octagon arena
     private Transform arenaRoot;
@@ -32,13 +33,25 @@ public class OctagonArea : MonoBehaviour
     [SerializeField] public OctagonAgent playerAgent;
     [SerializeField] public IdentityManager identityManager;
 
+    // Agent location
+    private Vector3 playerSpawnOffset = new Vector3(0, 1.5f, 0);
+
+    // Training curriculum parameters
+    private EnvironmentParameters envParams;
+    private float arenaScale;
+
 
     // References for the arena and identity manager of the arena walls
     void Awake()
     {
         arenaRoot = transform.parent;
 
+        
+        // GameObject playerAgent = Instantiate(playerAgent, arenaRoot, )
+
         if (identityManager == null) identityManager = arenaRoot.GetComponentInChildren<IdentityManager>();
+
+        arenaScale = arenaRoot.localScale.x; // Do not assume arena scale is 1 by default
     }
 
     // Get a reference to all triggers and present agents
@@ -110,6 +123,15 @@ public class OctagonArea : MonoBehaviour
         //Debug.Log($"Tags for high wall and low walls after colouring are {HW.tag} and {LW.tag}");
 
     }
+
+    // Scale the arena (during the training curriculum)
+    public void ApplyArenaScale()
+    {
+        float scale = envParams.GetWithDefault("arena_scale", 1.0f);
+
+        arenaRoot.localScale = new Vector3(scale, 1f, scale); // Don't scale the
+    }
+
 
     public void AssignNewWalls()
     {

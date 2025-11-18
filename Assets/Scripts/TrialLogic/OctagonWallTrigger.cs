@@ -8,7 +8,7 @@ public class OctagonWallTrigger : MonoBehaviour
     private Transform arenaRoot;
     // scripts
     IdentityAssignment identityAssignment;
-    [SerializeField] OctagonArea octagonArea;
+    [SerializeField] OctagonArenaSettings octagonArenaSettings;
     [SerializeField] OctagonAgent playerAgent;
     [SerializeField] OctagonAgent opponentAgent;
     // variables
@@ -40,7 +40,7 @@ public class OctagonWallTrigger : MonoBehaviour
     // Get references to player and opponent agents 
     void Start()
     {
-        if (!octagonArea.soloMode && opponentAgent == null)
+        if (!octagonArenaSettings.soloMode && opponentAgent == null)
         {
             opponentAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
                 .FirstOrDefault(t => t.CompareTag("OpponentAgent"))
@@ -61,15 +61,15 @@ public class OctagonWallTrigger : MonoBehaviour
         // if interacting GameObject has an ML-Agent component attached assign it to the agent variable
         if (!interactingObject.TryGetComponent<OctagonAgent>(out var agent)) return;
 
-        wallID1 = octagonArea.activeWalls.wall1;
-        wallID2 = octagonArea.activeWalls.wall2;
+        wallID1 = octagonArenaSettings.activeWalls.wall1;
+        wallID2 = octagonArenaSettings.activeWalls.wall2;
         wallIDs = new List<int> { wallID1, wallID2 };
 
         if (wallIDs.Contains(triggerID))
         {
             // What effect does this assignment have on trial logic? test without it
-            octagonArea.isTrialLooping = false;
-            Debug.Log($"Wall trigger - trial looping: {octagonArea.isTrialLooping}");
+            octagonArenaSettings.isTrialLooping = false;
+            Debug.Log($"Wall trigger - trial looping: {octagonArenaSettings.isTrialLooping}");
 
             string interactorTag = agent.CompareTag("PlayerAgent") ? "PlayerAgent" : "OpponentAgent";
 
@@ -79,7 +79,7 @@ public class OctagonWallTrigger : MonoBehaviour
 
             playerAgent.LogTriggerActivation(wallID1, wallTag, interactorTag);
 
-            if (!octagonArea.soloMode)
+            if (!octagonArenaSettings.soloMode)
             {
                 opponentAgent.LogTriggerActivation(wallID1, wallTag, interactorTag);
 
@@ -111,13 +111,13 @@ public class OctagonWallTrigger : MonoBehaviour
         string thisTrialType = interactor.thisTrialType;
 
         // Identify the outcome score dependent on activated trigger and current trial type
-        var (score, rewardType) = octagonArea.TrialInteraction(triggerID, wallID1, wallID2, thisTrialType);
+        var (score, rewardType) = octagonArenaSettings.TrialInteraction(triggerID, wallID1, wallID2, thisTrialType);
 
         // Set reward at 1/10 point value for this trial outcome
         // This might be way too high? Compared to other rewards
         float scaledReward = score / 10f;
 
-        if (!octagonArea.soloMode && opponentAgent != null)
+        if (!octagonArenaSettings.soloMode && opponentAgent != null)
         {
             OctagonAgent winner = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
             OctagonAgent loser = interactorTag == "PlayerAgent" ? opponentAgent : playerAgent;
@@ -126,7 +126,7 @@ public class OctagonWallTrigger : MonoBehaviour
             winner.AddReward(scaledReward);
             loser.AddReward(-scaledReward);
 
-            octagonArea.DisableTriggers();
+            octagonArenaSettings.DisableTriggers();
             float plCumulativeReward = playerAgent.GetCumulativeReward();
             Debug.Log($"Player agent reward at the end of this episode is {plCumulativeReward}");
             float oppCumulativeReward = opponentAgent.GetCumulativeReward();
@@ -139,7 +139,7 @@ public class OctagonWallTrigger : MonoBehaviour
 
 
         }
-        else if (octagonArea.soloMode)
+        else if (octagonArenaSettings.soloMode)
         {
             OctagonAgent winner = playerAgent;
             winner.AddReward(scaledReward);

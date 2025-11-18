@@ -16,7 +16,7 @@ public class OctagonAgent : Agent
     public GameObject wall1Trigger;
     public GameObject wall2Trigger;
     public string thisTrialType;
-    [SerializeField] public OctagonArea octagonArea;
+    [SerializeField] public OctagonArenaSettings octagonArenaSettings;
     // uncomment once trial logic script is ready
     //[SerializeField] public TrialLogic trialLogic;
     [SerializeField] public IdentityManager identityManager;
@@ -69,7 +69,7 @@ public class OctagonAgent : Agent
 
             // define path for agent log 
             // stores log in 'AgentLogs' folder in 'Assets' folder
-            if (!octagonArea.soloMode)
+            if (!octagonArenaSettings.soloMode)
             {
                 logPath = Application.dataPath + $"/SocialRaycastLogs/log_{agentTag}_{System.DateTime.Now:yyyyMMdd_HHmmss}.csv";
             }
@@ -90,7 +90,7 @@ public class OctagonAgent : Agent
     {
         arenaRoot = transform.parent;
 
-        if (octagonArea == null) octagonArea = arenaRoot.GetComponentInChildren<OctagonArea>();
+        if (octagonArenaSettings == null) octagonArenaSettings = arenaRoot.GetComponentInChildren<OctagonArenaSettings>();
 
     }
 
@@ -103,7 +103,7 @@ public class OctagonAgent : Agent
             .Where(t => t.CompareTag("WallTrigger")) // children with tag "WallTrigger"
             .Select(t => t.gameObject) // select the associated game object
             .ToList(); // store in list
-        if (octagonArea != null)
+        if (octagonArenaSettings != null)
         {
             Debug.Log("Octagon area located.");
         }
@@ -119,7 +119,7 @@ public class OctagonAgent : Agent
     {
         Debug.Log("OnEpisodeBegin is called");
 
-        Debug.Log($"OnEpisodeBegin - trial looping: {octagonArea.isTrialLooping}");
+        Debug.Log($"OnEpisodeBegin - trial looping: {octagonArenaSettings.isTrialLooping}");
 
         // Why is this necessary?
         Debug.Log("Time scale: " + Time.timeScale);
@@ -129,7 +129,7 @@ public class OctagonAgent : Agent
         }
 
         // This conditional should ideally be removed
-        if (!octagonArea.isTrialLooping)
+        if (!octagonArenaSettings.isTrialLooping)
         {
             // check that agent currently running this script is "PlayerAgent"
             if (this.CompareTag("PlayerAgent"))
@@ -138,18 +138,18 @@ public class OctagonAgent : Agent
                 totalShapingReward = 0; // variable to track shaping rewards for agent
 
                 // disable wall triggers during ITI
-                octagonArea.DisableTriggers();
+                octagonArenaSettings.DisableTriggers();
 
                 // reset arena by washing off active wall colours
-                octagonArea.ResetTrial();
+                octagonArenaSettings.ResetTrial();
 
                 // start trial ITI and active wall colouring logic
-                //StartCoroutine(octagonArea.ITI());
+                //StartCoroutine(octagonArenaSettings.ITI());
 
                 Debug.Log("Starting coroutine...");
 
-                octagonArea.TrialLoop();
-                //StartCoroutine(octagonArea.ITI());
+                octagonArenaSettings.TrialLoop();
+                //StartCoroutine(octagonArenaSettings.ITI());
 
                 Debug.Log("Coroutine has started");
 
@@ -160,7 +160,7 @@ public class OctagonAgent : Agent
         else
         {
             Debug.Log("please wait for trial loop to be unlocked");
-            Debug.Log($"OnEpisodeBegin, Trial looping - Trial looping: {octagonArea.isTrialLooping}");
+            Debug.Log($"OnEpisodeBegin, Trial looping - Trial looping: {octagonArenaSettings.isTrialLooping}");
         }
         //previousDistanceHigh = Vector3.Distance(transform.position, wall1Trigger.transform.position);
         //previousDistanceLow = Vector3.Distance(transform.position, wall2Trigger.transform.position);
@@ -190,7 +190,7 @@ public class OctagonAgent : Agent
         if (!isTraining)
         {
             // log this step's data to the CSV file
-            logWriter.WriteLine($"{episodeCount},{stepCount},{octagonArea.wallID1},{octagonArea.wallID2},{currentTime},{posX},{posY},{posZ},{rotY},{reward}");
+            logWriter.WriteLine($"{episodeCount},{stepCount},{octagonArenaSettings.wallID1},{octagonArenaSettings.wallID2},{currentTime},{posX},{posY},{posZ},{rotY},{reward}");
 
             // flush the writer to ensure data is written in real-time
             logWriter.Flush();
@@ -264,7 +264,7 @@ public class OctagonAgent : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         // observe mode
-        sensor.AddObservation(octagonArea.soloMode ? 1 : 2);  // 1 for solo mode, 2 for social mode
+        sensor.AddObservation(octagonArenaSettings.soloMode ? 1 : 2);  // 1 for solo mode, 2 for social mode
     }
 
     // Manual agent control for testing
