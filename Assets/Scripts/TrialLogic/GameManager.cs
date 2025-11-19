@@ -573,19 +573,28 @@ public class GameManager : SingletonNetwork<GameManager>
     
     public string SelectTrial()
     {
-        float roll = Random.Range(0f, 1f);
 
-        if (roll < 0.6f)
+        float mixedProbability  = General.trialTypeProbabilities[0];
+        float forcedProbability = General.trialTypeProbabilities[1];
+        float totalProbability  = mixedProbability + forcedProbability;
+
+        // roll between 0 and totalProbability
+        float roll = Random.Range(0f, totalProbability);
+
+        // pick mixed or forced trial
+        if (roll < mixedProbability)
         {
+            // mixed: pick between HighLow (0) and RiskyChoice (1)
             int idx = Random.Range(0, 2);
             return General.trialTypes[idx];
         }
-
         else
         {
+            // forced: pick between ForcedHigh, ForcedLow, and ForcedRisky (2–4)
             int index = Random.Range(2, 5);
             return General.trialTypes[index];
         }
+
         // Create weighted list of trial types to draw from 
         //WeightedList<string> trialTypeDist = new();
 

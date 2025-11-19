@@ -37,7 +37,10 @@ namespace Globals
 
         // solo sessions
         //public static List<int> trialTypeProbabilities = new List<int>{35, 35, 10, 10, 10};
-        public static List<int> trialTypeProbabilities = new List<int>{30, 30};
+
+        // trialTypeProbabilities index 0 = Mixed stimulus trials probability
+        // trialTypeProbabilities index 1 = Forced stimulus trials probability
+        public static List<int> trialTypeProbabilities = new List<int>{60, 40};
 
         // socials
         // public static List<int> trialTypeProbabilities = new List<int>{50, 50};
