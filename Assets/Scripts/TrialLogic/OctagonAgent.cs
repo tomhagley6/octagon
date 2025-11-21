@@ -50,6 +50,8 @@ public class OctagonAgent : Agent
     // path to log file where agent data will be saved
     string logPath;
     // StreamWriter instance used to write agent logs to the file
+
+    SelectivePassThroughRaycast raycastSensor; // custom raycast sensor component
     StreamWriter logWriter;
 
     public override void Initialize()
@@ -91,6 +93,13 @@ public class OctagonAgent : Agent
         arenaRoot = transform.parent;
 
         if (octagonArenaSettings == null) octagonArenaSettings = arenaRoot.GetComponentInChildren<OctagonArenaSettings>();
+
+        // get raycast sensor
+        raycastSensor = GetComponent<SelectivePassThroughRaycast>();
+        if (raycastSensor == null)
+        {
+            Debug.LogError("SelectivePassThroughRaycast component not found on agent.");
+        }
 
     }
 
@@ -265,6 +274,18 @@ public class OctagonAgent : Agent
     {
         // observe mode
         sensor.AddObservation(octagonArenaSettings.soloMode ? 1 : 2);  // 1 for solo mode, 2 for social mode
+    
+        // Add raycast observations
+        if (raycastSensor != null)
+        {
+            float[] rayObs = raycastSensor.GetObservations();
+            sensor.AddObservation(rayObs);
+        }
+        else
+        {
+            Debug.LogError("Raycast sensor is null during observation collection.");
+        }
+    
     }
 
     // Manual agent control for testing

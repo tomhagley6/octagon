@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4366765, g: 0.48427117, b: 0.56452465, a: 1}
+  m_IndirectSpecularColor: {r: 0.4366757, g: 0.48427194, b: 0.5645252, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -592,7 +592,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4489723424049516791, guid: 6128c5cdcf5bba961b9c183bfe3a0081, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.1
+      value: 4.78
       objectReference: {fileID: 0}
     - target: {fileID: 4489723424049516791, guid: 6128c5cdcf5bba961b9c183bfe3a0081, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2509,6 +2509,67 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scoreText: {fileID: 966589353}
   score: 0
+--- !u!1001 &990746659
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8896195942426240604, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+      propertyPath: detectionMask.m_Bits
+      value: 507
+      objectReference: {fileID: 0}
+    - target: {fileID: 1717201731386774889, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+      propertyPath: m_Name
+      value: PlayerAgentTest
+      objectReference: {fileID: 0}
+    - target: {fileID: 4489723424049516791, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1.33
+      objectReference: {fileID: 0}
+    - target: {fileID: 4489723424049516791, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 4.11
+      objectReference: {fileID: 0}
+    - target: {fileID: 4489723424049516791, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 11.93
+      objectReference: {fileID: 0}
+    - target: {fileID: 4489723424049516791, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.07157874
+      objectReference: {fileID: 0}
+    - target: {fileID: 4489723424049516791, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4489723424049516791, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.997435
+      objectReference: {fileID: 0}
+    - target: {fileID: 4489723424049516791, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4489723424049516791, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4489723424049516791, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -188.209
+      objectReference: {fileID: 0}
+    - target: {fileID: 4489723424049516791, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
 --- !u!1001 &1037029839
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3626,7 +3687,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4845276930943762971, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000061035156
+      value: 0.000030517578
       objectReference: {fileID: 0}
     - target: {fileID: 4845637959249703711, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchorMax.y
@@ -4838,6 +4899,10 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 2068871501
       objectReference: {fileID: 0}
+    - target: {fileID: 2703631618401489782, guid: 07f7508a475f01aadb3ab7e81ad6b64a, type: 3}
+      propertyPath: m_MaxRayDegrees
+      value: 66
+      objectReference: {fileID: 0}
     - target: {fileID: 2738612438200210927, guid: 07f7508a475f01aadb3ab7e81ad6b64a, type: 3}
       propertyPath: m_Name
       value: PlayerAgent
@@ -4870,3 +4935,4 @@ SceneRoots:
   - {fileID: 943512223}
   - {fileID: 1260986861}
   - {fileID: 270167757}
+  - {fileID: 990746659}

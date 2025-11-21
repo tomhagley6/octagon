@@ -63,9 +63,9 @@ GameObject:
   - component: {fileID: 864409754076990077}
   - component: {fileID: 3883084382528183162}
   - component: {fileID: -4245991771020405375}
-  - component: {fileID: -3568981186069289449}
+  - component: {fileID: -8896195942426240604}
   m_Layer: 0
-  m_Name: PlayerAgent
+  m_Name: PlayerAgentTest
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -228,7 +228,7 @@ MonoBehaviour:
   DecisionPeriod: 1
   DecisionStep: 0
   TakeActionsBetweenDecisions: 0
---- !u!114 &-3568981186069289449
+--- !u!114 &-8896195942426240604
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -237,32 +237,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 1717201731386774889}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Script: {fileID: 11500000, guid: 610e55864875220408db48d38f7dbc60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SensorName: RayPerceptionSensor
-  m_DetectableTags:
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  m_RaysPerDirection: 4
-  m_MaxRayDegrees: 66
-  m_SphereCastRadius: 0
-  m_RayLength: 60
-  m_RayLayerMask:
+  maxRayDegrees: 66
+  raysPerDirection: 3
+  rayLength: 60
+  sphereRadius: 0
+  detectionMask:
     serializedVersion: 2
-    m_Bits: 4294967291
-  m_ObservationStacks: 1
-  m_AlternatingRayOrder: 1
-  m_UseBatchedRaycasts: 1
-  rayHitColor: {r: 1, g: 0, b: 0.7647059, a: 1}
-  rayMissColor: {r: 0, g: 0, b: 0, a: 1}
-  m_StartVerticalOffset: -1.15
-  m_EndVerticalOffset: -1.15
+    m_Bits: 1
+  passThroughTag: OpponentAgent
+  detectPassThroughObjects: 1
+  detectionTags:
+  - HighWall
+  - LowWall
+  - HighWallTrigger
+  - LowWallTrigger
 --- !u!1 &3589750069483679266
 GameObject:
   m_ObjectHideFlags: 0
