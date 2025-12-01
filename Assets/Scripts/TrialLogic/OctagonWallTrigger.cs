@@ -27,7 +27,7 @@ public class OctagonWallTrigger : MonoBehaviour
             triggerID = identityAssignment.customID;
         }
 
-        arenaRoot = transform.parent;
+        arenaRoot = transform.parent.parent.parent; // Above the Wall and OctagonArena container
 
         // get all wall colliders
         wallColliders = arenaRoot.GetComponentsInChildren<Transform>(true)
@@ -40,6 +40,15 @@ public class OctagonWallTrigger : MonoBehaviour
     // Get references to player and opponent agents 
     void Start()
     {
+        if (octagonArenaSettings == null) 
+        {
+            octagonArenaSettings = arenaRoot.GetComponentInChildren<OctagonArenaSettings>();
+            if (octagonArenaSettings == null)
+            {
+                Debug.LogError("OctagonArenaSettings component not found in arena root.");
+            }
+        }
+
         if (!octagonArenaSettings.soloMode && opponentAgent == null)
         {
             opponentAgent = arenaRoot.GetComponentsInChildren<Transform>(true)

@@ -66,7 +66,7 @@ GameObject:
   - component: {fileID: -8896195942426240604}
   m_Layer: 0
   m_Name: PlayerAgentTest
-  m_TagString: Player
+  m_TagString: PlayerAgent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -164,7 +164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 1
+    VectorObservationSize: 43
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -213,6 +213,7 @@ MonoBehaviour:
   totalShapingReward: 0
   isTraining: 0
   isInference: 0
+  raycastSensor: {fileID: 0}
 --- !u!114 &-4245991771020405375
 MonoBehaviour:
   m_ObjectHideFlags: 0

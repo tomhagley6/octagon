@@ -59,12 +59,37 @@ public class SelectivePassThroughRaycast : MonoBehaviour
             
             var sortedHits = allHits.OrderBy(h => h.distance).ToList();
             
+
+            // RaycastHit? wallHit = sortedHits.FirstOrDefault(h => !h.collider.CompareTag(passThroughTag));
+            // RaycastHit? opponentHit = detectPassThroughObjects
+            //  ? sortedHits.FirstOrDefault(h => h.collider.CompareTag(passThroughTag))
+            //  : null; // Keeping pass-through detection flexible here
+
             // Using 'wallHit' here because currently all of the detected objects besides OpponentAgent are 
             // wall related
-            RaycastHit? wallHit = sortedHits.FirstOrDefault(h => !h.collider.CompareTag(passThroughTag));
+            /* Changed to Cast the IEnumerable result of .Where to RaycastHit? to avoid
+            issues with FirstOrDefault returning default(RaycastHit) which is not nullable,
+            and so instead returns a RaycastHit with all fields defaulted (including distance 0) */
+            RaycastHit? wallHit = sortedHits
+                                    .Where(h => !h.collider.CompareTag(passThroughTag))
+                                    .Cast<RaycastHit?>()
+                                    .FirstOrDefault();
+            
             RaycastHit? opponentHit = detectPassThroughObjects
-             ? sortedHits.FirstOrDefault(h => h.collider.CompareTag(passThroughTag))
+             ? sortedHits
+                .Where(h => h.collider.CompareTag(passThroughTag))
+                .Cast<RaycastHit?>()
+                .FirstOrDefault()
              : null; // Keeping pass-through detection flexible here
+                        
+             // Debugging
+             if (opponentHit.HasValue && wallHit.HasValue)
+            {
+                bool isPassingThrough = opponentHit.Value.distance < wallHit.Value.distance;
+                Debug.Log($"Ray {i}: Opponent at {opponentHit.Value.distance:F2}m, " +
+                $"Wall at {wallHit.Value.distance:F2}m - " + 
+                $"Passing through: {isPassingThrough}");
+            }
                         
             rayDataList.Add(new RayData
             {
@@ -124,7 +149,12 @@ public class SelectivePassThroughRaycast : MonoBehaviour
                 // pass-through object (opponent) distance
                 observations[opponentIdx] = ray.opponentHit.Value.distance / rayLength;
             }
-            // else 0 (no pass-through objects)
+            // Else distance is reported as 0 (no pass-through object)
+            // Can double check to see if this is a good way to implement for the network!
+            else
+            {
+                observations[opponentIdx] = 0f; // This value means 'no opponent agent'
+            }
         }
         
         return observations;

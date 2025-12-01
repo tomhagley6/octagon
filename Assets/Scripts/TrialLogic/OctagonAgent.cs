@@ -51,7 +51,7 @@ public class OctagonAgent : Agent
     string logPath;
     // StreamWriter instance used to write agent logs to the file
 
-    SelectivePassThroughRaycast raycastSensor; // custom raycast sensor component
+    [SerializeField] SelectivePassThroughRaycast raycastSensor; // custom raycast sensor component
     StreamWriter logWriter;
 
     public override void Initialize()
@@ -92,13 +92,44 @@ public class OctagonAgent : Agent
     {
         arenaRoot = transform.parent;
 
-        if (octagonArenaSettings == null) octagonArenaSettings = arenaRoot.GetComponentInChildren<OctagonArenaSettings>();
+        if (octagonArenaSettings == null)
+        {
+            octagonArenaSettings = arenaRoot.GetComponentInChildren<OctagonArenaSettings>();
+            if (octagonArenaSettings == null)
+            {
+                Debug.LogError("OctagonArenaSettings component not found in arena root.");
+            }
+        }
 
-        // get raycast sensor
-        raycastSensor = GetComponent<SelectivePassThroughRaycast>();
+        // Get character controller component
+        if (controller == null)
+        {
+            controller = GetComponent<CharacterController>();
+            if (controller == null)
+            {
+                Debug.LogError("CharacterController component not found on agent.");
+            }   
+        }
+
+        // Get animator component
+        if (animator == null)   
+        {
+            animator = GetComponentInChildren<Animator>();
+            if (animator == null)
+            {
+                Debug.LogError("Animator component not found on agent.");
+            }
+        }
+
+        // Get raycast sensor
+        // raycastSensor = GetComponent<SelectivePassThroughRaycast>();
         if (raycastSensor == null)
         {
-            Debug.LogError("SelectivePassThroughRaycast component not found on agent.");
+            raycastSensor = GetComponent<SelectivePassThroughRaycast>();
+            if (raycastSensor == null)
+            {
+                Debug.LogError("SelectivePassThroughRaycast component not found on agent.");
+            }
         }
 
     }
@@ -280,6 +311,14 @@ public class OctagonAgent : Agent
         {
             float[] rayObs = raycastSensor.GetObservations();
             sensor.AddObservation(rayObs);
+
+            // Debug
+            int midRay = 3;
+            int obsPerRay = 6; // 1 distance + 4 tags + 1 pass-through distance
+            int startIdx = midRay * obsPerRay;
+
+            Debug.Log($"Middle Ray - Wall dist: {rayObs[startIdx]:F2}, " +
+                    $"Opponent dist: {rayObs[startIdx + 5]:F2}");
         }
         else
         {
