@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4366757, g: 0.48427194, b: 0.5645252, a: 1}
+  m_IndirectSpecularColor: {r: 0.4366765, g: 0.48427117, b: 0.56452465, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -639,6 +639,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6128c5cdcf5bba961b9c183bfe3a0081, type: 3}
+--- !u!1 &288201410 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1717201731386774889, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+  m_PrefabInstance: {fileID: 990746659}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &292919118
 GameObject:
   m_ObjectHideFlags: 0
@@ -1087,7 +1092,7 @@ MonoBehaviour:
   thisTrialType: 
   isTrialLooping: 0
   opponentAgent: {fileID: 0}
-  playerAgent: {fileID: 846055672}
+  playerAgent: {fileID: 1629962735}
   identityManager: {fileID: 1063991865}
 --- !u!1 &705507993
 GameObject:
@@ -1720,17 +1725,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1105698220055947328, guid: 07f7508a475f01aadb3ab7e81ad6b64a, type: 3}
   m_PrefabInstance: {fileID: 6182819648218646647}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &846055672 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6385557125355756181, guid: 07f7508a475f01aadb3ab7e81ad6b64a, type: 3}
-  m_PrefabInstance: {fileID: 6182819648218646647}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: adc592ca0309941cebe204ee9ecaf385, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &867040846
 GameObject:
   m_ObjectHideFlags: 0
@@ -2563,8 +2557,12 @@ PrefabInstance:
       value: 507
       objectReference: {fileID: 0}
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+      propertyPath: m_BehaviorType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
-      value: 43
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1717201731386774889, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_Name
@@ -2573,6 +2571,10 @@ PrefabInstance:
     - target: {fileID: 1717201731386774889, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_TagString
       value: PlayerAgent
+      objectReference: {fileID: 0}
+    - target: {fileID: 3883084382528183162, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+      propertyPath: MaxStep
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 3883084382528183162, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: raycastSensor
@@ -2637,7 +2639,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1717201731386774889, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1629962733}
   m_SourcePrefab: {fileID: 100100000, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
 --- !u!1001 &1037029839
 PrefabInstance:
@@ -3451,7 +3456,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: -8896195942426240604, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
   m_PrefabInstance: {fileID: 990746659}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 288201410}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 610e55864875220408db48d38f7dbc60, type: 3}
@@ -3462,6 +3467,31 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4489723424049516791, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
   m_PrefabInstance: {fileID: 990746659}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1629962733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 288201410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be8de09fc454d2c2a93a830661cff50c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  raycastLogic: {fileID: 1629962719}
+  sensorName: SelectivePassThroughRaycastSensor
+--- !u!114 &1629962735 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3883084382528183162, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+  m_PrefabInstance: {fileID: 990746659}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 288201410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adc592ca0309941cebe204ee9ecaf385, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1637624913
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3772,7 +3802,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4845276930943762971, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -0.000061035156
       objectReference: {fileID: 0}
     - target: {fileID: 4845637959249703711, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchorMax.y
@@ -3960,7 +3990,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   octagonArenaSettings: {fileID: 0}
-  playerAgent: {fileID: 846055672}
+  playerAgent: {fileID: 0}
   opponentAgent: {fileID: 0}
   triggerID: 0
   wallID1: 0
@@ -3980,7 +4010,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   octagonArenaSettings: {fileID: 0}
-  playerAgent: {fileID: 846055672}
+  playerAgent: {fileID: 0}
   opponentAgent: {fileID: 0}
   triggerID: 0
   wallID1: 0
@@ -4641,7 +4671,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   octagonArenaSettings: {fileID: 0}
-  playerAgent: {fileID: 846055672}
+  playerAgent: {fileID: 0}
   opponentAgent: {fileID: 0}
   triggerID: 0
   wallID1: 0
@@ -4696,7 +4726,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   octagonArenaSettings: {fileID: 0}
-  playerAgent: {fileID: 846055672}
+  playerAgent: {fileID: 0}
   opponentAgent: {fileID: 0}
   triggerID: 0
   wallID1: 0
@@ -4716,7 +4746,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   octagonArenaSettings: {fileID: 0}
-  playerAgent: {fileID: 846055672}
+  playerAgent: {fileID: 0}
   opponentAgent: {fileID: 0}
   triggerID: 0
   wallID1: 0
@@ -4736,7 +4766,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   octagonArenaSettings: {fileID: 0}
-  playerAgent: {fileID: 846055672}
+  playerAgent: {fileID: 0}
   opponentAgent: {fileID: 0}
   triggerID: 0
   wallID1: 0
@@ -4756,7 +4786,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   octagonArenaSettings: {fileID: 0}
-  playerAgent: {fileID: 846055672}
+  playerAgent: {fileID: 0}
   opponentAgent: {fileID: 0}
   triggerID: 0
   wallID1: 0
@@ -4776,7 +4806,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   octagonArenaSettings: {fileID: 0}
-  playerAgent: {fileID: 846055672}
+  playerAgent: {fileID: 0}
   opponentAgent: {fileID: 0}
   triggerID: 0
   wallID1: 0
@@ -4950,7 +4980,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1105698220055947328, guid: 07f7508a475f01aadb3ab7e81ad6b64a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -3.64
       objectReference: {fileID: 0}
     - target: {fileID: 1105698220055947328, guid: 07f7508a475f01aadb3ab7e81ad6b64a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -4994,7 +5024,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2738612438200210927, guid: 07f7508a475f01aadb3ab7e81ad6b64a, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2738612438200210927, guid: 07f7508a475f01aadb3ab7e81ad6b64a, type: 3}
       propertyPath: m_TagString
@@ -5003,6 +5033,10 @@ PrefabInstance:
     - target: {fileID: 5460850268824221329, guid: 07f7508a475f01aadb3ab7e81ad6b64a, type: 3}
       propertyPath: m_BehaviorType
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6385557125355756181, guid: 07f7508a475f01aadb3ab7e81ad6b64a, type: 3}
+      propertyPath: MaxStep
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 6385557125355756181, guid: 07f7508a475f01aadb3ab7e81ad6b64a, type: 3}
       propertyPath: octagonArea

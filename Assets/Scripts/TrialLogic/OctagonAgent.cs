@@ -50,8 +50,6 @@ public class OctagonAgent : Agent
     // path to log file where agent data will be saved
     string logPath;
     // StreamWriter instance used to write agent logs to the file
-
-    [SerializeField] SelectivePassThroughRaycast raycastSensor; // custom raycast sensor component
     StreamWriter logWriter;
 
     public override void Initialize()
@@ -90,14 +88,40 @@ public class OctagonAgent : Agent
     // use to intialise references
     protected override void Awake()
     {
-        arenaRoot = transform.parent;
+        // Search upward to find the ArenaManager parent
+        Transform current = transform;
+        while (current != null)
+        {
+            if (current.name == "ArenaManager" || current.GetComponent<Transform>().name.Contains("ArenaManager"))
+            {
+                arenaRoot = current;
+                break;
+            }
+            current = current.parent;
+        }
 
+        // Fallback to direct parent if ArenaManager not found
+        if (arenaRoot == null)
+        {
+            Debug.LogWarning($"[{gameObject.name}] ArenaManager not found in hierarchy, using direct parent");
+            arenaRoot = transform.parent;
+        }
+        else
+        {
+            Debug.Log($"[{gameObject.name}] Found ArenaManager: {arenaRoot.name}");
+        }
+
+        // Find OctagonArenaSettings in the arena hierarchy
         if (octagonArenaSettings == null)
         {
             octagonArenaSettings = arenaRoot.GetComponentInChildren<OctagonArenaSettings>();
             if (octagonArenaSettings == null)
             {
-                Debug.LogError("OctagonArenaSettings component not found in arena root.");
+                Debug.LogError($"[{gameObject.name}] OctagonArenaSettings component not found under {arenaRoot.name}");
+            }
+            else
+            {
+                Debug.Log($"[{gameObject.name}] Found OctagonArenaSettings on {octagonArenaSettings.gameObject.name}");
             }
         }
 
@@ -121,16 +145,8 @@ public class OctagonAgent : Agent
             }
         }
 
-        // Get raycast sensor
-        // raycastSensor = GetComponent<SelectivePassThroughRaycast>();
-        if (raycastSensor == null)
-        {
-            raycastSensor = GetComponent<SelectivePassThroughRaycast>();
-            if (raycastSensor == null)
-            {
-                Debug.LogError("SelectivePassThroughRaycast component not found on agent.");
-            }
-        }
+        // Raycast sensor is now handled automatically by SelectivePassThroughRaycastSensorComponent
+        // No need to get a reference here
 
     }
 
@@ -140,24 +156,121 @@ public class OctagonAgent : Agent
     {
         // Get references to all wall triggers in the arena
         allWallTriggers = arenaRoot.GetComponentsInChildren<Transform>(true)
-            .Where(t => t.CompareTag("WallTrigger")) // children with tag "WallTrigger"
-            .Select(t => t.gameObject) // select the associated game object
-            .ToList(); // store in list
+            .Where(t => t.CompareTag("WallTrigger"))            .Select(t => t.gameObject)            .ToList(); // store in list
         if (octagonArenaSettings != null)
         {
             Debug.Log("Octagon area located.");
         }
+        
+        // Debug: Check sensor initialization state
+        Debug.LogWarning($"[OctagonAgent] Start() called on {gameObject.name} - Frame: {Time.frameCount}");
+        var agentType = typeof(Agent);
+        var sensorsField = agentType.GetField("sensors", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        if (sensorsField != null)
+        {
+            var sensors = sensorsField.GetValue(this);
+            if (sensors != null)
+            {
+                var sensorsList = sensors as System.Collections.Generic.List<ISensor>;
+                Debug.LogWarning($"[OctagonAgent] Start() - sensors count: {sensorsList?.Count ?? -1}");
+            }
+            else
+            {
+                Debug.LogWarning($"[OctagonAgent] Start() - sensors is NULL");
+            }
+        }
+    }
+
+    // Debug OnEnable/OnDisable - Re-adding to track initialization lifecycle
+
+    /// <summary>
+    /// CRITICAL: Must call base.OnEnable() to trigger LazyInitialize()
+    /// </summary>
+    protected override void OnEnable()
+    {
+        Debug.LogWarning($"[OctagonAgent {GetInstanceID()}] OnEnable called on {gameObject.name} - Frame: {Time.frameCount}");
+        base.OnEnable(); // MUST call this - it calls LazyInitialize()
+        
+        // Check if initialization succeeded
+        var agentType = typeof(Agent);
+        var initializedField = agentType.GetField("m_Initialized", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        if (initializedField != null)
+        {
+            bool isInitialized = (bool)initializedField.GetValue(this);
+            Debug.LogWarning($"[OctagonAgent {GetInstanceID()}] After OnEnable - m_Initialized: {isInitialized}");
+        }
+    }
+
+    /// <summary>
+    /// Debug: Track when agent is disabled
+    /// </summary>
+    protected override void OnDisable()
+    {
+        Debug.LogWarning($"[OctagonAgent {GetInstanceID()}] OnDisable called on {gameObject.name} - Frame: {Time.frameCount}");
+        base.OnDisable();
+    }
+
+    /// <summary>
+    /// Debug: Override EndEpisode to check sensor state before the crash
+    /// </summary>
+    public new void EndEpisode()
+    {
+        Debug.LogWarning($"[OctagonAgent {GetInstanceID()}] EndEpisode called on {gameObject.name} (Tag: {tag}) - Frame: {Time.frameCount} - StepCount: {StepCount}/{MaxStep}");
+        
+        // Check if agent is initialized
+        var agentType = typeof(Agent);
+        var initializedField = agentType.GetField("m_Initialized", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        if (initializedField != null)
+        {
+            bool isInitialized = (bool)initializedField.GetValue(this);
+            Debug.LogWarning($"[OctagonAgent {GetInstanceID()}] Agent m_Initialized: {isInitialized}");
+        }
+        
+        // Use reflection to check the internal sensors list
+        var sensorsField = agentType.GetField("sensors", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        
+        if (sensorsField != null)
+        {
+            var sensors = sensorsField.GetValue(this);
+            Debug.LogWarning($"[OctagonAgent] sensors field value: {(sensors == null ? "NULL" : "EXISTS")}");
+            
+            if (sensors != null)
+            {
+                var sensorsList = sensors as System.Collections.Generic.List<ISensor>;
+                Debug.LogWarning($"[OctagonAgent] sensors list count: {sensorsList?.Count ?? -1}");
+                
+                if (sensorsList != null && sensorsList.Count > 0)
+                {
+                    for (int i = 0; i < sensorsList.Count; i++)
+                    {
+                        Debug.LogWarning($"[OctagonAgent]   Sensor {i}: {sensorsList[i]?.GetName() ?? "NULL"} (hash: {sensorsList[i]?.GetHashCode() ?? 0})");
+                    }
+                }
+            }
+        }
+        else
+        {
+            Debug.LogError("[OctagonAgent] Could not access sensors field via reflection");
+        }
+        
+        Debug.LogWarning($"[OctagonAgent {GetInstanceID()}] About to call base.EndEpisode() - Frame: {Time.frameCount}");
+        base.EndEpisode();
+        Debug.LogWarning($"[OctagonAgent {GetInstanceID()}] Returned from base.EndEpisode() - Frame: {Time.frameCount}");
     }
 
 
-    // We can put all reset code in OnEpisodeBegins, so that regardless of the reason for 
+    // We can put all reset code in OnEpisodeBegins, so that regardless of the reason for
     // EndEpisode, we reset the agent and arena the same way
     // ITI Can be still be called here. I think it's needed to keep the trained task
     // spiritually similar to the human task. However, in the curriculum we can move from
     // low variability and low duration, up to the standard ITI
     public override void OnEpisodeBegin()
     {
-        Debug.Log("OnEpisodeBegin is called");
+        Debug.LogWarning($"[OctagonAgent {GetInstanceID()}] OnEpisodeBegin called on {gameObject.name} (Tag: {tag}) - Frame: {Time.frameCount}");
+
+        // Reset agent-specific state regardless of whether this is PlayerAgent or OpponentAgent
+        totalShapingReward = 0;
+        episodeCount++;
 
         Debug.Log($"OnEpisodeBegin - trial looping: {octagonArenaSettings.isTrialLooping}");
 
@@ -168,34 +281,29 @@ public class OctagonAgent : Agent
             Time.timeScale = 1; // Resume normal time
         }
 
-        // This conditional should ideally be removed
+        // Only PlayerAgent should handle arena-wide setup (trial loop, wall coloring, etc.)
+        // OpponentAgent just resets its own state above
+        if (!this.CompareTag("PlayerAgent"))
+        {
+            Debug.Log($"[{gameObject.name}] OpponentAgent OnEpisodeBegin complete (no arena setup needed)");
+            return;
+        }
+
+        // PlayerAgent-specific arena setup logic below
         if (!octagonArenaSettings.isTrialLooping)
         {
-            // check that agent currently running this script is "PlayerAgent"
-            if (this.CompareTag("PlayerAgent"))
-            {
-                Debug.Log("PlayerAgent found, starting episode");
-                totalShapingReward = 0; // variable to track shaping rewards for agent
+            Debug.Log("PlayerAgent found, starting episode");
 
-                // disable wall triggers during ITI
-                octagonArenaSettings.DisableTriggers();
+            // disable wall triggers during ITI
+            octagonArenaSettings.DisableTriggers();
 
-                // reset arena by washing off active wall colours
-                octagonArenaSettings.ResetTrial();
+            // reset arena by washing off active wall colours
+            octagonArenaSettings.ResetTrial();
 
-                // start trial ITI and active wall colouring logic
-                //StartCoroutine(octagonArenaSettings.ITI());
-
-                Debug.Log("Starting coroutine...");
-
-                octagonArenaSettings.TrialLoop();
-                //StartCoroutine(octagonArenaSettings.ITI());
-
-                Debug.Log("Coroutine has started");
-
-            }
-
-            episodeCount++;
+            // start trial ITI and active wall colouring logic
+            Debug.Log("Starting coroutine...");
+            octagonArenaSettings.TrialLoop();
+            Debug.Log("Coroutine has started");
         }
         else
         {
@@ -299,32 +407,11 @@ public class OctagonAgent : Agent
 
     }
 
-    // Do we not have other observations? What about the raycast information, and distance to walls/opponent?
-    // ANS: No, we don't need to implement any code for observations taken from raycast.
+    // Raycast observations are automatically collected by SelectivePassThroughRaycastSensorComponent
     public override void CollectObservations(VectorSensor sensor)
     {
-        // observe mode
-        sensor.AddObservation(octagonArenaSettings.soloMode ? 1 : 2);  // 1 for solo mode, 2 for social mode
-    
-        // Add raycast observations
-        if (raycastSensor != null)
-        {
-            float[] rayObs = raycastSensor.GetObservations();
-            sensor.AddObservation(rayObs);
-
-            // Debug
-            int midRay = 3;
-            int obsPerRay = 6; // 1 distance + 4 tags + 1 pass-through distance
-            int startIdx = midRay * obsPerRay;
-
-            Debug.Log($"Middle Ray - Wall dist: {rayObs[startIdx]:F2}, " +
-                    $"Opponent dist: {rayObs[startIdx + 5]:F2}");
-        }
-        else
-        {
-            Debug.LogError("Raycast sensor is null during observation collection.");
-        }
-    
+        // Observe mode (solo vs social)
+        sensor.AddObservation(octagonArenaSettings.soloMode ? 1 : 2);
     }
 
     // Manual agent control for testing

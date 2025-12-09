@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4366756, g: 0.48427135, b: 0.56452316, a: 1}
+  m_IndirectSpecularColor: {r: 0.4366765, g: 0.48427117, b: 0.56452465, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -861,7 +861,7 @@ MonoBehaviour:
   wall1Trigger: {fileID: 0}
   wall2Trigger: {fileID: 0}
   thisTrialType: 
-  octagonArea: {fileID: 643279652}
+  octagonArenaSettings: {fileID: 0}
   identityManager: {fileID: 1063991865}
   moveSpeed: 10
   turnSpeed: 360
@@ -1982,7 +1982,7 @@ MonoBehaviour:
   wall1Trigger: {fileID: 0}
   wall2Trigger: {fileID: 0}
   thisTrialType: 
-  octagonArea: {fileID: 643279652}
+  octagonArenaSettings: {fileID: 0}
   identityManager: {fileID: 1063991865}
   moveSpeed: 10
   turnSpeed: 360
@@ -4325,7 +4325,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4845276930943762971, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000061035156
+      value: -0.000061035156
       objectReference: {fileID: 0}
     - target: {fileID: 4845637959249703711, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchorMax.y
@@ -4512,7 +4512,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1edcffc3fdb4442d5a6fca1b57ed7087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  octagonArea: {fileID: 643279652}
+  octagonArenaSettings: {fileID: 0}
   playerAgent: {fileID: 846055672}
   opponentAgent: {fileID: 387446836}
   triggerID: 0
@@ -4532,7 +4532,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1edcffc3fdb4442d5a6fca1b57ed7087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  octagonArea: {fileID: 643279652}
+  octagonArenaSettings: {fileID: 0}
   playerAgent: {fileID: 846055672}
   opponentAgent: {fileID: 387446836}
   triggerID: 0
@@ -4883,6 +4883,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 3224838472309191008, guid: 84cba722e1a3f8a20aa07e8d8e23016a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3445233267155266493, guid: 84cba722e1a3f8a20aa07e8d8e23016a, type: 3}
       propertyPath: m_Layer
       value: 3
@@ -5202,7 +5206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1edcffc3fdb4442d5a6fca1b57ed7087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  octagonArea: {fileID: 643279652}
+  octagonArenaSettings: {fileID: 0}
   playerAgent: {fileID: 846055672}
   opponentAgent: {fileID: 387446836}
   triggerID: 0
@@ -5257,7 +5261,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1edcffc3fdb4442d5a6fca1b57ed7087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  octagonArea: {fileID: 643279652}
+  octagonArenaSettings: {fileID: 0}
   playerAgent: {fileID: 846055672}
   opponentAgent: {fileID: 387446836}
   triggerID: 0
@@ -5277,7 +5281,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1edcffc3fdb4442d5a6fca1b57ed7087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  octagonArea: {fileID: 643279652}
+  octagonArenaSettings: {fileID: 0}
   playerAgent: {fileID: 846055672}
   opponentAgent: {fileID: 387446836}
   triggerID: 0
@@ -5297,7 +5301,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1edcffc3fdb4442d5a6fca1b57ed7087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  octagonArea: {fileID: 643279652}
+  octagonArenaSettings: {fileID: 0}
   playerAgent: {fileID: 846055672}
   opponentAgent: {fileID: 387446836}
   triggerID: 0
@@ -5317,7 +5321,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1edcffc3fdb4442d5a6fca1b57ed7087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  octagonArea: {fileID: 643279652}
+  octagonArenaSettings: {fileID: 0}
   playerAgent: {fileID: 846055672}
   opponentAgent: {fileID: 387446836}
   triggerID: 0
@@ -5337,7 +5341,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1edcffc3fdb4442d5a6fca1b57ed7087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  octagonArea: {fileID: 643279652}
+  octagonArenaSettings: {fileID: 0}
   playerAgent: {fileID: 846055672}
   opponentAgent: {fileID: 387446836}
   triggerID: 0

@@ -27,7 +27,28 @@ public class OctagonWallTrigger : MonoBehaviour
             triggerID = identityAssignment.customID;
         }
 
-        arenaRoot = transform.parent.parent.parent; // Above the Wall and OctagonArena container
+        // Search upward to find the ArenaManager parent
+        Transform current = transform;
+        while (current != null)
+        {
+            if (current.name == "ArenaManager" || current.name.Contains("ArenaManager"))
+            {
+                arenaRoot = current;
+                break;
+            }
+            current = current.parent;
+        }
+
+        // Fallback to hardcoded parent hierarchy if ArenaManager not found
+        if (arenaRoot == null)
+        {
+            Debug.LogWarning($"[{gameObject.name}] ArenaManager not found in hierarchy, using hardcoded parent.parent.parent");
+            arenaRoot = transform.parent.parent.parent;
+        }
+        else
+        {
+            Debug.Log($"[{gameObject.name}] Found ArenaManager: {arenaRoot.name}");
+        }
 
         // get all wall colliders
         wallColliders = arenaRoot.GetComponentsInChildren<Transform>(true)
@@ -45,21 +66,36 @@ public class OctagonWallTrigger : MonoBehaviour
             octagonArenaSettings = arenaRoot.GetComponentInChildren<OctagonArenaSettings>();
             if (octagonArenaSettings == null)
             {
-                Debug.LogError("OctagonArenaSettings component not found in arena root.");
+                Debug.LogError($"[{gameObject.name}] OctagonArenaSettings component not found under {arenaRoot.name}");
+            }
+            else
+            {
+                Debug.Log($"[{gameObject.name}] Found OctagonArenaSettings on {octagonArenaSettings.gameObject.name}");
             }
         }
 
         if (!octagonArenaSettings.soloMode && opponentAgent == null)
         {
-            opponentAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
+            // Only find ACTIVE GameObjects (false parameter excludes inactive objects)
+            opponentAgent = arenaRoot.GetComponentsInChildren<Transform>(false)
                 .FirstOrDefault(t => t.CompareTag("OpponentAgent"))
                 ?.GetComponent<OctagonAgent>();
         }
         if (playerAgent == null)
         {
-            playerAgent = arenaRoot.GetComponentsInChildren<Transform>(true)
+            // Only find ACTIVE GameObjects (false parameter excludes inactive objects)
+            playerAgent = arenaRoot.GetComponentsInChildren<Transform>(false)
                 .FirstOrDefault(t => t.CompareTag("PlayerAgent"))
                 ?.GetComponent<OctagonAgent>();
+            
+            if (playerAgent != null)
+            {
+                Debug.Log($"[OctagonWallTrigger] Found PlayerAgent: {playerAgent.gameObject.name}");
+            }
+            else
+            {
+                Debug.LogError($"[OctagonWallTrigger] Could not find active PlayerAgent in arena!");
+            }
         }
 
     }

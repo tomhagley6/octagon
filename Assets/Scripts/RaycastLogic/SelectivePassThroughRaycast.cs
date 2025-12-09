@@ -33,13 +33,38 @@ public class SelectivePassThroughRaycast : MonoBehaviour
     
     void Awake()
     {
-        totalRays = 2 * raysPerDirection + 1;
-        rayDataList = new List<RayData>(totalRays); // Preallocation
+        Initialize();
+    }
+
+    /// <summary>
+    /// Ensure the raycast system is initialized.
+    /// Called from Awake() and also before first use to handle early initialization.
+    /// </summary>
+    private void Initialize()
+    {
+        if (rayDataList == null)
+        {
+            totalRays = 2 * raysPerDirection + 1;
+            rayDataList = new List<RayData>(totalRays);
+        }
+    }
+
+    /// <summary>
+    /// Calculate the total observation size for the sensor.
+    /// Used by the SensorComponent during initialization.
+    /// </summary>
+    public int GetObservationSize()
+    {
+        int totalRays = 2 * raysPerDirection + 1;
+        // Per ray: 1 distance + N tag encodings + 1 opponent distance
+        int obsPerRay = 1 + detectionTags.Count + 1;
+        return totalRays * obsPerRay;
     }
 
 
     private List<RayData> CastRays()
     {
+        Initialize(); // Ensure initialized before use
         rayDataList.Clear();
         
         for (int i = 0; i < totalRays; i++)
