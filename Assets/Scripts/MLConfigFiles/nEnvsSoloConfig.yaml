@@ -7,14 +7,14 @@ behaviors:
   OctagonAgentSolo:
     trainer_type: ppo
     max_steps: 2e06                   # Total training steps
-    time_horizon: 128                 # How many steps of experience per agent before updating (could be increased)
+    time_horizon: 256                 # How many steps of experience per agent before updating (increased for parallel envs)
     summary_freq: 25000               # How often stats are written to TensorBoard
     keep_checkpoints: 5               # Checkpoints that are older than the last keep_checkpoints will be deleted.
     checkpoint_interval: 200000       # Increased this from 50000
 
     hyperparameters:
-      batch_size: 512                 # Number of experiences used per training batch (could decreased, recommended range is 32-512)
-      buffer_size: 2048               # How many total experiences are collected before training (could be increased, recommended range is 2048-409600)
+      batch_size: 2048                # Number of experiences used per training batch (increased for GPU efficiency)
+      buffer_size: 10240              # How many total experiences are collected before training (scaled with num_envs)
       learning_rate: 1.0e-4           # Changed from 3.0e-4, but should be experimented with
       learning_rate_schedule: linear  # doubt this needs to be changed (for PPO)
       beta: 5.0e-3                    # Decision-making randomness. Decays linearly with time. May not be important if using Curiosity
@@ -50,5 +50,5 @@ behaviors:
 
     # init_path: results/SocialSelfPlay12/OctagonAgentSocial/OctagonAgentSocial12.pt # Can be used to load and continue training
                                                                                      # from a pre-trained model
-    init_oath: null
+    init_path: null
     self_play: null
