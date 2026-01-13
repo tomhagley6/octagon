@@ -15,7 +15,7 @@ behaviors:
     hyperparameters:
       batch_size: 512                 # Number of experiences used per training batch (could decreased, recommended range is 32-512)
       buffer_size: 2048               # How many total experiences are collected before training (could be increased, recommended range is 2048-409600)
-      learning_rate: 1.0e-4           # Changed from 3.0e-4, but should be experimented with
+      learning_rate: 3.0e-4           # Changed from 3.0e-4, but should be experimented with
       learning_rate_schedule: linear  # doubt this needs to be changed (for PPO)
       beta: 5.0e-3                    # Decision-making randomness. Decays linearly with time. May not be important if using Curiosity
       epsilon: 0.2                    # How different the old and new policies can be during gradient descent updating. Default value.
