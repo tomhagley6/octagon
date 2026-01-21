@@ -29,8 +29,8 @@ namespace Globals
         public static List<int> wallSeparationsProbabilities = new List<int>{50,25,25};
 
         // colours
-        public static Color wallHighColour = Color.blue; // Color.red
-        public static Color wallLowColour = Color.red;  // Color.blue
+        public static Color wallHighColour = Color.red; // Color.blue
+        public static Color wallLowColour = Color.blue;  // Color.red
         public static Color wallInteractionZoneColour = new Color(1, 215/255f, 0, 129/255f);
 
         // misc

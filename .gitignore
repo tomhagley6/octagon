@@ -73,3 +73,14 @@ crashlytics-build.properties
 
 # Unity package meta files
 *.unitypackage.meta
+
+# ML-Agents specific ignores
+Assets/AgentBrains/
+Assets/ML-Agents/
+Assets/SocialRaycastLogs/
+Assets/SoloRaycastLogs/
+ml-agents/
+results/
+
+# Python virtual environments
+~python-envs/
