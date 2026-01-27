@@ -142,10 +142,10 @@ public class OctagonWallTrigger : MonoBehaviour
     // Assign a negative penalty for colliding with an inactive wall trigger
     public void HandleInactiveTrigger(int triggerID, string interactorTag)
     {
-        float inactiveWallPenalty = -0.01f;
+        // float inactiveWallPenalty = -0.01f;
 
-        OctagonAgent interactor = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
-        interactor.AddReward(inactiveWallPenalty);
+        // OctagonAgent interactor = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
+        // interactor.AddReward(inactiveWallPenalty);
     }
 
     // Assign reward and end the current episode, following relevant trigger collision 

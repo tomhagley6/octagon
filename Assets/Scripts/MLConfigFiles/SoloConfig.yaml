@@ -10,7 +10,7 @@ behaviors:
     time_horizon: 128                 # How many steps of experience per agent before updating (could be increased)
     summary_freq: 25000               # How often stats are written to TensorBoard
     keep_checkpoints: 5               # Checkpoints that are older than the last keep_checkpoints will be deleted.
-    checkpoint_interval: 200000       # Increased this from 50000
+    checkpoint_interval: 50000       # Increased this from 50000
 
     hyperparameters:
       batch_size: 512                 # Number of experiences used per training batch (could decreased, recommended range is 32-512)
