@@ -42,12 +42,16 @@ public class OctagonWallTrigger : MonoBehaviour
         // Fallback to hardcoded parent hierarchy if ArenaManager not found
         if (arenaRoot == null)
         {
+            #if UNITY_EDITOR
             Debug.LogWarning($"[{gameObject.name}] ArenaManager not found in hierarchy, using hardcoded parent.parent.parent");
+            #endif
             arenaRoot = transform.parent.parent.parent;
         }
         else
         {
+            #if UNITY_EDITOR
             Debug.Log($"[{gameObject.name}] Found ArenaManager: {arenaRoot.name}");
+            #endif
         }
 
         // get all wall colliders
@@ -70,7 +74,9 @@ public class OctagonWallTrigger : MonoBehaviour
             }
             else
             {
+                #if UNITY_EDITOR
                 Debug.Log($"[{gameObject.name}] Found OctagonArenaSettings on {octagonArenaSettings.gameObject.name}");
+                #endif
             }
         }
 
@@ -88,6 +94,7 @@ public class OctagonWallTrigger : MonoBehaviour
                 .FirstOrDefault(t => t.CompareTag("PlayerAgent"))
                 ?.GetComponent<OctagonAgent>();
             
+            #if UNITY_EDITOR
             if (playerAgent != null)
             {
                 Debug.Log($"[OctagonWallTrigger] Found PlayerAgent: {playerAgent.gameObject.name}");
@@ -96,6 +103,7 @@ public class OctagonWallTrigger : MonoBehaviour
             {
                 Debug.LogError($"[OctagonWallTrigger] Could not find active PlayerAgent in arena!");
             }
+            #endif
         }
 
     }
@@ -114,7 +122,12 @@ public class OctagonWallTrigger : MonoBehaviour
         {
             // What effect does this assignment have on trial logic? test without it
             octagonArenaSettings.isTrialLooping = false;
-            Debug.Log($"Wall trigger - trial looping: {octagonArenaSettings.isTrialLooping}");
+            
+            // NEW: Reset arena ready flag when trial ends - prevents agents from acting during next setup
+            octagonArenaSettings.isArenaReady = false;
+            #if UNITY_EDITOR
+            Debug.Log($"[OnTriggerEnter] Wall triggered - isTrialLooping: {octagonArenaSettings.isTrialLooping}, isArenaReady: {octagonArenaSettings.isArenaReady}");
+            #endif
 
             string interactorTag = agent.CompareTag("PlayerAgent") ? "PlayerAgent" : "OpponentAgent";
 
@@ -172,10 +185,12 @@ public class OctagonWallTrigger : MonoBehaviour
             loser.AddReward(-scaledReward);
 
             octagonArenaSettings.DisableTriggers();
+            #if UNITY_EDITOR
             float plCumulativeReward = playerAgent.GetCumulativeReward();
             Debug.Log($"Player agent reward at the end of this episode is {plCumulativeReward}");
             float oppCumulativeReward = opponentAgent.GetCumulativeReward();
             Debug.Log($"Opponent agent reward at the end of this episode is {oppCumulativeReward}");
+            #endif
 
             playerAgent.EndEpisode();
             opponentAgent.EndEpisode();
@@ -188,8 +203,10 @@ public class OctagonWallTrigger : MonoBehaviour
         {
             OctagonAgent winner = playerAgent;
             winner.AddReward(scaledReward);
+            #if UNITY_EDITOR
             float cumulativeReward = playerAgent.GetCumulativeReward();
             Debug.Log($"Agent reward at the end of this episode is {cumulativeReward}");
+            #endif
             playerAgent.EndEpisode();
             //playerAgent.LogEpisodeEndEvent();
         }

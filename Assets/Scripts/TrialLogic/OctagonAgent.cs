@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Unity.MLAgents;
 using UnityEngine;
@@ -103,12 +104,16 @@ public class OctagonAgent : Agent
         // Fallback to direct parent if ArenaManager not found
         if (arenaRoot == null)
         {
+            #if UNITY_EDITOR
             Debug.LogWarning($"[{gameObject.name}] ArenaManager not found in hierarchy, using direct parent");
+            #endif
             arenaRoot = transform.parent;
         }
         else
         {
+            #if UNITY_EDITOR
             Debug.Log($"[{gameObject.name}] Found ArenaManager: {arenaRoot.name}");
+            #endif
         }
 
         // Find OctagonArenaSettings in the arena hierarchy
@@ -121,7 +126,9 @@ public class OctagonAgent : Agent
             }
             else
             {
+                #if UNITY_EDITOR
                 Debug.Log($"[{gameObject.name}] Found OctagonArenaSettings on {octagonArenaSettings.gameObject.name}");
+                #endif
             }
         }
 
@@ -157,6 +164,8 @@ public class OctagonAgent : Agent
         // Get references to all wall triggers in the arena
         allWallTriggers = arenaRoot.GetComponentsInChildren<Transform>(true)
             .Where(t => t.CompareTag("WallTrigger"))            .Select(t => t.gameObject)            .ToList(); // store in list
+        
+        #if UNITY_EDITOR
         if (octagonArenaSettings != null)
         {
             Debug.Log("Octagon area located.");
@@ -179,6 +188,7 @@ public class OctagonAgent : Agent
                 Debug.LogWarning($"[OctagonAgent] Start() - sensors is NULL");
             }
         }
+        #endif
     }
 
     // Debug OnEnable/OnDisable - Re-adding to track initialization lifecycle
@@ -188,9 +198,12 @@ public class OctagonAgent : Agent
     /// </summary>
     protected override void OnEnable()
     {
+        #if UNITY_EDITOR
         Debug.LogWarning($"[OctagonAgent {GetInstanceID()}] OnEnable called on {gameObject.name} - Frame: {Time.frameCount}");
+        #endif
         base.OnEnable(); // MUST call this - it calls LazyInitialize()
         
+        #if UNITY_EDITOR
         // Check if initialization succeeded
         var agentType = typeof(Agent);
         var initializedField = agentType.GetField("m_Initialized", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
@@ -199,6 +212,7 @@ public class OctagonAgent : Agent
             bool isInitialized = (bool)initializedField.GetValue(this);
             Debug.LogWarning($"[OctagonAgent {GetInstanceID()}] After OnEnable - m_Initialized: {isInitialized}");
         }
+        #endif
     }
 
     /// <summary>
@@ -206,7 +220,9 @@ public class OctagonAgent : Agent
     /// </summary>
     protected override void OnDisable()
     {
+        #if UNITY_EDITOR
         Debug.LogWarning($"[OctagonAgent {GetInstanceID()}] OnDisable called on {gameObject.name} - Frame: {Time.frameCount}");
+        #endif
         base.OnDisable();
     }
 
@@ -215,6 +231,7 @@ public class OctagonAgent : Agent
     /// </summary>
     public new void EndEpisode()
     {
+        #if UNITY_EDITOR
         Debug.LogWarning($"[OctagonAgent {GetInstanceID()}] EndEpisode called on {gameObject.name} (Tag: {tag}) - Frame: {Time.frameCount} - StepCount: {StepCount}/{MaxStep}");
         
         // Check if agent is initialized
@@ -254,8 +271,13 @@ public class OctagonAgent : Agent
         }
         
         Debug.LogWarning($"[OctagonAgent {GetInstanceID()}] About to call base.EndEpisode() - Frame: {Time.frameCount}");
+        #endif
+        
         base.EndEpisode();
+        
+        #if UNITY_EDITOR
         Debug.LogWarning($"[OctagonAgent {GetInstanceID()}] Returned from base.EndEpisode() - Frame: {Time.frameCount}");
+        #endif
     }
 
 
@@ -266,16 +288,21 @@ public class OctagonAgent : Agent
     // low variability and low duration, up to the standard ITI
     public override void OnEpisodeBegin()
     {
+        #if UNITY_EDITOR
         Debug.LogWarning($"[OctagonAgent {GetInstanceID()}] OnEpisodeBegin called on {gameObject.name} (Tag: {tag}) - Frame: {Time.frameCount}");
+        #endif
 
         // Reset agent-specific state regardless of whether this is PlayerAgent or OpponentAgent
         totalShapingReward = 0;
         episodeCount++;
 
+        #if UNITY_EDITOR
         Debug.Log($"OnEpisodeBegin - trial looping: {octagonArenaSettings.isTrialLooping}");
 
         // Why is this necessary?
         Debug.Log("Time scale: " + Time.timeScale);
+        #endif
+        
         if (Time.timeScale == 0)
         {
             Time.timeScale = 1; // Resume normal time
@@ -285,14 +312,20 @@ public class OctagonAgent : Agent
         // OpponentAgent just resets its own state above
         if (!this.CompareTag("PlayerAgent"))
         {
-            Debug.Log($"[{gameObject.name}] OpponentAgent OnEpisodeBegin complete (no arena setup needed)");
+            // NEW: OpponentAgent waits for PlayerAgent's setup to complete before continuing
+            #if UNITY_EDITOR
+            Debug.Log($"[{gameObject.name}] OpponentAgent waiting for arena setup...");
+            #endif
+            StartCoroutine(WaitForArenaSetup());
             return;
         }
 
         // PlayerAgent-specific arena setup logic below
         if (!octagonArenaSettings.isTrialLooping)
         {
+            #if UNITY_EDITOR
             Debug.Log("PlayerAgent found, starting episode");
+            #endif
 
             // disable wall triggers during ITI
             octagonArenaSettings.DisableTriggers();
@@ -301,20 +334,46 @@ public class OctagonAgent : Agent
             octagonArenaSettings.ResetTrial();
 
             // start trial ITI and active wall colouring logic
+            #if UNITY_EDITOR
             Debug.Log("Starting coroutine...");
+            #endif
             octagonArenaSettings.TrialLoop();
+            #if UNITY_EDITOR
             Debug.Log("Coroutine has started");
+            #endif
         }
         else
         {
+            #if UNITY_EDITOR
             Debug.Log("please wait for trial loop to be unlocked");
             Debug.Log($"OnEpisodeBegin, Trial looping - Trial looping: {octagonArenaSettings.isTrialLooping}");
+            #endif
         }
         //previousDistanceHigh = Vector3.Distance(transform.position, wall1Trigger.transform.position);
         //previousDistanceLow = Vector3.Distance(transform.position, wall2Trigger.transform.position);
 
         //Debug.Log($"[OctagonAgent] Agent {this.tag} starts with distance to {previousDistanceHigh} and distance to low {previousDistanceLow}.");
 
+    }
+
+    /// <summary>
+    /// NEW: Coroutine that blocks OpponentAgent until arena setup is complete.
+    /// Prevents OpponentAgent from observing stale/incorrect wall tags and colors.
+    /// This ensures both agents observe the same arena state when episodes begin.
+    /// </summary>
+    private IEnumerator WaitForArenaSetup()
+    {
+        #if UNITY_EDITOR
+        Debug.Log($"[{gameObject.name}] OpponentAgent entering WaitForArenaSetup - isArenaReady: {octagonArenaSettings.isArenaReady}");
+        #endif
+        
+        // Wait until PlayerAgent's TrialLoop() -> ITI() -> StartTrial() -> ColourWalls() completes
+        yield return new WaitUntil(() => octagonArenaSettings.isArenaReady);
+        
+        #if UNITY_EDITOR
+        Debug.Log($"[{gameObject.name}] OpponentAgent arena setup complete - resuming episode");
+        #endif
+        // Now safe to observe walls with correct tags/colors and begin acting
     }
 
     // observations:

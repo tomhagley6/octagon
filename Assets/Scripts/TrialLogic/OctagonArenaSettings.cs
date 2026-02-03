@@ -28,6 +28,11 @@ public class OctagonArenaSettings : MonoBehaviour
     private Color defaultWallColour;
     private float iti;
     public bool isTrialLooping = false;
+    
+    // NEW: Flag to signal when arena setup is complete and safe for agents to observe/act
+    // This prevents OpponentAgent from observing stale wall states before PlayerAgent completes setup
+    public bool isArenaReady = false;
+    
     // assign agents in inspector
     [SerializeField] public OctagonAgent opponentAgent;
     [SerializeField] public OctagonAgent playerAgent;
@@ -78,7 +83,9 @@ public class OctagonArenaSettings : MonoBehaviour
 
     public void StartTrial()
     {
+        #if UNITY_EDITOR
         Debug.Log("[StartTrial] calling arena set-up method");
+        #endif
         SetUpArena();
     }
 
@@ -91,7 +98,9 @@ public class OctagonArenaSettings : MonoBehaviour
     // Assign and colour walls for the upcoming trials
     public void SetUpArena()
     {
+        #if UNITY_EDITOR
         Debug.Log("[SetUpArena] arena set-up process initiated.");
+        #endif
 
         AssignNewWalls();
         wallID1 = activeWalls.wall1;
@@ -139,7 +148,9 @@ public class OctagonArenaSettings : MonoBehaviour
         activeWalls.wall1 = newWalls[0];
         activeWalls.wall2 = newWalls[1];
 
+        #if UNITY_EDITOR
         Debug.Log("[AssignNewWalls] New walls for this trial are assigned.");
+        #endif
     }
 
     public List<int> SelectNewWalls()
@@ -278,7 +289,9 @@ public class OctagonArenaSettings : MonoBehaviour
         wall1Centre.GetComponent<Renderer>().materials[0].color = zoneColor;
         wall2Centre.GetComponent<Renderer>().materials[0].color = zoneColor;
 
+        #if UNITY_EDITOR
         Debug.Log("[ColourWalls] New trial walls are coloured.");
+        #endif
         playerAgent.LogSliceOnsetEvent(wallID1, wallID2, thisTrialType);
 
     }
@@ -288,6 +301,12 @@ public class OctagonArenaSettings : MonoBehaviour
     public void TrialLoop()
     {
         isTrialLooping = true;
+        
+        // NEW: Mark arena as NOT ready during setup - prevents agents from observing stale state
+        isArenaReady = false;
+        #if UNITY_EDITOR
+        Debug.Log("[TrialLoop] Arena setup starting - isArenaReady set to false");
+        #endif
 
         StartCoroutine(ITI());
     }
@@ -295,22 +314,33 @@ public class OctagonArenaSettings : MonoBehaviour
     // Inititate the ITI and lead into Start Trial logic
     public IEnumerator ITI()
     {
-
+        #if UNITY_EDITOR
         Debug.Log($"ITI range: {General.ITIMin} to {General.ITIMax}");
+        #endif
         iti = Random.Range(General.ITIMin, General.ITIMax);
 
         //Debug.Log($"Waiting for ITI: {iti}");
         yield return new WaitForSeconds(iti);
 
+        #if UNITY_EDITOR
         Debug.Log("Trial loop started.");
-
         Debug.Log("About to enable triggers.");
+        #endif
+        
         // ensures that triggers are enabled only after ITI has passed
         EnableTriggers();
 
+        #if UNITY_EDITOR
         Debug.Log("ITI ended. Triggers re-enabled. Trial now starting.");
+        #endif
 
-        StartTrial();
+        StartTrial(); // This calls SetUpArena() -> ColourWalls() which sets wall tags
+
+        // NEW: Signal that arena setup is complete - safe for OpponentAgent to observe
+        isArenaReady = true;
+        #if UNITY_EDITOR
+        Debug.Log("[ITI] Arena setup complete - isArenaReady set to true");
+        #endif
 
         if (!soloMode)
         {
@@ -321,16 +351,20 @@ public class OctagonArenaSettings : MonoBehaviour
         playerAgent.previousDistanceHigh = Vector3.Distance(playerAgent.transform.position, wall1Trigger.transform.position);
         playerAgent.previousDistanceLow = Vector3.Distance(playerAgent.transform.position, wall2Trigger.transform.position);
 
+        #if UNITY_EDITOR
         Debug.Log($"[OctagonAgent] Agent {playerAgent.tag} starts with distance to high {playerAgent.previousDistanceHigh} and distance to low {playerAgent.previousDistanceLow}.");
         if (!soloMode)
         { Debug.Log($"[OctagonAgent] Agent {opponentAgent.tag} starts with distance to high {opponentAgent.previousDistanceHigh} and distance to low {opponentAgent.previousDistanceLow}."); }
+        #endif
 
     }
 
     // Wall collider trigger enabling/disabling methods
     public void EnableTriggers()
     {
+        #if UNITY_EDITOR
         Debug.Log("Enabling triggers");
+        #endif
         foreach (var trigger in allWallTriggers)
         {
             if (trigger.TryGetComponent<BoxCollider>(out var collider))
@@ -341,7 +375,9 @@ public class OctagonArenaSettings : MonoBehaviour
     }
     public void DisableTriggers()
     {
+        #if UNITY_EDITOR
         Debug.Log("Disabling triggers.");
+        #endif
         foreach (var trigger in allWallTriggers)
         {
             if (trigger.TryGetComponent<BoxCollider>(out var collider))
@@ -360,7 +396,9 @@ public class OctagonArenaSettings : MonoBehaviour
         {
             WashWalls(wallID1, wallID2);
 
+            #if UNITY_EDITOR
             Debug.Log("Walls have now been washed");
+            #endif
 
             GameObject HWT = identityManager.GetObjectByIdentifier(wallID1);
             GameObject LWT = identityManager.GetObjectByIdentifier(wallID2);
@@ -376,7 +414,9 @@ public class OctagonArenaSettings : MonoBehaviour
 
         else if (wallID1 == 0 && wallID2 == 0)
         {
+            #if UNITY_EDITOR
             Debug.Log("First episode. Walls yet to be assigned, nothing to reset.");
+            #endif
         }
     }
 
