@@ -36,7 +36,7 @@ behaviors:
         strength: 0.01 # if exploration is too low up to 0.1
         learning_rate: 0.0001
 
-    init_path: results/2601/260107/260107_5/OctagonAgentSolo/OctagonAgentSolo-2000113.pt
+    # init_path: results/2601/260107/260107_5/OctagonAgentSolo/OctagonAgentSolo-2000113.pt
     
     self_play:
       window: 8                          # Increased from 5 - more opponent diversity to compensate for slower swaps
