@@ -6,7 +6,7 @@
 behaviors:
   OctagonAgentSolo:
     trainer_type: ppo
-    max_steps: 2e06                   # Total training steps
+    max_steps: 4e06                   # Total training steps
     time_horizon: 128                 # How many steps of experience per agent before updating (could be increased)
     summary_freq: 25000               # How often stats are written to TensorBoard
     keep_checkpoints: 5               # Checkpoints that are older than the last keep_checkpoints will be deleted.

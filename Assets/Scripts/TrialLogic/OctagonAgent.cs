@@ -469,8 +469,10 @@ public class OctagonAgent : Agent
     // Raycast observations are automatically collected by SelectivePassThroughRaycastSensorComponent
     public override void CollectObservations(VectorSensor sensor)
     {
-        // Observe mode (solo vs social)
-        sensor.AddObservation(octagonArenaSettings.soloMode ? 1 : 2);
+        /* Removed 260210 to try and address the catastrophic forgetting behaviour when transitioning from 
+            Solo to social */
+        // // Observe mode (solo vs social)
+        // sensor.AddObservation(octagonArenaSettings.soloMode ? 1 : 2);
     }
 
     // Manual agent control for testing
