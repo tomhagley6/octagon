@@ -22,8 +22,8 @@ public class SelectivePassThroughRaycast : MonoBehaviour
     { 
         "HighWall",
         "LowWall",
-        "HighWallTrigger",
-        "LowWallTrigger",
+        // "HighWallTrigger",   // 260209 Removing these for now to see if agents can learn the interaction zone implicitly
+        // "LowWallTrigger",
     };
 
     private List<RayData> rayDataList;
@@ -110,7 +110,7 @@ public class SelectivePassThroughRaycast : MonoBehaviour
              // Debugging
              if (opponentHit.HasValue && wallHit.HasValue)
             {
-                bool isPassingThrough = opponentHit.Value.distance < wallHit.Value.distance;
+                bool isPassingThrough = opponentHit.Value.distance < wallHit.Value.distance; // This logic is sensible assuming from the same ray
                 Debug.Log($"Ray {i}: Opponent at {opponentHit.Value.distance:F2}m, " +
                 $"Wall at {wallHit.Value.distance:F2}m - " + 
                 $"Passing through: {isPassingThrough}");

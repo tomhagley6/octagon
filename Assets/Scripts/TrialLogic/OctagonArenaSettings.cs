@@ -230,6 +230,7 @@ public class OctagonArenaSettings : MonoBehaviour
                 wall2.GetComponent<Renderer>().materials[0].color = General.wallLowColour;
 
                 // set tags to high/low wall for raycasts
+                // 260209 Trigger raycasts were inactivated
                 wall1.tag = "HighWall";
                 wall2.tag = "LowWall";
 

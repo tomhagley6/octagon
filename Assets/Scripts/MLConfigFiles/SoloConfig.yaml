@@ -50,5 +50,4 @@ behaviors:
 
     # init_path: results/SocialSelfPlay12/OctagonAgentSocial/OctagonAgentSocial12.pt # Can be used to load and continue training
                                                                                      # from a pre-trained model
-    init_oath: null
     self_play: null
