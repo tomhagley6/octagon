@@ -443,7 +443,7 @@ public class OctagonAgent : Agent
 
         // step penalty
         // Too small compared to final reward? How frequent is one step, and how long is one trial?
-        AddReward(-0.0001f);
+        AddReward(-1e-3f);
 
 
         if (wall1Trigger == null || wall2Trigger == null)
