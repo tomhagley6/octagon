@@ -11,9 +11,9 @@ namespace Globals
         // // vals
 
         // trial logic
-        public static int highScore = 50;
-        public static int lowScore = 20;
-        public static Dictionary<int, int> repeatsDict = new Dictionary<int,int>{{highScore,3},
+        public static float highScore = 1f;
+        public static float lowScore = 0.4f;
+        public static Dictionary<float, int> repeatsDict = new Dictionary<float,int>{{highScore,3},
                                                                                  {lowScore,1}};  // Reward sound repeats
                                                                                                  // for each increment val
 

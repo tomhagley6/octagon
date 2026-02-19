@@ -169,11 +169,8 @@ public class OctagonWallTrigger : MonoBehaviour
         string thisTrialType = interactor.thisTrialType;
 
         // Identify the outcome score dependent on activated trigger and current trial type
-        var (score, rewardType) = octagonArenaSettings.TrialInteraction(triggerID, wallID1, wallID2, thisTrialType);
+        var (reward, rewardType) = octagonArenaSettings.TrialInteraction(triggerID, wallID1, wallID2, thisTrialType);
 
-        // Set reward at 1/10 point value for this trial outcome
-        // This might be way too high? Compared to other rewards
-        float scaledReward = score / 10f;
 
         if (!octagonArenaSettings.soloMode && opponentAgent != null)
         {
@@ -181,8 +178,8 @@ public class OctagonWallTrigger : MonoBehaviour
             OctagonAgent loser = interactorTag == "PlayerAgent" ? opponentAgent : playerAgent;
 
             // Equal and negative reward for the loser in competitive play
-            winner.AddReward(scaledReward);
-            loser.AddReward(-scaledReward);
+            winner.AddReward(reward);
+            loser.AddReward(-reward);
 
             octagonArenaSettings.DisableTriggers();
             #if UNITY_EDITOR
@@ -198,11 +195,10 @@ public class OctagonWallTrigger : MonoBehaviour
             //opponentAgent.LogEpisodeEndEvent();
 
 
-        }
-        else if (octagonArenaSettings.soloMode)
+        } else if (octagonArenaSettings.soloMode)
         {
             OctagonAgent winner = playerAgent;
-            winner.AddReward(scaledReward);
+            winner.AddReward(reward);
             #if UNITY_EDITOR
             float cumulativeReward = playerAgent.GetCumulativeReward();
             Debug.Log($"Agent reward at the end of this episode is {cumulativeReward}");

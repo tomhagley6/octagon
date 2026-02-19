@@ -456,16 +456,16 @@ public class OctagonArenaSettings : MonoBehaviour
     
 
     // Identify the outcome score dependent on activated trigger and current trial type
-    public (int score, string rewardType) TrialInteraction(int triggerID, int highWallTriggerID, int lowWallTriggerID, string thisTrialType)
+    public (float reward, string rewardType) TrialInteraction(int triggerID, int highWallTriggerID, int lowWallTriggerID, string thisTrialType)
     {
-        int score = 0;
+        float reward = 0f;
         string rewardType = "";
 
         switch (thisTrialType)
         {
             case var value when value == General.highLow:
 
-                score = triggerID == highWallTriggerID ? General.highScore : General.lowScore;
+                reward = triggerID == highWallTriggerID ? General.highScore : General.lowScore;
                 rewardType = triggerID == highWallTriggerID ? General.highScoreRewardType : General.lowScoreRewardType;
 
                 break;
@@ -478,14 +478,14 @@ public class OctagonArenaSettings : MonoBehaviour
 
             case var value when value == General.forcedHigh:
 
-                score = General.highScore;
+                reward = General.highScore;
                 rewardType = General.highScoreRewardType;
 
                 break;
 
             case var value when value == General.forcedLow:
 
-                score = General.lowScore;
+                reward = General.lowScore;
                 rewardType = General.lowScoreRewardType;
 
                 break;
@@ -498,7 +498,7 @@ public class OctagonArenaSettings : MonoBehaviour
                 // break;
         }
 
-        return (score, rewardType);
+        return (reward, rewardType);
     }
 
 }

@@ -22,8 +22,9 @@ public class SelectivePassThroughRaycast : MonoBehaviour
     { 
         "HighWall",
         "LowWall",
-        // "HighWallTrigger",   // 260209 Removing these for now to see if agents can learn the interaction zone implicitly
-        // "LowWallTrigger",
+        "HighWallTrigger",   // 260209 Removing these for now to see if agents can learn the interaction zone implicitly
+                              // 260210 Added back in for testing, but removed soloMode obs
+        "LowWallTrigger",
     };
 
     private List<RayData> rayDataList;
