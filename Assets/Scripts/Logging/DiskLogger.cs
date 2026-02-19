@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Text;
+using System.Diagnostics;
 
 // Class to handle logging data to file on the local machine
 public class DiskLogger : Logger
@@ -31,11 +32,12 @@ public class DiskLogger : Logger
 
     public event Action loggingStarted;
     public event Action loggingEnded;
+    public bool IsRunning => loggerReady;
 
-    public DiskLogger()
-    {   // This is not needed if we have filename as a private variable
+    // public DiskLogger()
+    // {   // This is not needed if we have filename as a private variable
         // this.filename = filename;
-    }
+    // }
 
     public void Start()
     {
@@ -43,7 +45,7 @@ public class DiskLogger : Logger
         {
             Directory.CreateDirectory(dataFolder);
         }
-        Debug.Log("DiskLogger Start() ran"); 
+        UnityEngine.Debug.Log("DiskLogger Start() ran"); 
 
         logger = FindObjectOfType<Logger>();
 
@@ -80,7 +82,7 @@ public class DiskLogger : Logger
         }
         else
         {
-            Debug.Log("Logger not ready");
+            UnityEngine.Debug.Log("Logger not ready");
         }
 
         // Debug.Log("DiskLogger.Log() ran");
@@ -105,7 +107,7 @@ public class DiskLogger : Logger
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError("Error while emptying logger buffer: " + ex.Message);
+                    UnityEngine.Debug.LogError("Error while emptying logger buffer: " + ex.Message);
                 }
             }
             // Waits for the next fixed framerate Update() method
@@ -129,22 +131,18 @@ public class DiskLogger : Logger
                     // File.WriteAllText(item, filePath);
                     try 
                     {
-                        // // Check whether this is the most efficient way of doing things,
-                        // // or whether this will hog resources
-                        // firstLine = isFirstLine == true ? "[" : "";
-                        sw.WriteLine(item + ",");
-                        // Debug.Log(item);
+                        // write comma before entries except for the first line
+                        // makes it easier to remove the last comma for JSON formatting when closing the file
+                        if (!isFirstLine)
+                            sw.WriteLine(",");
 
-                        // string item2 = JsonUtility.ToJson(
-                        //     new {
-                        //         Time = "now"
-                        //     }
-                        // );
-                        // sw.WriteLine(item2);
+                        sw.Write(item);
+                        isFirstLine = false;
+
                     }
                     catch (Exception e)
                     {
-                        Debug.Log(e.Message);
+                        UnityEngine.Debug.Log(e.Message);
                     }
                     // Debug.Log($"item length after writing is {item.Length}");
                     // Debug.Log("TextWriter ran WriteLine for single logEntry");
@@ -166,11 +164,16 @@ public class DiskLogger : Logger
     // Public API
     public void StartLogger()
     {
+        if (loggerReady)
+        {
+            UnityEngine.Debug.Log("StartLogger() called but logger is already running");
+            return;
+        }
         
         // Path
         filename = String.Concat(DateTime.Now.ToString(Logging.fileTimeFormat), ".json");
         filePath = Path.Combine(dataFolder, filename);
-        Debug.Log("Logger created. Filename: " + filename);
+        UnityEngine.Debug.Log("Logger created. Filename: " + filename);
 
         // Initialise the instance of StreamWriter that we will use for this logging session
         // This instance will need to be flushed regularly to avoid data loss on application crash
@@ -215,7 +218,9 @@ public class DiskLogger : Logger
         // logger.StartLogging();
         loggingStarted?.Invoke();
 
-
+        // DEBUG
+        // this just compares two methods of serialisation
+        // and checks that the event description is correctly deserialised
         StartLoggingLogEvent startLoggingLogEvent = new StartLoggingLogEvent();
         string jsonData = JsonUtility.ToJson(startLoggingLogEvent);
         // Debug.Log("new attempt at json is "+ jsonData);
@@ -223,28 +228,28 @@ public class DiskLogger : Logger
         // Debug.Log("and deserialized is " + deserialized.eventDescription);
         if (deserialized.eventDescription == null)
         {
-            Debug.Log("deserialized.Description is null");
+            UnityEngine.Debug.Log("deserialized.Description is null");
         }
         else if (deserialized.eventDescription.Length == 0)
         {
-            Debug.Log("deserialized.Description is length 0");
+            UnityEngine.Debug.Log("deserialized.Description is length 0");
         }
 
         string jsonDataNewtonsoft = JsonConvert.SerializeObject(startLoggingLogEvent);
         // Debug.Log($"Now trying Newtonsoft: " + jsonDataNewtonsoft);
 
-        Debug.Log($"{startEvent.Event} - {startEvent.LocalTime} - {startEvent.ApplicationTime}");
+        UnityEngine.Debug.Log($"{startEvent.Event} - {startEvent.LocalTime} - {startEvent.ApplicationTime}");
         
 
 
         StartCoroutine(LogToFile());
-        Debug.Log("Logging coroutine begun.");
+        UnityEngine.Debug.Log("Logging coroutine begun.");
     }
 
 
     public void StopLogger()
     {
-        Debug.Log("Closing current logger: " + filename);
+        UnityEngine.Debug.Log("Closing current logger: " + filename);
 
         // Write a logging ended event to file to show that logging finished successfully
         loggingEnded?.Invoke();
@@ -280,24 +285,26 @@ public class DiskLogger : Logger
                 else {indexToRemove = 3;}
 
                 jsonContent = jsonContent.Remove(jsonContent.Length - indexToRemove, 1);
-                Debug.Log("Last character of the JSON string has been removed");
+                UnityEngine.Debug.Log("Last character of the JSON string has been removed");
 
                 // Write the modified content back to the file
                 File.WriteAllText(filePath, jsonContent);
             }
             else
             {
-                Debug.LogWarning("JSON file is empty or has only one character. No action taken.");
+                UnityEngine.Debug.LogWarning("JSON file is empty or has only one character. No action taken.");
             }
         }
         else
         {
-            Debug.LogWarning("JSON file path is invalid or does not exist. No action taken.");
+            UnityEngine.Debug.LogWarning("JSON file path is invalid or does not exist. No action taken.");
         }
         
         // Finish the JSON file by writing a square bracket to the end 
         using (StreamWriter sw = new StreamWriter(filePath, true))
         {
+            sw.Write("}");
+            sw.WriteLine();
             sw.WriteLine("]");
         }
     }

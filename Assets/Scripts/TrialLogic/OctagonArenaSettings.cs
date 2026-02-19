@@ -6,7 +6,7 @@ using KaimiraGames;
 using Unity.MLAgents;
 using UnityEngine;
 using UnityEditor;
-// using System.Numerics;
+using System;
 
 public class OctagonArenaSettings : MonoBehaviour
 {
@@ -44,7 +44,13 @@ public class OctagonArenaSettings : MonoBehaviour
     // Training curriculum parameters
     private EnvironmentParameters envParams;
     private float arenaScale;
-
+    public int PlayerTrialScore { get; private set; } = 0;
+    public int OpponentTrialScore { get; private set; } = 0;
+    public event Action SliceOnset;
+    public bool TrialActive { get; private set; } //  non-networked trial active boolean
+    public event Action<bool,bool> TrialActiveChanged; // added to equate to OnValueChanged in Netcode
+    public ushort trialNum { get; private set; } = 0;
+    public event Action<ushort, ushort> TrialNumChanged;
 
     // References for the arena and identity manager of the arena walls
     void Awake()
@@ -84,15 +90,24 @@ public class OctagonArenaSettings : MonoBehaviour
     public void StartTrial()
     {
         #if UNITY_EDITOR
-        Debug.Log("[StartTrial] calling arena set-up method");
+        Debug.Log("[StartTrial] calling start trial coroutine.");
         #endif
-        SetUpArena();
+        StartCoroutine(StartTrialCoroutine());
     }
 
     public struct ActiveWalls
     {
         public int wall1;
         public int wall2;
+    }
+
+    public IEnumerator StartTrialCoroutine()
+    {
+        var sliceOnsetDelay = UnityEngine.Random.Range(General.trialStartDurationMin, General.trialStartDurationMax);
+        yield return new WaitForSeconds(sliceOnsetDelay);
+
+        Debug.Log("[StartTrialCoroutine] calling arena set-up method");
+        SetUpArena();
     }
 
     // Assign and colour walls for the upcoming trials
@@ -160,7 +175,7 @@ public class OctagonArenaSettings : MonoBehaviour
         walls = identityManager.ListCustomIDs();
 
         // choose a random anchor wall to reference the trial to 
-        int anchorWallIndex = Random.Range(0, walls.Count);
+        int anchorWallIndex = UnityEngine.Random.Range(0, walls.Count);
 
         // create weighted list of wall separation values to draw from 
         WeightedList<int> wallSeparationsWeighted = new();
@@ -174,7 +189,7 @@ public class OctagonArenaSettings : MonoBehaviour
 
 
         // choose a random second wall that is consistent with anchor wall for this trial type
-        int wallIndexDiff = new List<int> { -wallSeparation, wallSeparation }[Random.Range(0, 2)];
+        int wallIndexDiff = new List<int> { -wallSeparation, wallSeparation }[UnityEngine.Random.Range(0, 2)];
 
         int dependentWallIndex = anchorWallIndex + wallIndexDiff;
 
@@ -293,7 +308,9 @@ public class OctagonArenaSettings : MonoBehaviour
         #if UNITY_EDITOR
         Debug.Log("[ColourWalls] New trial walls are coloured.");
         #endif
-        playerAgent.LogSliceOnsetEvent(wallID1, wallID2, thisTrialType);
+        
+        // logging variable to signal slice onset
+        SliceOnset?.Invoke();
 
     }
 
@@ -318,10 +335,14 @@ public class OctagonArenaSettings : MonoBehaviour
         #if UNITY_EDITOR
         Debug.Log($"ITI range: {General.ITIMin} to {General.ITIMax}");
         #endif
-        iti = Random.Range(General.ITIMin, General.ITIMax);
+        iti = UnityEngine.Random.Range(General.ITIMin, General.ITIMax);
 
         //Debug.Log($"Waiting for ITI: {iti}");
         yield return new WaitForSeconds(iti);
+
+        // logging variables signalling trial is active and scores to be reset
+        SetTrialActive(true);
+        ResetTrialScores();
 
         #if UNITY_EDITOR
         Debug.Log("Trial loop started.");
@@ -410,6 +431,8 @@ public class OctagonArenaSettings : MonoBehaviour
 
             //Debug.Log($"Tags for high wall and low walls after washing are {HW.tag} and {LW.tag}");
 
+            // Coroutine for delay between trigger activation and trial end
+            StartCoroutine(TrialEndDelayCoroutine());
         }
 
 
@@ -419,6 +442,12 @@ public class OctagonArenaSettings : MonoBehaviour
             Debug.Log("First episode. Walls yet to be assigned, nothing to reset.");
             #endif
         }
+    }
+
+    private IEnumerator TrialEndDelayCoroutine()
+    {
+        yield return new WaitForSeconds(General.trialEndDuration);
+        SetTrialActive(false);
     }
 
     // Why are we changing interaction zone colour? Could this be removed
@@ -499,6 +528,32 @@ public class OctagonArenaSettings : MonoBehaviour
         }
 
         return (score, rewardType);
+    }
+
+    public void SetTrialActive(bool value)
+    {
+        if (TrialActive == value) return;
+        bool prev = TrialActive;
+        TrialActive = value;
+        TrialActiveChanged?.Invoke(prev, TrialActive);
+    }
+    public void ResetTrialScores()
+    {
+        PlayerTrialScore = 0;
+        OpponentTrialScore = 0;
+    }
+
+    public void SetTrialScores(int playerScore, int opponentScore = 0)
+    {
+        PlayerTrialScore = playerScore;
+        OpponentTrialScore = opponentScore;
+    }
+
+    public void IncrementTrialNum()
+    {
+        ushort previous = trialNum;
+        trialNum++;
+        TrialNumChanged?.Invoke(previous, trialNum);
     }
 
 }

@@ -1,6 +1,11 @@
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
+using System.Numerics;
+using System.Runtime.Serialization.Formatters;
 using UnityEngine;
+using Globals;
+using System.ComponentModel;
 
 public class OctagonWallTrigger : MonoBehaviour
 {
@@ -11,6 +16,7 @@ public class OctagonWallTrigger : MonoBehaviour
     [SerializeField] OctagonArenaSettings octagonArenaSettings;
     [SerializeField] OctagonAgent playerAgent;
     [SerializeField] OctagonAgent opponentAgent;
+    [SerializeField] private ArenaLogger arenaLogger;
     // variables
     public int triggerID;
     public int wallID1;
@@ -106,6 +112,9 @@ public class OctagonWallTrigger : MonoBehaviour
             #endif
         }
 
+        if (arenaLogger == null)
+          arenaLogger = arenaRoot.GetComponentInChildren<ArenaLogger>();
+
     }
 
     // Method called when another collider interacts with the trigger collider of the parent game object
@@ -131,22 +140,19 @@ public class OctagonWallTrigger : MonoBehaviour
 
             string interactorTag = agent.CompareTag("PlayerAgent") ? "PlayerAgent" : "OpponentAgent";
 
+            arenaLogger?.LogTriggerActivation(triggerID, agent, authorised: true);
+
             HandleWallTrigger(triggerID, wallID1, wallID2, interactorTag);
 
             string wallTag = triggerID == wallID1 ? "HighWall" : "LowWall";
 
-            playerAgent.LogTriggerActivation(wallID1, wallTag, interactorTag);
-
-            if (!octagonArenaSettings.soloMode)
-            {
-                opponentAgent.LogTriggerActivation(wallID1, wallTag, interactorTag);
-
-            }
 
         }
         else if (!wallIDs.Contains(triggerID))
         {
             string interactorTag = agent.CompareTag("PlayerAgent") ? "PlayerAgent" : "OpponentAgent";
+            
+            arenaLogger?.LogTriggerActivation(triggerID, agent, authorised: false);
 
             HandleInactiveTrigger(triggerID, interactorTag);
         }
@@ -184,6 +190,10 @@ public class OctagonWallTrigger : MonoBehaviour
             winner.AddReward(scaledReward);
             loser.AddReward(-scaledReward);
 
+            int playerScore = winner == playerAgent ? (int)scaledReward : -(int)scaledReward;
+            int opponentScore = winner == opponentAgent ? (int)scaledReward : -(int)scaledReward;
+            octagonArenaSettings.SetTrialScores(playerScore, opponentScore);
+
             octagonArenaSettings.DisableTriggers();
             #if UNITY_EDITOR
             float plCumulativeReward = playerAgent.GetCumulativeReward();
@@ -203,6 +213,9 @@ public class OctagonWallTrigger : MonoBehaviour
         {
             OctagonAgent winner = playerAgent;
             winner.AddReward(scaledReward);
+
+            octagonArenaSettings.SetTrialScores((int)scaledReward, 0);
+
             #if UNITY_EDITOR
             float cumulativeReward = playerAgent.GetCumulativeReward();
             Debug.Log($"Agent reward at the end of this episode is {cumulativeReward}");
