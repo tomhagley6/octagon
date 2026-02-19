@@ -443,6 +443,7 @@ public class OctagonAgent : Agent
 
         // step penalty
         // Too small compared to final reward? How frequent is one step, and how long is one trial?
+        // Changed to -1e-3f from -1e-4f on 260219 
         AddReward(-1e-3f);
 
 

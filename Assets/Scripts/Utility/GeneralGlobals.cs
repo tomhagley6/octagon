@@ -13,6 +13,8 @@ namespace Globals
         // trial logic
         public static float highScore = 1f;
         public static float lowScore = 0.4f;
+        public static int highScoreDummy = 50;
+        public static int lowScoreDummy = 20;
         public static Dictionary<float, int> repeatsDict = new Dictionary<float,int>{{highScore,3},
                                                                                  {lowScore,1}};  // Reward sound repeats
                                                                                                  // for each increment val

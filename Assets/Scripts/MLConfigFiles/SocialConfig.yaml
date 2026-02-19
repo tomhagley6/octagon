@@ -1,7 +1,7 @@
 behaviors:
   OctagonAgentSocial:
     trainer_type: ppo
-    max_steps: 2e06          # Total training steps
+    max_steps: 4e06          # Total training steps
     time_horizon: 128            # How many steps of experience per agent before updating
     summary_freq: 20000          # How often stats are written to TensorBoard
     keep_checkpoints: 22         # Keep more checkpoints since we're saving less frequently
@@ -23,8 +23,13 @@ behaviors:
       num_layers: 2              # How deep the network is
       #vis_encode_type: resnet    # Visual encoder type: simple, nature_cnn, resnet
       memory:
-        sequence_length: 128
-        memory_size: 512
+        sequence_length: 64      # Length of the sequence of experiences while training. Smaller values increase training 
+                                  # but reduce the distance into the past that the agent can remember.
+                                  # Reduced to 64 from 128 on 260219
+        memory_size: 256         # size of the float array used to store the hidden state of the RNN. Scales without amount
+                                  # of information expected to be remembered in order to complete the task successfully.
+                                  # This is very high, above the default of 128 and range of 32-256. Could consider reducing.
+                                  # Reduced to 256 from 512 on 260219
 
     reward_signals:
       extrinsic:

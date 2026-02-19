@@ -627,21 +627,21 @@ public class GameManager : SingletonNetwork<GameManager>
         {
             case var value when value == General.highLow: // No one knows why this works, but cannot directly use FixedString value
             
-            score = triggerID == highWallTriggerID ? General.highScore : General.lowScore;
+            score = triggerID == highWallTriggerID ? General.highScoreDummy : General.lowScoreDummy;
             rewardType = triggerID == highWallTriggerID ? General.highScoreRewardType : General.lowScoreRewardType;
         
            break;
 
             case var value when value == General.forcedHigh:
             
-            score = General.highScore;
+            score = General.highScoreDummy;
             rewardType = General.highScoreRewardType;
 
             break;
 
             case var value when value == General.forcedLow:
 
-            score = General.lowScore;
+            score = General.lowScoreDummy;
             rewardType = General.lowScoreRewardType;
 
             break;

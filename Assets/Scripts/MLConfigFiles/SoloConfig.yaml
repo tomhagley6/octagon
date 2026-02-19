@@ -30,11 +30,13 @@ behaviors:
       num_layers: 2                       # How deep the network is
       vector_observation_space_size: 42   # Number of floats recorded as observations each step
       memory:                     # LSTM
-        sequence_length: 128      # Length of the sequence of experiences while training. Smaller values increase training 
+        sequence_length: 64      # Length of the sequence of experiences while training. Smaller values increase training 
                                   # but reduce the distance into the past that the agent can remember.
-        memory_size: 512          # size of the float array used to store the hidden state of the RNN. Scales without amount
+                                  # Reduced to 64 from 128 on 260219
+        memory_size: 256         # size of the float array used to store the hidden state of the RNN. Scales without amount
                                   # of information expected to be remembered in order to complete the task successfully.
                                   # This is very high, above the default of 128 and range of 32-256. Could consider reducing.
+                                  # Reduced to 256 from 512 on 260219
 
     reward_signals:
       extrinsic:                      # Reward signals from the environment itself (i.e. not Curiosity, GAIL)
