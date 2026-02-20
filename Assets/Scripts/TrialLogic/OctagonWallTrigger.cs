@@ -176,10 +176,14 @@ public class OctagonWallTrigger : MonoBehaviour
         {
             OctagonAgent winner = interactorTag == "PlayerAgent" ? playerAgent : opponentAgent;
             OctagonAgent loser = interactorTag == "PlayerAgent" ? opponentAgent : playerAgent;
+            
+            /* Removed zero-sum rewards and replaced with a small negative reinforcement 260220 */
+            // // Equal and negative reward for the loser in competitive play
+            // winner.AddReward(reward);
+            // loser.AddReward(-reward);
 
-            // Equal and negative reward for the loser in competitive play
             winner.AddReward(reward);
-            loser.AddReward(-reward);
+            loser.AddReward(Globals.General.loserScore);
 
             octagonArenaSettings.DisableTriggers();
             #if UNITY_EDITOR
