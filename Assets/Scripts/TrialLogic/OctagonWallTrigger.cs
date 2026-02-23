@@ -183,7 +183,7 @@ public class OctagonWallTrigger : MonoBehaviour
             // loser.AddReward(-reward);
 
             winner.AddReward(reward);
-            loser.AddReward(Globals.General.loserScore);
+            // loser.AddReward(Globals.General.loserScore); // All negative reward for the loser is removed 250220 (end-of-day)
 
             octagonArenaSettings.DisableTriggers();
             #if UNITY_EDITOR

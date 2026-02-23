@@ -164,7 +164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 43
+    VectorObservationSize: 0
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -213,7 +213,6 @@ MonoBehaviour:
   totalShapingReward: 0
   isTraining: 0
   isInference: 0
-  raycastSensor: {fileID: 0}
 --- !u!114 &-4245991771020405375
 MonoBehaviour:
   m_ObjectHideFlags: 0

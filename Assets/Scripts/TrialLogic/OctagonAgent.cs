@@ -444,8 +444,15 @@ public class OctagonAgent : Agent
         // step penalty
         // Too small compared to final reward? How frequent is one step, and how long is one trial?
         // Changed to -1e-3f from -1e-4f on 260219 
-        AddReward(-1e-3f);
-
+        if (actionBuffers.DiscreteActions[0] == 0 && actionBuffers.DiscreteActions[1] == 0 && actionBuffers.DiscreteActions[2] == 0)
+        {
+            // No penalty if choosing to rest. May need to create some penalty if this causes issues with training
+        }
+        else
+        {
+            // If any action is taken, apply step penalty
+            AddReward(-1e-3f);
+        }
 
         if (wall1Trigger == null || wall2Trigger == null)
         {
