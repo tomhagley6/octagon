@@ -251,18 +251,19 @@ public class DiskLogger : Logger
     {
         UnityEngine.Debug.Log("Closing current logger: " + filename);
 
+        loggerReady = false;
+
+        StopAllCoroutines();
+
         // Write a logging ended event to file to show that logging finished successfully
         loggingEnded?.Invoke();
 
         EmptyBuffer();
 
-        loggerReady = false;
-
-        StopAllCoroutines();
-
         // Be careful to close the StreamWriter instance before the application exits
         if (sw != null)
         {
+            sw.Flush();
             sw.Close();         
         }
 
@@ -284,7 +285,7 @@ public class DiskLogger : Logger
                 }
                 else {indexToRemove = 3;}
 
-                jsonContent = jsonContent.Remove(jsonContent.Length - indexToRemove, 1);
+                //jsonContent = jsonContent.Remove(jsonContent.Length - indexToRemove, 1);
                 UnityEngine.Debug.Log("Last character of the JSON string has been removed");
 
                 // Write the modified content back to the file
@@ -303,7 +304,7 @@ public class DiskLogger : Logger
         // Finish the JSON file by writing a square bracket to the end 
         using (StreamWriter sw = new StreamWriter(filePath, true))
         {
-            sw.Write("}");
+            //sw.Write("}");
             sw.WriteLine();
             sw.WriteLine("]");
         }

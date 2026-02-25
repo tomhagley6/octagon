@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using Unity.MLAgents;
 using UnityEngine;
 using System.IO;
@@ -7,6 +8,9 @@ using System.Linq;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 public class OctagonAgent : Agent
 {
@@ -36,6 +40,7 @@ public class OctagonAgent : Agent
     public float previousDistanceLow;
     private int episodeCount = 0;
     private int stepCount = 0;
+    private int targetEpisodes = -1;
 
     // octagon arena
     private Transform arenaRoot;
@@ -53,6 +58,8 @@ public class OctagonAgent : Agent
     private static bool loggerStarted = false;
     // path to log file where agent data will be saved
     string logPath;
+    private string simOutDir;
+    private bool simFinished = false;
     // StreamWriter instance used to write agent logs to the file
     StreamWriter logWriter;
 
@@ -63,13 +70,24 @@ public class OctagonAgent : Agent
         isTraining = Academy.Instance.IsCommunicatorOn;
         isInference = GetComponent<BehaviorParameters>().BehaviorType == BehaviorType.InferenceOnly;
 
+        var args = System.Environment.GetCommandLineArgs();
+        string epStr = GetArg(args, "--sim_episodes");
+        simOutDir = GetArg(args, "--sim_out");
+
+        if (!string.IsNullOrEmpty(epStr))
+        {
+            targetEpisodes = int.Parse(epStr);
+            Debug.Log($"Simulation target episodes: {targetEpisodes}");
+        }
+
         // get step penalty from environment parameters in yaml config
         stepPenalty = Academy.Instance.EnvironmentParameters
         .GetWithDefault("step_penalty", 0.0001f);
 
         // if communicator is off
         //if (!isTraining && isInference)
-        if (!isTraining && CompareTag("PlayerAgent") && !loggerStarted)
+        //if (!isTraining && CompareTag("PlayerAgent") && !loggerStarted)
+        if (targetEpisodes > 0 && CompareTag("PlayerAgent") && !loggerStarted)
         {
             loggerStarted = true;
             // find the DiskLogger and start logger
@@ -287,6 +305,30 @@ public class OctagonAgent : Agent
         // Reset agent-specific state regardless of whether this is PlayerAgent or OpponentAgent
         totalShapingReward = 0;
         episodeCount++;
+        Debug.Log($"Episode count: {episodeCount}");
+
+        if (!simFinished && CompareTag("PlayerAgent") && targetEpisodes > 0 && episodeCount > targetEpisodes)
+        {
+            simFinished = true;
+            Debug.Log("Simulation finished. Stopping logger then quitting.");
+            
+            diskLogger?.StopLogger();
+
+            if (!string.IsNullOrEmpty(simOutDir))
+            {
+                try
+                {
+                    File.WriteAllText(Path.Combine(simOutDir, "DONE.txt"), "ok");
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Failed to write DONE.txt: {e}");
+                }
+            }
+
+            this.enabled = false;
+            return;
+        }
 
         #if UNITY_EDITOR
         Debug.Log($"OnEpisodeBegin - trial looping: {octagonArenaSettings.isTrialLooping}");
@@ -496,4 +538,13 @@ public class OctagonAgent : Agent
         }
 
     }
+
+    string GetArg(string[] args, string name)
+    {
+        int idx = Array.IndexOf(args, name);
+        if (idx >= 0 && idx < args.Length - 1)
+            return args[idx + 1];
+        return null;
+    }
+
 }
