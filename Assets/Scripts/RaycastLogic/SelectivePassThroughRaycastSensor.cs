@@ -30,8 +30,8 @@ public class SelectivePassThroughRaycastSensor : ISensor
             // Debug every 60 frames to avoid spam
             if (Time.frameCount % 60 == 0)
             {
-                Debug.Log($"[{m_Name}] Update() called - Frame {Time.frameCount}, " +
-                         $"Observations: {m_CachedObservations?.Length ?? 0}");
+                //Debug.Log($"[{m_Name}] Update() called - Frame {Time.frameCount}, " +
+                         //$"Observations: {m_CachedObservations?.Length ?? 0}");
             }
         }
         else if (m_CachedObservations == null)

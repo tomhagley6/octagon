@@ -7,6 +7,8 @@ using Unity.MLAgents;
 using UnityEngine;
 using UnityEditor;
 using System;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 public class OctagonArenaSettings : MonoBehaviour
 {
@@ -92,7 +94,7 @@ public class OctagonArenaSettings : MonoBehaviour
         #if UNITY_EDITOR
         Debug.Log("[StartTrial] calling start trial coroutine.");
         #endif
-        StartCoroutine(StartTrialCoroutine());
+        StartCoroutine(StartTrialDelay());
     }
 
     public struct ActiveWalls
@@ -101,12 +103,13 @@ public class OctagonArenaSettings : MonoBehaviour
         public int wall2;
     }
 
-    public IEnumerator StartTrialCoroutine()
+    public IEnumerator StartTrialDelay()
     {
         var sliceOnsetDelay = UnityEngine.Random.Range(General.trialStartDurationMin, General.trialStartDurationMax);
+        Debug.Log("slice onset delay: " + sliceOnsetDelay + ", waiting...");
         yield return new WaitForSeconds(sliceOnsetDelay);
 
-        Debug.Log("[StartTrialCoroutine] calling arena set-up method");
+        Debug.Log("[StartTrialDelay] calling arena set-up method");
         SetUpArena();
     }
 
@@ -138,7 +141,6 @@ public class OctagonArenaSettings : MonoBehaviour
         playerAgent.thisTrialType = thisTrialType;
 
         ColourWalls(wallID1, wallID2, thisTrialType);
-
 
         // get the parent object (octagon wall) for each trigger
         GameObject HW = wall1Trigger.transform.parent.gameObject;
@@ -332,10 +334,10 @@ public class OctagonArenaSettings : MonoBehaviour
     // Inititate the ITI and lead into Start Trial logic
     public IEnumerator ITI()
     {
-        #if UNITY_EDITOR
-        Debug.Log($"ITI range: {General.ITIMin} to {General.ITIMax}");
-        #endif
         iti = UnityEngine.Random.Range(General.ITIMin, General.ITIMax);
+        #if UNITY_EDITOR
+        Debug.Log($"ITI {iti}, waiting...");
+        #endif
 
         //Debug.Log($"Waiting for ITI: {iti}");
         yield return new WaitForSeconds(iti);
@@ -446,7 +448,9 @@ public class OctagonArenaSettings : MonoBehaviour
 
     private IEnumerator TrialEndDelayCoroutine()
     {
+        Debug.Log($"Trial end delay {General.trialEndDuration}, waiting...");
         yield return new WaitForSeconds(General.trialEndDuration);
+
         SetTrialActive(false);
     }
 

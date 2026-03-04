@@ -49,6 +49,7 @@ namespace Globals
         // paths
         //public static string logFolder = "/home/tom/Unity/data";
         public static string logFolder ="/Users/benny/Data";
+        //public static string logFolder = "/Users/benny/Documents/swc/bayesian-inference/sbi/sim_logs";
 
         // log formatting
         public static string logEntryFormat = "[{0}]:{1}";  // [tag]:data

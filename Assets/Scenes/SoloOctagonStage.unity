@@ -2567,7 +2567,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1717201731386774889, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_Name
@@ -2579,7 +2579,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3883084382528183162, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: MaxStep
-      value: 1000
+      value: 2000
       objectReference: {fileID: 0}
     - target: {fileID: 3883084382528183162, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: diskLogger
@@ -3857,7 +3857,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4845276930943762971, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000045776367
+      value: -0.000030517578
       objectReference: {fileID: 0}
     - target: {fileID: 4845637959249703711, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchorMax.y
@@ -4097,10 +4097,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a549b4b5db6454c1fb316386fc9aaa5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  octagonArenaSettings: {fileID: 643279652}
-  diskLogger: {fileID: 1614808579}
-  enableTimeTriggered: 1
-  logStartStopEvents: 1
 --- !u!114 &1767474646
 MonoBehaviour:
   m_ObjectHideFlags: 0

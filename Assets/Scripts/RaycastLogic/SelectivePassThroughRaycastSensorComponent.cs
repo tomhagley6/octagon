@@ -28,8 +28,8 @@ public class SelectivePassThroughRaycastSensorComponent : SensorComponent
         // Return cached sensors if they already exist
         if (m_CachedSensors != null && m_CachedSensors.Length > 0)
         {
-            Debug.Log($"[{sensorName}] RETURNING CACHED sensor (instance: {m_CachedSensors[0].GetHashCode()}) " +
-                     $"- Frame: {Time.frameCount}, Cache valid: {m_CachedSensors[0] != null}");
+            //Debug.Log($"[{sensorName}] RETURNING CACHED sensor (instance: {m_CachedSensors[0].GetHashCode()}) " +
+                     //$"- Frame: {Time.frameCount}, Cache valid: {m_CachedSensors[0] != null}");
             return m_CachedSensors;
         }
         

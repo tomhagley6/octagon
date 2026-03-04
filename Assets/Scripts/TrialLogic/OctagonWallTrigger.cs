@@ -127,11 +127,15 @@ public class OctagonWallTrigger : MonoBehaviour
         wallID2 = octagonArenaSettings.activeWalls.wall2;
         wallIDs = new List<int> { wallID1, wallID2 };
 
-        if (wallIDs.Contains(triggerID))
+        if (wallIDs.Contains(triggerID)) 
         {
-            // What effect does this assignment have on trial logic? test without it
+            // this is essential to prevent same trigger being activated multiple times in the same trial
+            // removing this will result in multiple trials being coloured if the agent lingers in the trigger collider
+            // and likely faulty reward assignment
+            octagonArenaSettings.activeWalls.wall1 = 99;
+            octagonArenaSettings.activeWalls.wall2 = 99;
+
             octagonArenaSettings.isTrialLooping = false;
-            
             // NEW: Reset arena ready flag when trial ends - prevents agents from acting during next setup
             octagonArenaSettings.isArenaReady = false;
             #if UNITY_EDITOR
@@ -145,7 +149,6 @@ public class OctagonWallTrigger : MonoBehaviour
             HandleWallTrigger(triggerID, wallID1, wallID2, interactorTag);
 
             string wallTag = triggerID == wallID1 ? "HighWall" : "LowWall";
-
 
         }
         else if (!wallIDs.Contains(triggerID))
