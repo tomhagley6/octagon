@@ -497,7 +497,7 @@ public class OctagonAgent : Agent
         /* Removed 260210 to try and address the catastrophic forgetting behaviour when transitioning from 
             Solo to social */
         // // Observe mode (solo vs social)
-        // sensor.AddObservation(octagonArenaSettings.soloMode ? 1 : 2);
+        sensor.AddObservation(octagonArenaSettings.soloMode ? 1 : 2);
     }
 
     // Manual agent control for testing

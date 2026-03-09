@@ -25,7 +25,7 @@ public class ArenaLogger : MonoBehaviour
     private void Awake()
     {
         if (octagonArenaSettings == null)
-            octagonArenaSettings = GetComponentInChildren<OctagonArenaSettings>();
+            octagonArenaSettings = FindObjectOfType<OctagonArenaSettings>();
 
         if (diskLogger == null)
             diskLogger = FindObjectOfType<DiskLogger>();
@@ -39,6 +39,8 @@ public class ArenaLogger : MonoBehaviour
 
     private void OnEnable()
     {
+        if (octagonArenaSettings == null)
+            Debug.LogError("[ArenaLogger] OctagonArenaSettings not found.");
         if (octagonArenaSettings == null || diskLogger == null) return;
 
         octagonArenaSettings.SliceOnset += OnSliceOnset;

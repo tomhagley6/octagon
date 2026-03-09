@@ -2567,7 +2567,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1717201731386774889, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_Name
@@ -2579,7 +2579,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3883084382528183162, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: MaxStep
-      value: 2000
+      value: 1200
       objectReference: {fileID: 0}
     - target: {fileID: 3883084382528183162, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: diskLogger
@@ -3490,7 +3490,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2215ee9fc9a3edf68baf6b12b7bddd05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  logger: {fileID: 0}
 --- !u!4 &1614808580
 Transform:
   m_ObjectHideFlags: 0
@@ -3857,7 +3856,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4845276930943762971, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000030517578
+      value: 0.000015258789
       objectReference: {fileID: 0}
     - target: {fileID: 4845637959249703711, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchorMax.y
@@ -4062,7 +4061,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1762711488}
-  - component: {fileID: 1762711489}
+  - component: {fileID: 1762711490}
   m_Layer: 0
   m_Name: ArenaLogger
   m_TagString: Untagged
@@ -4085,7 +4084,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1260986861}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1762711489
+--- !u!114 &1762711490
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4097,6 +4096,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a549b4b5db6454c1fb316386fc9aaa5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  octagonArenaSettings: {fileID: 643279652}
+  diskLogger: {fileID: 1614808579}
+  enableTimeTriggered: 1
+  logStartStopEvents: 1
 --- !u!114 &1767474646
 MonoBehaviour:
   m_ObjectHideFlags: 0

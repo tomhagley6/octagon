@@ -24,7 +24,7 @@ public class DiskLogger : Logger
     private StreamWriter sw; 
     private bool isFirstLine = true;
     private string firstLine;
-    public Logger logger;
+    //public Logger logger;
 
     
     // Store log entries in a buffer before writing to file
@@ -47,7 +47,7 @@ public class DiskLogger : Logger
         }
         UnityEngine.Debug.Log("DiskLogger Start() ran"); 
 
-        logger = FindObjectOfType<Logger>();
+        //logger = FindObjectOfType<Logger>();
 
     }
 
