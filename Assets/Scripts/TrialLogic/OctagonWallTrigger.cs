@@ -112,7 +112,7 @@ public class OctagonWallTrigger : MonoBehaviour
             #endif
 
             if (arenaLogger == null)
-                arenaLogger = arenaRoot.GetComponentInChildren<arenaLogger>();
+                arenaLogger = FindObjectOfType<ArenaLogger>();
         }
 
     }
@@ -189,8 +189,8 @@ public class OctagonWallTrigger : MonoBehaviour
 
             winner.AddReward(reward);
             // loser.AddReward(Globals.General.loserScore); // All negative reward for the loser is removed 250220 (end-of-day)
-            int playerScore = winner == playerAgent ? (int)scaledReward : 0;
-            int opponentScore = winner == opponentAgent ? (int)scaledReward : 0;
+            int playerScore = winner == playerAgent ? (int)reward : 0;
+            int opponentScore = winner == opponentAgent ? (int)reward : 0;
             octagonArenaSettings.SetTrialScores(playerScore, opponentScore);
 
             octagonArenaSettings.DisableTriggers();
@@ -212,7 +212,7 @@ public class OctagonWallTrigger : MonoBehaviour
             OctagonAgent winner = playerAgent;
             winner.AddReward(reward);
 
-            octagonArenaSettings.SetTrialScores((int)scaledReward, 0);
+            octagonArenaSettings.SetTrialScores((int)reward, 0);
 
             #if UNITY_EDITOR
             float cumulativeReward = playerAgent.GetCumulativeReward();

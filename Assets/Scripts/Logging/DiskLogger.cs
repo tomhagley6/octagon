@@ -7,6 +7,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Text;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 // Class to handle logging data to file on the local machine
 public class DiskLogger : Logger
@@ -23,7 +25,7 @@ public class DiskLogger : Logger
     private StreamWriter sw; 
     private bool isFirstLine = true;
     private string firstLine;
-    public Logger logger;
+    // public Logger logger;
 
     
     // Store log entries in a buffer before writing to file
@@ -31,11 +33,12 @@ public class DiskLogger : Logger
 
     public event Action loggingStarted;
     public event Action loggingEnded;
+    public bool isRunning => loggerReady;
 
-    public DiskLogger()
-    {   // This is not needed if we have filename as a private variable
+    // public DiskLogger()
+    // {   // This is not needed if we have filename as a private variable
         // this.filename = filename;
-    }
+    // }
 
     public void Start()
     {
@@ -45,7 +48,7 @@ public class DiskLogger : Logger
         }
         Debug.Log("DiskLogger Start() ran"); 
 
-        logger = FindObjectOfType<Logger>();
+        // logger = FindObjectOfType<Logger>();
 
     }
 
@@ -132,7 +135,7 @@ public class DiskLogger : Logger
                         // // Check whether this is the most efficient way of doing things,
                         // // or whether this will hog resources
                         // firstLine = isFirstLine == true ? "[" : "";
-                        sw.WriteLine(item + ",");
+                        // sw.WriteLine(item + ",");
                         // Debug.Log(item);
 
                         // string item2 = JsonUtility.ToJson(
@@ -141,6 +144,15 @@ public class DiskLogger : Logger
                         //     }
                         // );
                         // sw.WriteLine(item2);
+
+                        // write comma before entries except for the first line
+                        // makes it easier to remove the last comma for JSON formatting when closing the file
+                        if (!isFirstLine)
+                            sw.WriteLine(",");
+                        
+                        sw.Write(item);
+                        isFirstLine = false;
+
                     }
                     catch (Exception e)
                     {
@@ -166,7 +178,14 @@ public class DiskLogger : Logger
     // Public API
     public void StartLogger()
     {
-        
+        if (loggerReady)
+        {
+            Debug.Log("StartLogger() called but logger is already running");
+            return;
+        }
+
+        Debug.Log("Start logger ran.");
+
         // Path
         filename = String.Concat(DateTime.Now.ToString(Logging.fileTimeFormat), ".json");
         filePath = Path.Combine(dataFolder, filename);
@@ -215,7 +234,9 @@ public class DiskLogger : Logger
         // logger.StartLogging();
         loggingStarted?.Invoke();
 
-
+        // DEBUG
+        // this just compares two methods of serialisation
+        // and checks that the event description is correctly deserialised
         StartLoggingLogEvent startLoggingLogEvent = new StartLoggingLogEvent();
         string jsonData = JsonUtility.ToJson(startLoggingLogEvent);
         // Debug.Log("new attempt at json is "+ jsonData);
@@ -246,22 +267,28 @@ public class DiskLogger : Logger
     {
         Debug.Log("Closing current logger: " + filename);
 
-        // Write a logging ended event to file to show that logging finished successfully
+        // Write stop event directly
+        var stopEvent = new StopLoggingLogEvent();
+        string stopJson = JsonConvert.SerializeObject(stopEvent, new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        });
+
+        Log(stopJson);
+
+        // Notify listeners
         loggingEnded?.Invoke();
 
         EmptyBuffer();
 
         loggerReady = false;
-
         StopAllCoroutines();
 
-        // Be careful to close the StreamWriter instance before the application exits
         if (sw != null)
         {
+            sw.Flush();
             sw.Close();         
         }
-
- 
 
         if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
         {
@@ -279,8 +306,8 @@ public class DiskLogger : Logger
                 }
                 else {indexToRemove = 3;}
 
-                jsonContent = jsonContent.Remove(jsonContent.Length - indexToRemove, 1);
-                Debug.Log("Last character of the JSON string has been removed");
+                //jsonContent = jsonContent.Remove(jsonContent.Length - indexToRemove, 1);
+                //Debug.Log("Last character of the JSON string has been removed");
 
                 // Write the modified content back to the file
                 File.WriteAllText(filePath, jsonContent);
@@ -298,6 +325,8 @@ public class DiskLogger : Logger
         // Finish the JSON file by writing a square bracket to the end 
         using (StreamWriter sw = new StreamWriter(filePath, true))
         {
+            //sw.Write("}");
+            sw.WriteLine();
             sw.WriteLine("]");
         }
     }

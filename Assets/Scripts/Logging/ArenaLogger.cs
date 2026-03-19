@@ -57,7 +57,7 @@ public class ArenaLogger : MonoBehaviour
             diskLogger.loggingStarted += OnLoggingStarted;
             diskLogger.loggingEnded += OnLoggingEnded;
 
-            if (diskLogger.IsRunning)
+            if (diskLogger.isRunning)
             {
                 OnLoggingStarted();
             }
@@ -137,7 +137,7 @@ public class ArenaLogger : MonoBehaviour
     /// Method called when active walls are first coloured for each trial.
     /// Logs a slice onset event, including details about the walls active, the trial type, and player positions.
     {
-        if (!isReady()) return;
+        if (!IsReady()) return;
         
         int wall1 = octagonArenaSettings.activeWalls.wall1;
         int wall2 = octagonArenaSettings.activeWalls.wall2;
