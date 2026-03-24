@@ -40,6 +40,8 @@ public class OctagonAgent : Agent
     private int episodeCount = 0;
     private int stepCount = 0;
     private int targetEpisodes = -1;
+    // customisable step penalty
+    float stepPenalty;
 
     // octagon arena
     private Transform arenaRoot;
@@ -71,6 +73,7 @@ public class OctagonAgent : Agent
         isTraining = Academy.Instance.IsCommunicatorOn;
         isInference = GetComponent<BehaviorParameters>().BehaviorType == BehaviorType.InferenceOnly;
         
+        // SBI: parse command line arguments to read how many episodes to run for simulation
         var args = System.Environment.GetCommandLineArgs();
         string epStr = GetArg(args, "--sim_episodes");
         simOutDir = GetArg(args, "--sim_out");
@@ -80,6 +83,10 @@ public class OctagonAgent : Agent
             targetEpisodes = int.Parse(epStr);
             Debug.Log($"Simulation target episodes: {targetEpisodes}");
         }
+
+        // get step penalty from environment parameters in yaml config
+        stepPenalty = Academy.Instance.EnvironmentParameters
+        .GetWithDefault("step_penalty", 0.0001f);
 
         BehaviorParameters behavior = GetComponent<BehaviorParameters>();
 
@@ -318,6 +325,7 @@ public class OctagonAgent : Agent
         totalShapingReward = 0;
         episodeCount++;
 
+        // SBI: stop the simulation once the desired number of episodes is reached
         if (!simFinished && CompareTag("PlayerAgent") && targetEpisodes > 0 && episodeCount > targetEpisodes)
         {
             simFinished = true;
@@ -487,7 +495,8 @@ public class OctagonAgent : Agent
         else
         {
             // If any action is taken, apply step penalty
-            AddReward(-1e-3f);
+            //AddReward(-1e-3f);
+            AddReward(-stepPenalty);
         }
 
         if (wall1Trigger == null || wall2Trigger == null)
@@ -558,6 +567,7 @@ public class OctagonAgent : Agent
 
     }
 
+    // SBI: help function to search for the specified argument name and, if found, return the element immediately following it (its value).
     string GetArg(string[] args, string name)
     {
         int idx = Array.IndexOf(args, name);
