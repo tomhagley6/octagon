@@ -47,7 +47,8 @@ namespace Globals
         
 
         // paths
-        public static string logFolder = "/home/tom/Unity/data";
+        //public static string logFolder = "/home/tom/Unity/data";
+        public static string logFolder ="/Users/benny/Data";
 
         // log formatting
         public static string logEntryFormat = "[{0}]:{1}";  // [tag]:data

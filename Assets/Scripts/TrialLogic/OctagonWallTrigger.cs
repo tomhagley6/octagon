@@ -1,6 +1,11 @@
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
+using System.Numerics;
+using System.Runtime.Serialization.Formatters;
 using UnityEngine;
+using Globals;
+using System.ComponentModel;
 
 public class OctagonWallTrigger : MonoBehaviour
 {
@@ -11,6 +16,7 @@ public class OctagonWallTrigger : MonoBehaviour
     [SerializeField] OctagonArenaSettings octagonArenaSettings;
     [SerializeField] OctagonAgent playerAgent;
     [SerializeField] OctagonAgent opponentAgent;
+    [SerializeField] private ArenaLogger arenaLogger;
     // variables
     public int triggerID;
     public int wallID1;
@@ -104,6 +110,9 @@ public class OctagonWallTrigger : MonoBehaviour
                 Debug.LogError($"[OctagonWallTrigger] Could not find active PlayerAgent in arena!");
             }
             #endif
+
+            if (arenaLogger == null)
+                arenaLogger = FindObjectOfType<ArenaLogger>();
         }
 
     }
@@ -131,22 +140,18 @@ public class OctagonWallTrigger : MonoBehaviour
 
             string interactorTag = agent.CompareTag("PlayerAgent") ? "PlayerAgent" : "OpponentAgent";
 
+            arenaLogger?.LogTriggerActivation(triggerID, agent, authorised: true);
+
             HandleWallTrigger(triggerID, wallID1, wallID2, interactorTag);
 
             string wallTag = triggerID == wallID1 ? "HighWall" : "LowWall";
-
-            playerAgent.LogTriggerActivation(wallID1, wallTag, interactorTag);
-
-            if (!octagonArenaSettings.soloMode)
-            {
-                opponentAgent.LogTriggerActivation(wallID1, wallTag, interactorTag);
-
-            }
 
         }
         else if (!wallIDs.Contains(triggerID))
         {
             string interactorTag = agent.CompareTag("PlayerAgent") ? "PlayerAgent" : "OpponentAgent";
+
+            arenaLogger?.LogTriggerActivation(triggerID, agent, authorised: false);
 
             HandleInactiveTrigger(triggerID, interactorTag);
         }
@@ -184,6 +189,9 @@ public class OctagonWallTrigger : MonoBehaviour
 
             winner.AddReward(reward);
             // loser.AddReward(Globals.General.loserScore); // All negative reward for the loser is removed 250220 (end-of-day)
+            int playerScore = winner == playerAgent ? (int)reward : 0;
+            int opponentScore = winner == opponentAgent ? (int)reward : 0;
+            octagonArenaSettings.SetTrialScores(playerScore, opponentScore);
 
             octagonArenaSettings.DisableTriggers();
             #if UNITY_EDITOR
@@ -203,6 +211,9 @@ public class OctagonWallTrigger : MonoBehaviour
         {
             OctagonAgent winner = playerAgent;
             winner.AddReward(reward);
+
+            octagonArenaSettings.SetTrialScores((int)reward, 0);
+
             #if UNITY_EDITOR
             float cumulativeReward = playerAgent.GetCumulativeReward();
             Debug.Log($"Agent reward at the end of this episode is {cumulativeReward}");
