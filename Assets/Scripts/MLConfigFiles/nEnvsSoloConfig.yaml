@@ -2,6 +2,7 @@
 # stability can be increased by decreasing learning rate and increasing buffer size.
 # RND is used here for curiosity instead of the Curiosity module, as it is less likely 
 # to be affected by random environment noise
+# USE SOCIALCONFIG OR SOLOCONFIG, NOT THIS FILE 260408
 
 behaviors:
   OctagonAgentSolo:
