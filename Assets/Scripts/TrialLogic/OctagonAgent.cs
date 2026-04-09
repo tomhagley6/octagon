@@ -39,7 +39,7 @@ public class OctagonAgent : Agent
     public float previousDistanceLow;
     private int episodeCount = 0;
     private int stepCount = 0;
-    private int targetEpisodes = -1;
+    private int targetSteps = -1;
     // customisable step penalty
     float stepPenalty;
 
@@ -75,13 +75,13 @@ public class OctagonAgent : Agent
         
         // SBI: parse command line arguments to read how many episodes to run for simulation
         var args = System.Environment.GetCommandLineArgs();
-        string epStr = GetArg(args, "--sim_episodes");
+        string stStr = GetArg(args, "--sim_steps");
         simOutDir = GetArg(args, "--sim_out");
 
-        if (!string.IsNullOrEmpty(epStr))
+        if (!string.IsNullOrEmpty(stStr))
         {
-            targetEpisodes = int.Parse(epStr);
-            Debug.Log($"Simulation target episodes: {targetEpisodes}");
+            targetSteps = int.Parse(stStr);
+            Debug.Log($"Simulation target steps: {targetSteps}");
         }
 
         // get step penalty from environment parameters in yaml config
@@ -106,7 +106,7 @@ public class OctagonAgent : Agent
 
         // if communicator is off
         //if (!isTraining && isInference)
-        if (targetEpisodes > 0 && CompareTag("PlayerAgent") && !loggerStarted)
+        if (targetSteps > 0 && CompareTag("PlayerAgent") && !loggerStarted)
         {
             loggerStarted = true;
             // find the DiskLogger and start logger
@@ -326,7 +326,7 @@ public class OctagonAgent : Agent
         episodeCount++;
 
         // SBI: stop the simulation once the desired number of episodes is reached
-        if (!simFinished && CompareTag("PlayerAgent") && targetEpisodes > 0 && episodeCount > targetEpisodes)
+        if (!simFinished && CompareTag("PlayerAgent") && targetSteps > 0 && stepCount > targetSteps)
         {
             simFinished = true;
             Debug.Log("Simulation finished. Stopping logger then quitting.");
