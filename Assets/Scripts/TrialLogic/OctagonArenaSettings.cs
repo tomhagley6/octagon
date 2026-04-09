@@ -337,9 +337,11 @@ public class OctagonArenaSettings : MonoBehaviour
         // Use a 2 second fixed EndTrial delay to replicate experimental setup, added 260310
         // Present in builds only from 260408 onwards
         yield return new WaitForSeconds(2f);
+        SetTrialActive(false);
 
         //Debug.Log($"Waiting for ITI: {iti}");
         yield return new WaitForSeconds(iti);
+        SetTrialActive(true);
 
         // Use a 0.5-1.5 second variable length TrialStart delay to replicate experimental setup, added 260310
         // Present in builds only from 260408 onwards
@@ -347,7 +349,6 @@ public class OctagonArenaSettings : MonoBehaviour
         yield return new WaitForSeconds(trialStartDelay);
 
         // logging variables signalling trial is active and scores to be reset
-        SetTrialActive(true);
         ResetTrialScores();
 
         #if UNITY_EDITOR
@@ -447,7 +448,6 @@ public class OctagonArenaSettings : MonoBehaviour
             #endif
         }
 
-        SetTrialActive(false);
     }
 
     // Why are we changing interaction zone colour? Could this be removed
