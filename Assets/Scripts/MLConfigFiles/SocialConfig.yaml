@@ -50,3 +50,6 @@ behaviors:
       swap_steps: 150000                 # TRIPLED from 50k - reduces non-stationarity shock, prevents jittery movement
       # team_change removed - octagon arena is symmetrical, no positional advantage 
     
+
+environment_parameters:
+  step_penalty: 0.001

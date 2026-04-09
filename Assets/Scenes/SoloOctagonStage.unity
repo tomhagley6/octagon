@@ -921,7 +921,7 @@ PrefabInstance:
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: f43dbc92bb7725201a3fac65e5d00848, type: 3}
+      objectReference: {fileID: 5022602860645237092, guid: 85b4a36695aacd22fa21b0b611c3490f, type: 3}
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_BehaviorName
       value: OctagonAgentSocial
@@ -940,7 +940,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1717201731386774889, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1717201731386774889, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_TagString
@@ -1332,7 +1332,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d55e3c354ce947fea30fe406089abf3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  soloMode: 1
+  soloMode: 0
   allWallTriggers: []
   wallID1: 0
   wallID2: 0
@@ -2809,10 +2809,10 @@ PrefabInstance:
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 5022602860645237092, guid: 85b4a36695aacd22fa21b0b611c3490f, type: 3}
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_BehaviorName
-      value: OctagonAgentSolo
+      value: OctagonAgentSocial
       objectReference: {fileID: 0}
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_BehaviorType
@@ -4170,7 +4170,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4845276930943762971, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchoredPosition.y
+<<<<<<< HEAD
       value: -0.000030517578
+=======
+      value: 0.000030517578
+>>>>>>> tom-dev_raycast-agents
       objectReference: {fileID: 0}
     - target: {fileID: 4845637959249703711, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchorMax.y

@@ -334,15 +334,17 @@ public class OctagonArenaSettings : MonoBehaviour
         #endif
         iti = Random.Range(General.ITIMin, General.ITIMax);
         
-        // // Use a 2 second fixed EndTrial delay to replicate experimental setup, added 260310
-        // yield return new WaitForSeconds(2f);
+        // Use a 2 second fixed EndTrial delay to replicate experimental setup, added 260310
+        // Present in builds only from 260408 onwards
+        yield return new WaitForSeconds(2f);
 
         //Debug.Log($"Waiting for ITI: {iti}");
         yield return new WaitForSeconds(iti);
 
-        // // Use a 0.5-1.5 second variable length TrialStart delay to replicate experimental setup, added 260310
-        // float trialStartDelay = Random.Range(0.5f, 1.5f);
-        // yield return new WaitForSeconds(trialStartDelay);
+        // Use a 0.5-1.5 second variable length TrialStart delay to replicate experimental setup, added 260310
+        // Present in builds only from 260408 onwards
+        float trialStartDelay = Random.Range(0.5f, 1.5f);
+        yield return new WaitForSeconds(trialStartDelay);
 
         // logging variables signalling trial is active and scores to be reset
         SetTrialActive(true);

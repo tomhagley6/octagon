@@ -1,3 +1,6 @@
+# USE SOCIALCONFIG OR SOLOCONFIG, NOT THIS FILE 260408
+
+
 behaviors:
   OctagonAgentCurriculumSolo:
     trainer_type: ppo
