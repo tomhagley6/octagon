@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.43667546, g: 0.4842708, b: 0.56452245, a: 1}
+  m_IndirectSpecularColor: {r: 0.4366765, g: 0.48427117, b: 0.56452465, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -123,50 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &31837503
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 31837505}
-  - component: {fileID: 31837504}
-  m_Layer: 0
-  m_Name: Logger
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &31837504
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 31837503}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2215ee9fc9a3edf68baf6b12b7bddd05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &31837505
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 31837503}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1260986861}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &56229177
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -921,7 +877,7 @@ PrefabInstance:
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: 85b4a36695aacd22fa21b0b611c3490f, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_BehaviorName
       value: OctagonAgentSocial
@@ -940,7 +896,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1717201731386774889, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1717201731386774889, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_TagString
@@ -1200,54 +1156,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 824a603892b22cee3b77ab37b97cb3c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &525484647
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 525484648}
-  - component: {fileID: 525484649}
-  m_Layer: 0
-  m_Name: ArenaLogger
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &525484648
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 525484647}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1260986861}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &525484649
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 525484647}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4740f7cb72db44d018ab3e4bcbd977e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  octagonArenaSettings: {fileID: 643279652}
-  diskLogger: {fileID: 31837504}
-  enableTimeTriggered: 1
-  logStartStopEvents: 1
 --- !u!1 &564152526
 GameObject:
   m_ObjectHideFlags: 0
@@ -1332,7 +1240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d55e3c354ce947fea30fe406089abf3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  soloMode: 0
+  soloMode: 1
   allWallTriggers: []
   wallID1: 0
   wallID2: 0
@@ -2809,14 +2717,14 @@ PrefabInstance:
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: 85b4a36695aacd22fa21b0b611c3490f, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_BehaviorName
-      value: OctagonAgentSocial
+      value: OctagonAgentSolo
       objectReference: {fileID: 0}
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_BehaviorType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
@@ -2838,10 +2746,6 @@ PrefabInstance:
       propertyPath: MaxStep
       value: 1000
       objectReference: {fileID: 0}
-    - target: {fileID: 3883084382528183162, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
-      propertyPath: diskLogger
-      value: 
-      objectReference: {fileID: 31837504}
     - target: {fileID: 3883084382528183162, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: raycastSensor
       value: 
@@ -3566,8 +3470,6 @@ Transform:
   - {fileID: 643279651}
   - {fileID: 1866153474}
   - {fileID: 564152527}
-  - {fileID: 525484648}
-  - {fileID: 31837505}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1323548499 stripped
@@ -3777,7 +3679,6 @@ MonoBehaviour:
   thisTrialType: 
   octagonArenaSettings: {fileID: 0}
   identityManager: {fileID: 0}
-  diskLogger: {fileID: 0}
   moveSpeed: 10
   turnSpeed: 360
   controller: {fileID: 0}
@@ -4360,7 +4261,6 @@ MonoBehaviour:
   octagonArenaSettings: {fileID: 0}
   playerAgent: {fileID: 0}
   opponentAgent: {fileID: 0}
-  arenaLogger: {fileID: 0}
   triggerID: 0
   wallID1: 0
   wallID2: 0
@@ -4381,7 +4281,6 @@ MonoBehaviour:
   octagonArenaSettings: {fileID: 0}
   playerAgent: {fileID: 0}
   opponentAgent: {fileID: 0}
-  arenaLogger: {fileID: 0}
   triggerID: 0
   wallID1: 0
   wallID2: 0
@@ -5043,7 +4942,6 @@ MonoBehaviour:
   octagonArenaSettings: {fileID: 0}
   playerAgent: {fileID: 0}
   opponentAgent: {fileID: 0}
-  arenaLogger: {fileID: 0}
   triggerID: 0
   wallID1: 0
   wallID2: 0
@@ -5099,7 +4997,6 @@ MonoBehaviour:
   octagonArenaSettings: {fileID: 0}
   playerAgent: {fileID: 0}
   opponentAgent: {fileID: 0}
-  arenaLogger: {fileID: 0}
   triggerID: 0
   wallID1: 0
   wallID2: 0
@@ -5120,7 +5017,6 @@ MonoBehaviour:
   octagonArenaSettings: {fileID: 0}
   playerAgent: {fileID: 0}
   opponentAgent: {fileID: 0}
-  arenaLogger: {fileID: 0}
   triggerID: 0
   wallID1: 0
   wallID2: 0
@@ -5141,7 +5037,6 @@ MonoBehaviour:
   octagonArenaSettings: {fileID: 0}
   playerAgent: {fileID: 0}
   opponentAgent: {fileID: 0}
-  arenaLogger: {fileID: 0}
   triggerID: 0
   wallID1: 0
   wallID2: 0
@@ -5162,7 +5057,6 @@ MonoBehaviour:
   octagonArenaSettings: {fileID: 0}
   playerAgent: {fileID: 0}
   opponentAgent: {fileID: 0}
-  arenaLogger: {fileID: 0}
   triggerID: 0
   wallID1: 0
   wallID2: 0
@@ -5183,7 +5077,6 @@ MonoBehaviour:
   octagonArenaSettings: {fileID: 0}
   playerAgent: {fileID: 0}
   opponentAgent: {fileID: 0}
-  arenaLogger: {fileID: 0}
   triggerID: 0
   wallID1: 0
   wallID2: 0

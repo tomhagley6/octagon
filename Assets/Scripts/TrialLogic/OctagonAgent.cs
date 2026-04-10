@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System;
 using Unity.MLAgents;
 using UnityEngine;
 using System.IO;
@@ -8,9 +7,6 @@ using System.Linq;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
-using Debug = UnityEngine.Debug;
 
 public class OctagonAgent : Agent
 {
@@ -25,7 +21,6 @@ public class OctagonAgent : Agent
     // uncomment once trial logic script is ready
     //[SerializeField] public TrialLogic trialLogic;
     [SerializeField] public IdentityManager identityManager;
-    [SerializeField] private DiskLogger diskLogger;
 
     // variables and objects
 
@@ -39,9 +34,6 @@ public class OctagonAgent : Agent
     public float previousDistanceLow;
     private int episodeCount = 0;
     private int stepCount = 0;
-    private int targetSteps = -1;
-    // customisable step penalty
-    float stepPenalty;
 
     // octagon arena
     private Transform arenaRoot;
@@ -56,13 +48,8 @@ public class OctagonAgent : Agent
     public bool isTraining = false;
     // flag to check whether behaviour is set to inferene
     public bool isInference = false;
-    // flag to check whether logger has started
-    private static bool loggerStarted = false;
     // path to log file where agent data will be saved
     string logPath;
-    // simulation details
-    private string simOutDir;
-    private bool simFinished = false;
     // StreamWriter instance used to write agent logs to the file
     StreamWriter logWriter;
 
@@ -72,45 +59,29 @@ public class OctagonAgent : Agent
         // if off, agent is in inference/heuristic mode
         isTraining = Academy.Instance.IsCommunicatorOn;
         isInference = GetComponent<BehaviorParameters>().BehaviorType == BehaviorType.InferenceOnly;
-        
-        // SBI: parse command line arguments to read how many episodes to run for simulation
-        var args = System.Environment.GetCommandLineArgs();
-        string stStr = GetArg(args, "--sim_steps");
-        simOutDir = GetArg(args, "--sim_out");
 
-        if (!string.IsNullOrEmpty(stStr))
-        {
-            targetSteps = int.Parse(stStr);
-            Debug.Log($"Simulation target steps: {targetSteps}");
-        }
-
-        // get step penalty from environment parameters in yaml config
-        stepPenalty = Academy.Instance.EnvironmentParameters
-        .GetWithDefault("step_penalty", 0.0001f);
-
-        BehaviorParameters behavior = GetComponent<BehaviorParameters>();
-
-        if (CompareTag("PlayerAgent") && !loggerStarted && behavior.BehaviorType == BehaviorType.HeuristicOnly)
-        {
-            if (diskLogger == null)
-            {
-                Debug.LogError("[OctagonAgent] diskLogger is null, cannot start logger.");
-            }
-            else
-            {
-                loggerStarted = true;
-                diskLogger.StartLogger();
-                Debug.Log("[OctagonAgent] Logger started.");
-            }
-        }
 
         // if communicator is off
         //if (!isTraining && isInference)
-        if (targetSteps > 0 && CompareTag("PlayerAgent") && !loggerStarted)
+        if (!isTraining)
         {
-            loggerStarted = true;
-            // find the DiskLogger and start logger
-            diskLogger?.StartLogger();
+            // get agent tag (PlayerAgent or OpponentAgent)
+            string agentTag = this.tag;
+
+            // define path for agent log 
+            // stores log in 'AgentLogs' folder in 'Assets' folder
+            if (!octagonArenaSettings.soloMode)
+            {
+                logPath = Application.dataPath + $"/SocialRaycastLogs/log_{agentTag}_{System.DateTime.Now:yyyyMMdd_HHmmss}.csv";
+            }
+            else
+            {
+                logPath = Application.dataPath + $"/SoloRaycastLogs/log_{agentTag}_{System.DateTime.Now:yyyyMMdd_HHmmss}.csv";
+            }
+
+            logWriter = new StreamWriter(logPath, true); // class for writing text to files
+            logWriter.WriteLine("Episode,Step,Wall1,Wall2,Time,PosX,PosY,PosZ,RotY,Reward");
+
         }
     }
 
@@ -325,30 +296,6 @@ public class OctagonAgent : Agent
         totalShapingReward = 0;
         episodeCount++;
 
-        // SBI: stop the simulation once the desired number of episodes is reached
-        if (!simFinished && CompareTag("PlayerAgent") && targetSteps > 0 && stepCount > targetSteps)
-        {
-            simFinished = true;
-            Debug.Log("Simulation finished. Stopping logger then quitting.");
-            
-            diskLogger?.StopLogger();
-
-            if (!string.IsNullOrEmpty(simOutDir))
-            {
-                try
-                {
-                    File.WriteAllText(Path.Combine(simOutDir, "DONE.txt"), "ok");
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"Failed to write DONE.txt: {e}");
-                }
-            }
-
-            this.enabled = false;
-            return;
-        }
-
         #if UNITY_EDITOR
         Debug.Log($"OnEpisodeBegin - trial looping: {octagonArenaSettings.isTrialLooping}");
 
@@ -447,6 +394,15 @@ public class OctagonAgent : Agent
         float rotY = transform.eulerAngles.y;
         float reward = GetCumulativeReward();
 
+        if (!isTraining)
+        {
+            // log this step's data to the CSV file
+            logWriter.WriteLine($"{episodeCount},{stepCount},{octagonArenaSettings.wallID1},{octagonArenaSettings.wallID2},{currentTime},{posX},{posY},{posZ},{rotY},{reward}");
+
+            // flush the writer to ensure data is written in real-time
+            logWriter.Flush();
+        }
+
         // Extract discrete actions for movement, strafe, and rotation
         int moveAction = actionBuffers.DiscreteActions[0];  // Move (3 choices)
         int strafeAction = actionBuffers.DiscreteActions[1];  // Strafe (3 choices)
@@ -494,16 +450,19 @@ public class OctagonAgent : Agent
         }
         else
         {
-            // If any action is taken, apply step penalty
-            float stepPenalty = Academy.Instance.EnvironmentParameters.GetWithDefault("step_penalty", float.NaN);
-            
-            if (float.IsNaN(stepPenalty))
+            // If any action is taken, apply step penalty (training only)
+            if (isTraining)
             {
-                throw new System.InvalidOperationException(
-                    "step_penalty not found in environment_parameters — check the training YAML.");
+                float stepPenalty = Academy.Instance.EnvironmentParameters.GetWithDefault("step_penalty", float.NaN);
+
+                if (float.IsNaN(stepPenalty))
+                {
+                    throw new System.InvalidOperationException(
+                        "step_penalty not found in environment_parameters — check the training YAML.");
+                }
+
+                AddReward(-stepPenalty);
             }
-            
-            AddReward(-stepPenalty);
 
 
         }
@@ -576,12 +535,52 @@ public class OctagonAgent : Agent
 
     }
 
-    // SBI: help function to search for the specified argument name and, if found, return the element immediately following it (its value).
-    string GetArg(string[] args, string name)
+    public void LogTriggerActivation(int triggerID, string wallType, string interactorTag)
     {
-        int idx = Array.IndexOf(args, name);
-        if (idx >= 0 && idx < args.Length - 1)
-            return args[idx + 1];
-        return null;
+        if (logWriter != null && !isTraining)
+        {
+            float currentTime = Time.time;
+            logWriter.WriteLine($"{episodeCount},{stepCount},{currentTime},TriggerActivated,{triggerID},{wallType},{interactorTag}");
+            logWriter.Flush();
+        }
+    }
+
+    public void LogSliceOnsetEvent(int highWall, int lowWall, string trialType)
+    {
+        if (logWriter != null && !isTraining)
+        {
+            float currentTime = Time.time;
+            logWriter.WriteLine($"{episodeCount},{stepCount},{currentTime},SliceOnset,{highWall},{lowWall},{trialType}");
+            logWriter.Flush();
+        }
+    }
+
+    public void LogEpisodeBeginEvent()
+    {
+        if (logWriter != null && !isTraining)
+        {
+            float currentTime = Time.time;
+            logWriter.WriteLine($"{episodeCount},{stepCount},{currentTime},EpisodeBegin");
+            logWriter.Flush();
+        }
+    }
+
+    public void LogEpisodeEndEvent()
+    {
+        if (logWriter != null && !isTraining)
+        {
+            float currentTime = Time.time;
+            logWriter.WriteLine($"{episodeCount},{stepCount},{currentTime},EpisodeEnd");
+            logWriter.Flush();
+        }
+    }
+
+    void OnApplicationQuit()
+    {
+        if (logWriter != null && !isTraining)
+        {
+            logWriter.Flush();
+            logWriter.Close();
+        }
     }
 }
