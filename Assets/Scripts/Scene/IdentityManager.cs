@@ -39,7 +39,9 @@ public class IdentityManager : MonoBehaviour
 
     public List<int> ListCustomIDs()
     {
-        return new List<int>(wallDictionary.Keys);
+        List<int> keys = new List<int>(wallDictionary.Keys);
+        keys.Sort();
+        return keys;
     }
 
     // From GPT - Using Linq to order my dictionary
