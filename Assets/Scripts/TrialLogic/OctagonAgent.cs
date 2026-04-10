@@ -494,16 +494,19 @@ public class OctagonAgent : Agent
         }
         else
         {
-            // If any action is taken, apply step penalty
-            float stepPenalty = Academy.Instance.EnvironmentParameters.GetWithDefault("step_penalty", float.NaN);
-            
-            if (float.IsNaN(stepPenalty))
+            // If any action is taken, apply step penalty (training only)
+            if (isTraining)
             {
-                throw new System.InvalidOperationException(
-                    "step_penalty not found in environment_parameters — check the training YAML.");
+                float stepPenalty = Academy.Instance.EnvironmentParameters.GetWithDefault("step_penalty", float.NaN);
+
+                if (float.IsNaN(stepPenalty))
+                {
+                    throw new System.InvalidOperationException(
+                        "step_penalty not found in environment_parameters — check the training YAML.");
+                }
+                
+                AddReward(-stepPenalty);
             }
-            
-            AddReward(-stepPenalty);
 
 
         }
