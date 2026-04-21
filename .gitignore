@@ -54,6 +54,7 @@ ExportedObj/
 
 # Unity3D generated file on crash reports
 sysinfo.txt
+mono_crash.*
 
 # Builds
 *.apk
@@ -95,7 +96,11 @@ SoloRaycastLogs/
 SocialRaycastLogs/
 SoloVisualLogs/
 SocialVisualLogs/
+Data/
 
 # ONNX exports (unless you want to version them explicitly)
 *.onnx
 .fake
+
+#macOS
+.DS_Store

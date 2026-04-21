@@ -17,6 +17,8 @@ public class ArenaLogger : MonoBehaviour
     private Coroutine timeCoroutine;
     private const ulong PlayerKey = 0UL;
     private const ulong OpponentKey = 1UL;
+    public float fixedLogAccumulator = 0f;
+    private bool timeTriggeredActive = false;
 
     private void Awake()
     /// Ensures that necessary components are assigned,
@@ -197,18 +199,40 @@ public class ArenaLogger : MonoBehaviour
     /// Called at the start of the logging process
     /// Initiates the player position and time logging at chosen frequency
     {
-        if (timeCoroutine != null) StopCoroutine(timeCoroutine);
-        timeCoroutine = StartCoroutine(TimeTriggeredLoop());
+        //if (timeCoroutine != null) StopCoroutine(timeCoroutine);
+        //timeCoroutine = StartCoroutine(TimeTriggeredLoop());
+        fixedLogAccumulator = 0f;
+        timeTriggeredActive = true;
     }
     
     private void StopTimeTriggered()
     /// Called at the end of the logging process
     /// Concludes the frequent logging of player position and time
     {
-        if (timeCoroutine != null)
+        //if (timeCoroutine != null)
+        //{
+        //    StopCoroutine(timeCoroutine);
+        //    timeCoroutine = null;
+        //}
+        timeTriggeredActive = false;
+        fixedLogAccumulator = 0f;    
+    }
+
+    private void FixedUpdate()
+    /// Alternative to coroutine for time-triggered logging, using FixedUpdate to accumulate time and trigger logs at given frequency.
+    {
+        if (!timeTriggeredActive) return;
+        if (!IsReady()) return;
+
+        fixedLogAccumulator += Time.fixedDeltaTime;
+
+        if (fixedLogAccumulator >= Logging.loggingFrequency)
         {
-            StopCoroutine(timeCoroutine);
-            timeCoroutine = null;
+            var playerPosDict = BuildPlayerPosDict();
+            var ev = new TimeTriggeredLogEvent(playerPosDict);
+            Write(ev);
+
+            fixedLogAccumulator -= Logging.loggingFrequency; // Subtract the logging frequency to handle any excess time
         }
     }
 
