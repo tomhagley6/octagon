@@ -74,13 +74,13 @@ public class LoggingEvents : NetworkBehaviour
     {
 
         // Create a StartLoggingLogEvent object
-        StartLoggingLogEvent startLoggingLogEvent = new StartLoggingLogEvent();
+        //StartLoggingLogEvent startLoggingLogEvent = new StartLoggingLogEvent();
 
         // Serialize log event object to JSON formatted string
-        string toLog = JsonConvert.SerializeObject(startLoggingLogEvent);
+        //string toLog = JsonConvert.SerializeObject(startLoggingLogEvent);
 
         // Write string to file 
-        diskLogger.Log(toLog);
+        //diskLogger.Log(toLog);
     }
 
 
@@ -127,13 +127,13 @@ public class LoggingEvents : NetworkBehaviour
         }
 
         // create the full log event
-        TrialStartLogEvent trialStartLogEvent = new TrialStartLogEvent(gameManager.trialNum.Value, gameManager.trialType.Value, playerPosDict);
+        //TrialStartLogEvent trialStartLogEvent = new TrialStartLogEvent(gameManager.trialNum.Value, gameManager.trialType.Value, playerPosDict);
 
         // JSON serialize the log object to string
-        string logEntry = JsonConvert.SerializeObject(trialStartLogEvent);
+        //string logEntry = JsonConvert.SerializeObject(trialStartLogEvent);
 
         // Send string to the active diskLogger to be logged to file
-        diskLogger.Log(logEntry);
+        //diskLogger.Log(logEntry);
 
     }
 
@@ -182,19 +182,19 @@ public class LoggingEvents : NetworkBehaviour
         }
 
         // Create the final log class instance
-        SliceOnsetLogEvent sliceOnsetLogEvent = new SliceOnsetLogEvent(wall1, wall2, gameManager.trialType.Value, playerPosDict);
+        //SliceOnsetLogEvent sliceOnsetLogEvent = new SliceOnsetLogEvent(wall1, wall2, gameManager.trialType.Value, playerPosDict);
         // Debug.Log("SliceOnsetLogEvent created");
 
         // Serialize the class to JSON
-        string logEntry = JsonConvert.SerializeObject(sliceOnsetLogEvent, new JsonSerializerSettings
-        {
+        //string logEntry = JsonConvert.SerializeObject(sliceOnsetLogEvent, new JsonSerializerSettings
+        //{
             // This ensures that Unity Quaternions can serialize correctly
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-        });
+        //    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        //});
         // Debug.Log("SliceOnsetLogEvent serialized to JSON string: " + logEntry);
 
         // Send this string to the active diskLogger to be logged to file
-        diskLogger.Log(logEntry);
+        //diskLogger.Log(logEntry);
     }
 
     
@@ -239,16 +239,16 @@ public class LoggingEvents : NetworkBehaviour
         }
 
         // Create the final log class instance
-        TriggerActivationLogEvent triggerActivationLogEvent = new TriggerActivationLogEvent(wall1, wall2, wallTriggered,
-                                                                                             triggerClientId, playerPosDict);
+        //TriggerActivationLogEvent triggerActivationLogEvent = new TriggerActivationLogEvent(wall1, wall2, wallTriggered,
+        //                                                                                     triggerClientId, playerPosDict);
         // Debug.Log("triggerActivationLogEvent created");
 
         // Serialize the class to JSON
-        string logEntry = JsonConvert.SerializeObject(triggerActivationLogEvent, new JsonSerializerSettings
-        {
+        //string logEntry = JsonConvert.SerializeObject(triggerActivationLogEvent, new JsonSerializerSettings
+        //{
             // This ensures that Unity Quaternions can serialize correctly
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-        });
+        //   ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        //});
         // Debug.Log("triggerActivationLogEvent serialized to JSON string: " + logEntry);
 
         // // Send this string to the active diskLogger to be logged to file
@@ -294,26 +294,26 @@ public class LoggingEvents : NetworkBehaviour
         }
 
         // Create the log class instance
-        TriggerActivationLogEvent triggerActivationLogEvent = new TriggerActivationLogEvent(wall1, wall2, wallTriggered,
-                                                                                             triggerClientId, playerPosDict)
-        {
-            // Change the description of this event to reflect that this trigger is authorised
-            // Using an object initialiser to make this change in the same statement
-            eventDescription = Logging.triggerActivationAuthorised
-        };
+        //TriggerActivationLogEvent triggerActivationLogEvent = new TriggerActivationLogEvent(wall1, wall2, wallTriggered,
+        //                                                                                     triggerClientId, playerPosDict)
+        //{
+        //    // Change the description of this event to reflect that this trigger is authorised
+        //    // Using an object initialiser to make this change in the same statement
+        //    eventDescription = Logging.triggerActivationAuthorised
+        //};
 
         // Debug.Log("triggerActivationLogEvent created");
 
         // Serialize the class to JSON
-        string logEntry = JsonConvert.SerializeObject(triggerActivationLogEvent, new JsonSerializerSettings
-        {
-            // This ensures that Unity Quaternions can serialize correctly
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-        });
+        //string logEntry = JsonConvert.SerializeObject(triggerActivationLogEvent, new JsonSerializerSettings
+        //{
+        //    // This ensures that Unity Quaternions can serialize correctly
+        //    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        //});
         // Debug.Log("triggerActivationLogEvent serialized to JSON string: " + logEntry);
 
         // Send this string to the active diskLogger to be logged to file
-        diskLogger.Log(logEntry);
+        //diskLogger.Log(logEntry);
 
     }
 
@@ -351,24 +351,24 @@ public class LoggingEvents : NetworkBehaviour
         }
 
         // Create the log class instance
-        TriggerActivationLogEvent triggerActivationLogEvent = new TriggerActivationLogEvent(wall1, wall2, wallTriggered,
-                                                                                             triggerClientId, playerPosDict)
-        {
+        //TriggerActivationLogEvent triggerActivationLogEvent = new TriggerActivationLogEvent(wall1, wall2, wallTriggered,
+        //                                                                                     triggerClientId, playerPosDict)
+        //{
         // Set the description of this event to reflect that this trigger is server-authorised 
         // but irrelevant to the current trial
         // Using an object initialiser to make this change in the same statement
-        eventDescription = Logging.triggerActivationIrrelevant
-        };
+        //eventDescription = Logging.triggerActivationIrrelevant
+        //};
 
         // Serialize the class to JSON
-        string logEntry = JsonConvert.SerializeObject(triggerActivationLogEvent, new JsonSerializerSettings
-        {
+        //string logEntry = JsonConvert.SerializeObject(triggerActivationLogEvent, new JsonSerializerSettings
+        //{
             // This ensures that Unity Quaternions can serialize correctly
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-        });
+        //    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        //});
 
         // Send this string to the active diskLogger to be logged to file
-        diskLogger.Log(logEntry);
+        //diskLogger.Log(logEntry);
     }
     
 
@@ -414,13 +414,13 @@ public class LoggingEvents : NetworkBehaviour
         }
 
         // create the full log event
-        TrialEndLogEvent trialEndLogEvent = new TrialEndLogEvent(gameManager.trialNum.Value, playerPosDict, playerScoresDict);
+        //TrialEndLogEvent trialEndLogEvent = new TrialEndLogEvent(gameManager.trialNum.Value, playerPosDict, playerScoresDict);
 
         // JSON serialize the log object to string
-        string logEntry = JsonConvert.SerializeObject(trialEndLogEvent);
+        //string logEntry = JsonConvert.SerializeObject(trialEndLogEvent);
 
         // Send string to the active diskLogger to be logged to file
-        diskLogger.Log(logEntry);
+        //diskLogger.Log(logEntry);
     }
 
     // Write a time-triggered log at regular time intervals
@@ -472,13 +472,13 @@ public class LoggingEvents : NetworkBehaviour
             // Debug.LogWarning($"Logging Events sees gameManager.connectecClientIds[0] as {gameManager.connectedClientIds[0]}");
 
             // create the time-triggered log event
-            TimeTriggeredLogEvent timeTriggeredLogEvent = new TimeTriggeredLogEvent(playerPosDict);
+            //TimeTriggeredLogEvent timeTriggeredLogEvent = new TimeTriggeredLogEvent(playerPosDict);
 
             // serialize to JSON format
-            string logEntry = JsonConvert.SerializeObject(timeTriggeredLogEvent);
+            //string logEntry = JsonConvert.SerializeObject(timeTriggeredLogEvent);
             
             // send string to logger
-            diskLogger.Log(logEntry);
+            //diskLogger.Log(logEntry);
         }
     }
 
@@ -486,13 +486,13 @@ public class LoggingEvents : NetworkBehaviour
 public void LoggingEndedHandler_EndLogging()
 {
     // Create a StopLoggingLogEvent object
-    StopLoggingLogEvent stopLoggingLogEvent = new StopLoggingLogEvent();
+    //StopLoggingLogEvent stopLoggingLogEvent = new StopLoggingLogEvent();
 
     // Serialize log event object to JSON formatted string
-    string toLog = JsonConvert.SerializeObject(stopLoggingLogEvent);
+    //string toLog = JsonConvert.SerializeObject(stopLoggingLogEvent);
 
     // Write string to file 
-    diskLogger.Log(toLog);
+    //diskLogger.Log(toLog);
 }
     public void TrialActiveHandler(bool prevVal, bool newVal)
     {

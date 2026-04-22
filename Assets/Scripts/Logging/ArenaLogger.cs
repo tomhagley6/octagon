@@ -14,11 +14,11 @@ public class ArenaLogger : MonoBehaviour
     [SerializeField] private DiskLogger diskLogger;
     [SerializeField] private bool enableTimeTriggered = true;
     [SerializeField] private bool logStartStopEvents = true;
-    private Coroutine timeCoroutine;
+    //private Coroutine timeCoroutine;
     private const ulong PlayerKey = 0UL;
     private const ulong OpponentKey = 1UL;
-    public float fixedLogAccumulator = 0f;
     private bool timeTriggeredActive = false;
+    private double nextLogTime = 0.0;
 
     private void Awake()
     /// Ensures that necessary components are assigned,
@@ -88,10 +88,15 @@ public class ArenaLogger : MonoBehaviour
     // Logging event handlers
     // -----------------------
 
+    private double CurrentApplicationTime()
+    {
+        return Time.timeAsDouble;
+    }
+
     private void OnLoggingStarted()
     /// Logs the first line stating that logging has started
     {
-        Write(new StartLoggingLogEvent());
+        Write(new StartLoggingLogEvent(CurrentApplicationTime()));
         if (enableTimeTriggered) StartTimeTriggered();
     }
 
@@ -99,7 +104,7 @@ public class ArenaLogger : MonoBehaviour
     /// Logs the last line stating that logging has ended
     {
         StopTimeTriggered();
-        Write(new StopLoggingLogEvent());
+        Write(new StopLoggingLogEvent(CurrentApplicationTime()));
     }
 
     // ---------------------
@@ -131,7 +136,7 @@ public class ArenaLogger : MonoBehaviour
 
         var playerPosDict = BuildPlayerPosDict();
 
-        var ev = new TrialStartLogEvent(trialNum, trialType, playerPosDict);
+        var ev = new TrialStartLogEvent(trialNum, trialType, playerPosDict, CurrentApplicationTime());
         Write(ev);
     }
 
@@ -147,7 +152,7 @@ public class ArenaLogger : MonoBehaviour
         var trialType = new FixedString32Bytes(octagonArenaSettings.thisTrialType);
         var playerPosDict = BuildPlayerPosDict();
 
-        var ev = new SliceOnsetLogEvent(wall1, wall2, trialType, playerPosDict);
+        var ev = new SliceOnsetLogEvent(wall1, wall2, trialType, playerPosDict, CurrentApplicationTime());
         Write(ev);
     }
 
@@ -166,7 +171,7 @@ public class ArenaLogger : MonoBehaviour
 
         var playerPosDict = BuildPlayerPosDict();
 
-        var ev = new TriggerActivationLogEvent(wall1, wall2, wallTriggered, triggerClientId, playerPosDict)
+        var ev = new TriggerActivationLogEvent(wall1, wall2, wallTriggered, triggerClientId, playerPosDict, CurrentApplicationTime())
         {
             eventDescription = Logging.triggerActivationAuthorised
         };
@@ -187,7 +192,7 @@ public class ArenaLogger : MonoBehaviour
         // If you don't have a "score", use cumulative reward (still numeric).
         var playerScoresDict = BuildPlayerScoresDict();
 
-        var ev = new TrialEndLogEvent(trialNum, playerPosDict, playerScoresDict);
+        var ev = new TrialEndLogEvent(trialNum, playerPosDict, playerScoresDict, CurrentApplicationTime());
         Write(ev);
     }
 
@@ -201,8 +206,8 @@ public class ArenaLogger : MonoBehaviour
     {
         //if (timeCoroutine != null) StopCoroutine(timeCoroutine);
         //timeCoroutine = StartCoroutine(TimeTriggeredLoop());
-        fixedLogAccumulator = 0f;
         timeTriggeredActive = true;
+        nextLogTime = Time.timeAsDouble;
     }
     
     private void StopTimeTriggered()
@@ -215,41 +220,38 @@ public class ArenaLogger : MonoBehaviour
         //    timeCoroutine = null;
         //}
         timeTriggeredActive = false;
-        fixedLogAccumulator = 0f;    
     }
 
     private void FixedUpdate()
-    /// Alternative to coroutine for time-triggered logging, using FixedUpdate to accumulate time and trigger logs at given frequency.
+    /// Alternative to coroutine for time-triggered logging using FixedUpdate
     {
         if (!timeTriggeredActive) return;
         if (!IsReady()) return;
 
-        fixedLogAccumulator += Time.fixedDeltaTime;
-
-        if (fixedLogAccumulator >= Logging.loggingFrequency)
+        while (Time.timeAsDouble + 1e-9f >= nextLogTime)
         {
             var playerPosDict = BuildPlayerPosDict();
-            var ev = new TimeTriggeredLogEvent(playerPosDict);
+            var ev = new TimeTriggeredLogEvent(playerPosDict, nextLogTime);
             Write(ev);
 
-            fixedLogAccumulator -= Logging.loggingFrequency; // Subtract the logging frequency to handle any excess time
+            nextLogTime += Logging.loggingFrequency; // 0.02
         }
     }
 
-    private IEnumerator TimeTriggeredLoop()
-    /// Logs player position and time at chosen frequency
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(Logging.loggingFrequency);
+    //private IEnumerator TimeTriggeredLoop()
+    ///// Logs player position and time at chosen frequency
+    //{
+    //    while (true)
+    //    {
+    //        yield return new WaitForSeconds(Logging.loggingFrequency);
 
-            if (!IsReady()) continue;
+    //        if (!IsReady()) continue;
 
-            var playerPosDict = BuildPlayerPosDict();
-            var ev = new TimeTriggeredLogEvent(playerPosDict);
-            Write(ev);
-        }
-    }
+    //        var playerPosDict = BuildPlayerPosDict();
+    //        var ev = new TimeTriggeredLogEvent(playerPosDict);
+    //        Write(ev);
+    //    }
+    //}
     // -------------------------
     // Snapshot helpers (stable keys)
     // -------------------------

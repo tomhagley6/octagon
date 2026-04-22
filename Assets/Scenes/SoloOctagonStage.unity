@@ -1248,7 +1248,6 @@ MonoBehaviour:
   diskLogger: {fileID: 31837504}
   enableTimeTriggered: 1
   logStartStopEvents: 1
-  fixedLogAccumulator: 0
 --- !u!1 &564152526
 GameObject:
   m_ObjectHideFlags: 0
@@ -4171,7 +4170,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4845276930943762971, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000045776367
+      value: 0.000030517578
       objectReference: {fileID: 0}
     - target: {fileID: 4845637959249703711, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchorMax.y
