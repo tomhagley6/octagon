@@ -37,7 +37,7 @@ public class OctagonAgent : Agent
     public Animator animator;
     public float previousDistanceHigh;
     public float previousDistanceLow;
-    private int episodeCount = 0;
+    public int episodeCount = 0;
     private int stepCount = 0;
     private int targetEps = -1;
     // customisable step penalty
