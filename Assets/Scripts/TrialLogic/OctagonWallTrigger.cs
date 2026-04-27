@@ -192,6 +192,7 @@ public class OctagonWallTrigger : MonoBehaviour
             int playerScore = winner == playerAgent ? (int)reward : 0;
             int opponentScore = winner == opponentAgent ? (int)reward : 0;
             octagonArenaSettings.SetTrialScores(playerScore, opponentScore);
+            octagonArenaSettings.SetSessionScores(playerScore, opponentScore);
 
             octagonArenaSettings.DisableTriggers();
             #if UNITY_EDITOR
@@ -213,6 +214,7 @@ public class OctagonWallTrigger : MonoBehaviour
             winner.AddReward(reward);
 
             octagonArenaSettings.SetTrialScores((int)reward, 0);
+            octagonArenaSettings.SetSessionScores((int)reward, 0);
 
             #if UNITY_EDITOR
             float cumulativeReward = playerAgent.GetCumulativeReward();

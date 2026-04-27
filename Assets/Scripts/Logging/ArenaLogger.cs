@@ -298,10 +298,12 @@ public class ArenaLogger : MonoBehaviour
         var dict = new Dictionary<string, object>();
 
         // Must match your analysis expectations: keys "0" and "1"
-        dict["0"] = octagonArenaSettings.PlayerTrialScore;
+        //dict["0"] = octagonArenaSettings.PlayerTrialScore;
+        dict["0"] = octagonArenaSettings.PlayerCumulativeScore;
 
         if (!octagonArenaSettings.soloMode)
-            dict["1"] = octagonArenaSettings.OpponentTrialScore;
+            //dict["1"] = octagonArenaSettings.OpponentTrialScore;
+            dict["1"] = octagonArenaSettings.OpponentCumulativeScore;
 
         return dict;
     }

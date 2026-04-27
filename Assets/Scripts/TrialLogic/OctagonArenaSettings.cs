@@ -50,6 +50,8 @@ public class OctagonArenaSettings : MonoBehaviour
     // scores
     public int PlayerTrialScore { get; private set; } = 0;
     public int OpponentTrialScore { get; private set; } = 0;
+    public int PlayerCumulativeScore { get; private set; } = 0;
+    public int OpponentCumulativeScore { get; private set; } = 0;
     // trial events and trial number
     public event Action SliceOnset;
     public bool TrialActive { get; private set; } //  non-networked trial active boolean
@@ -546,6 +548,12 @@ public class OctagonArenaSettings : MonoBehaviour
     {
         PlayerTrialScore = playerScore;
         OpponentTrialScore = opponentScore;
+    }
+
+    public void SetSessionScores(int playerScore, int opponentScore = 0)
+    {
+        PlayerCumulativeScore += playerScore;
+        OpponentCumulativeScore += opponentScore;
     }
 
     public void IncrementTrialNum()
