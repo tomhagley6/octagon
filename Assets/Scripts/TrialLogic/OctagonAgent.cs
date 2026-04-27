@@ -323,7 +323,8 @@ public class OctagonAgent : Agent
 
         // Reset agent-specific state regardless of whether this is PlayerAgent or OpponentAgent
         totalShapingReward = 0;
-        episodeCount++;
+        //episodeCount++;
+        Debug.Log($"[OnEpisodeBegin] Trial {episodeCount}");
 
         // SBI: stop the simulation once the desired number of episodes is reached
         if (!simFinished && CompareTag("PlayerAgent") && targetEps > 0 && episodeCount > targetEps)

@@ -146,6 +146,8 @@ public class OctagonWallTrigger : MonoBehaviour
 
             string wallTag = triggerID == wallID1 ? "HighWall" : "LowWall";
 
+            playerAgent.episodeCount++;
+
         }
         else if (!wallIDs.Contains(triggerID))
         {
