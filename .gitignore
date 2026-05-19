@@ -95,6 +95,7 @@ SocialRaycastLogs/
 SoloVisualLogs/
 SocialVisualLogs/
 
-# ONNX exports (unless you want to version them explicitly)
+# Model files and associated Unity meta files
+Assets/Models/
 *.onnx
 .fake

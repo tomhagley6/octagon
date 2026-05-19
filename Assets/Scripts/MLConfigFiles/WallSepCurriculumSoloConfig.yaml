@@ -1,0 +1,108 @@
+# Solo training with a wall-separation curriculum.
+#
+# Failure mode being targeted: agent goes High ~100% on 45°/90° trials but
+# under-performs on 180° trials, where the High wall is behind the agent at
+# trial onset 50% of the time and the learned "approach visible red"
+# policy has no behaviour for "rotate past 90° when nothing red is in view".
+#
+# The curriculum up-weights 180° trials early so policy gradient is
+# concentrated on that subspace, then gradually returns to the target
+# experimental distribution (50/25/25 across separations 1/2/4 =
+# 45°/90°/180°). Easy trials are never dropped to zero — this avoids
+# catastrophic forgetting of the existing competent 45°/90° behaviour.
+
+behaviors:
+  OctagonAgentSolo:
+    trainer_type: ppo
+    max_steps: 3.0e6
+    time_horizon: 128
+    summary_freq: 20000
+    keep_checkpoints: 30
+    checkpoint_interval: 100000
+
+    hyperparameters:
+      batch_size: 512
+      buffer_size: 10240
+      learning_rate: 3.0e-4
+      learning_rate_schedule: linear
+      beta: 5.0e-3
+      epsilon: 0.2
+      lambd: 0.95
+      num_epoch: 3
+
+    network_settings:
+      normalize: false
+      hidden_units: 512
+      num_layers: 2
+      vector_observation_space_size: 42
+      memory:
+        sequence_length: 64
+        memory_size: 256
+
+    reward_signals:
+      extrinsic:
+        gamma: 0.99
+        strength: 1.0
+      rnd:
+        gamma: 0.99
+        strength: 0.01
+        learning_rate: 1.0e-4
+
+    self_play: null
+
+environment_parameters:
+  step_penalty: 0.001
+
+  # Relative weights for wall separations 1 / 2 / 4 (= 45° / 90° / 180°).
+  # Read by OctagonArenaSettings.SelectNewWalls; values are interpreted as
+  # relative weights, not probabilities (they need not sum to 1).
+  sep_weight_1:
+    curriculum:
+      - name: bias_180
+        completion_criteria:
+          measure: progress
+          behavior: OctagonAgentSolo
+          threshold: 0.2
+        value: 0.2
+      - name: transition
+        completion_criteria:
+          measure: progress
+          behavior: OctagonAgentSolo
+          threshold: 0.4
+        value: 0.35
+      - name: target_distribution
+        value: 0.5
+
+  sep_weight_2:
+    curriculum:
+      - name: bias_180
+        completion_criteria:
+          measure: progress
+          behavior: OctagonAgentSolo
+          threshold: 0.2
+        value: 0.2
+      - name: transition
+        completion_criteria:
+          measure: progress
+          behavior: OctagonAgentSolo
+          threshold: 0.4
+        value: 0.25
+      - name: target_distribution
+        value: 0.25
+
+  sep_weight_4:
+    curriculum:
+      - name: bias_180
+        completion_criteria:
+          measure: progress
+          behavior: OctagonAgentSolo
+          threshold: 0.2
+        value: 0.6
+      - name: transition
+        completion_criteria:
+          measure: progress
+          behavior: OctagonAgentSolo
+          threshold: 0.4
+        value: 0.4
+      - name: target_distribution
+        value: 0.25

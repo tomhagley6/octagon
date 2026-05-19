@@ -162,15 +162,36 @@ public class OctagonArenaSettings : MonoBehaviour
         // choose a random anchor wall to reference the trial to 
         int anchorWallIndex = Random.Range(0, walls.Count);
 
-        // create weighted list of wall separation values to draw from 
+        // Build weighted list of wall separations. When a curriculum YAML provides
+        // sep_weight_{1,2,4} via EnvironmentParameters those override the static
+        // defaults in General; otherwise the defaults are used (inference, or a
+        // non-curriculum training config such as SoloConfig.yaml).
         WeightedList<int> wallSeparationsWeighted = new();
         for (int i = 0; i < General.wallSeparations.Count; i++)
         {
-            wallSeparationsWeighted.Add(General.wallSeparations[i], General.wallSeparationsProbabilities[i]);
+            int separation = General.wallSeparations[i];
+            float defaultWeight = General.wallSeparationsProbabilities[i];
+            float weight = Academy.Instance.EnvironmentParameters.GetWithDefault(
+                $"sep_weight_{separation}", defaultWeight);
+            // WeightedList takes int weights; scale to retain precision on fractional curriculum values.
+            int weightInt = Mathf.Max(0, Mathf.RoundToInt(weight * 1000f));
+            if (weightInt > 0)
+            {
+                wallSeparationsWeighted.Add(separation, weightInt);
+            }
+
+            // Surface the current per-separation weight to Tensorboard (one trace per separation).
+            Academy.Instance.StatsRecorder.Add(
+                $"WallSep/weight_{separation}", weight, StatAggregationMethod.MostRecent);
         }
 
         // query the weighted list for this trial's wall separation
         int wallSeparation = wallSeparationsWeighted.Next();
+
+        // Surface the actually-sampled separation; the summary-window mean lets you confirm
+        // the empirical distribution matches the lesson weights.
+        Academy.Instance.StatsRecorder.Add(
+            "WallSep/sampled", wallSeparation, StatAggregationMethod.Average);
 
 
         // choose a random second wall that is consistent with anchor wall for this trial type
