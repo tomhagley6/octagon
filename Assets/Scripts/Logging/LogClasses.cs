@@ -148,17 +148,19 @@ namespace LoggingClasses
         public string eventDescription;
         public Dictionary<string, object> data;
 
-        public TrialEndLogEvent(ushort trialNum, Dictionary<string, object> playerPosDict, Dictionary<string,object> playerScoresDict, double applicationTime)
+        public TrialEndLogEvent(ushort trialNum, Dictionary<string, object> playerPosDict, Dictionary<string,object> playerScoresDict, Dictionary<string,object> trialScoresDict, Dictionary<string,object> trialRewardsDict, double applicationTime)
         {
             timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
             timeApplication = applicationTime.ToString("f3");
             eventDescription = Logging.trialEnd;
             data = new Dictionary<string, object>()
-            {   
+            {
                 {"trialNum", trialNum},
                 {"playerScores", playerScoresDict},
+                {"trialScores", trialScoresDict},
+                {"trialRewards", trialRewardsDict},
                 {"playerPosition", playerPosDict}
-                
+
 
             };
         }

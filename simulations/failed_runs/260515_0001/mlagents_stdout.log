@@ -83,9 +83,38 @@
 	self_play:	None
 	behavioral_cloning:	None
 [INFO] Resuming from results/2605/260515/260515_0001/OctagonAgentSolo.
-[INFO] Resuming training from step 3499997.
+[INFO] Resuming training from step 3000089.
 [INFO] Parameter 'step_penalty' is in lesson 'step_penalty' and has value 'Float: value=0.001'.
-[INFO] OctagonAgentSolo. Step: 3500000. Time Elapsed: 1.923 s. No episode was completed since last summary. Not Training.
+[INFO] OctagonAgentSolo. Step: 3020000. Time Elapsed: 189.563 s. Mean Reward: 0.504. Std of Reward: 0.228. Not Training.
+[INFO] OctagonAgentSolo. Step: 3040000. Time Elapsed: 383.154 s. Mean Reward: 0.422. Std of Reward: 0.278. Not Training.
+[INFO] OctagonAgentSolo. Step: 3060000. Time Elapsed: 576.537 s. Mean Reward: 0.382. Std of Reward: 0.288. Not Training.
+[INFO] OctagonAgentSolo. Step: 3080000. Time Elapsed: 769.143 s. Mean Reward: 0.412. Std of Reward: 0.281. Not Training.
+[INFO] OctagonAgentSolo. Step: 3100000. Time Elapsed: 959.371 s. Mean Reward: 0.440. Std of Reward: 0.269. Not Training.
 /home/tom/miniconda3/envs/mlagents/lib/python3.10/site-packages/torch/onnx/symbolic_opset9.py:4244: UserWarning: Exporting a model to ONNX with a batch_size other than 1, with a variable length with LSTM can cause an error when running the ONNX model with a different batch size. Make sure to save the model with a batch size of 1, or define the initial states (h0/c0) as inputs of the model. 
   warnings.warn(
+[INFO] Exported results/2605/260515/260515_0001/OctagonAgentSolo/OctagonAgentSolo-3099917.onnx
+[INFO] OctagonAgentSolo. Step: 3120000. Time Elapsed: 1151.085 s. Mean Reward: 0.417. Std of Reward: 0.281. Not Training.
+[INFO] OctagonAgentSolo. Step: 3140000. Time Elapsed: 1344.189 s. Mean Reward: 0.473. Std of Reward: 0.253. Not Training.
+[INFO] OctagonAgentSolo. Step: 3160000. Time Elapsed: 1534.375 s. Mean Reward: 0.431. Std of Reward: 0.271. Not Training.
+[INFO] OctagonAgentSolo. Step: 3180000. Time Elapsed: 1724.874 s. Mean Reward: 0.453. Std of Reward: 0.266. Not Training.
+[INFO] OctagonAgentSolo. Step: 3200000. Time Elapsed: 1915.551 s. Mean Reward: 0.429. Std of Reward: 0.276. Not Training.
+[INFO] Exported results/2605/260515/260515_0001/OctagonAgentSolo/OctagonAgentSolo-3199896.onnx
+[INFO] OctagonAgentSolo. Step: 3220000. Time Elapsed: 2106.008 s. Mean Reward: 0.451. Std of Reward: 0.260. Not Training.
+[INFO] OctagonAgentSolo. Step: 3240000. Time Elapsed: 2296.033 s. Mean Reward: 0.425. Std of Reward: 0.269. Not Training.
+[INFO] OctagonAgentSolo. Step: 3260000. Time Elapsed: 2486.867 s. Mean Reward: 0.413. Std of Reward: 0.280. Not Training.
+[INFO] OctagonAgentSolo. Step: 3280000. Time Elapsed: 2678.197 s. Mean Reward: 0.463. Std of Reward: 0.251. Not Training.
+[INFO] OctagonAgentSolo. Step: 3300000. Time Elapsed: 2868.115 s. Mean Reward: 0.493. Std of Reward: 0.213. Not Training.
+[INFO] Exported results/2605/260515/260515_0001/OctagonAgentSolo/OctagonAgentSolo-3299876.onnx
+[INFO] OctagonAgentSolo. Step: 3320000. Time Elapsed: 3059.180 s. Mean Reward: 0.398. Std of Reward: 0.280. Not Training.
+[INFO] OctagonAgentSolo. Step: 3340000. Time Elapsed: 3249.833 s. Mean Reward: 0.486. Std of Reward: 0.251. Not Training.
+[INFO] OctagonAgentSolo. Step: 3360000. Time Elapsed: 3441.588 s. Mean Reward: 0.422. Std of Reward: 0.271. Not Training.
+[INFO] OctagonAgentSolo. Step: 3380000. Time Elapsed: 3632.268 s. Mean Reward: 0.461. Std of Reward: 0.254. Not Training.
+[INFO] OctagonAgentSolo. Step: 3400000. Time Elapsed: 3823.665 s. Mean Reward: 0.471. Std of Reward: 0.244. Not Training.
+[INFO] Exported results/2605/260515/260515_0001/OctagonAgentSolo/OctagonAgentSolo-3399927.onnx
+[INFO] OctagonAgentSolo. Step: 3420000. Time Elapsed: 4014.973 s. Mean Reward: 0.501. Std of Reward: 0.224. Not Training.
+[INFO] OctagonAgentSolo. Step: 3440000. Time Elapsed: 4208.333 s. Mean Reward: 0.385. Std of Reward: 0.295. Not Training.
+[INFO] OctagonAgentSolo. Step: 3460000. Time Elapsed: 4403.449 s. Mean Reward: 0.397. Std of Reward: 0.295. Not Training.
+[INFO] OctagonAgentSolo. Step: 3480000. Time Elapsed: 4598.968 s. Mean Reward: 0.471. Std of Reward: 0.245. Not Training.
+[INFO] OctagonAgentSolo. Step: 3500000. Time Elapsed: 4795.552 s. Mean Reward: 0.473. Std of Reward: 0.242. Not Training.
 [INFO] Exported results/2605/260515/260515_0001/OctagonAgentSolo/OctagonAgentSolo-3499997.onnx
+[INFO] OctagonAgentSolo. Step: 3520000. Time Elapsed: 4990.398 s. Mean Reward: 0.422. Std of Reward: 0.281. Not Training.

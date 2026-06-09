@@ -181,6 +181,15 @@ public class DiskLogger : Logger
     }
 
     // Public API
+
+    // Override the output directory for the JSON behavioural log. Must be called
+    // before StartLogger(), since StartLogger() resolves the file path from dataFolder.
+    // Used to route simulation logs into the --sim_out directory alongside DONE.txt.
+    public void SetDataFolder(string folder)
+    {
+        dataFolder = folder;
+    }
+
     public void StartLogger()
     {
         if (loggerReady)

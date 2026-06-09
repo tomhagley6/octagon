@@ -48,10 +48,14 @@ public class OctagonArenaSettings : MonoBehaviour
 
     // Logging events and variables
     // scores
-    public int PlayerTrialScore { get; private set; } = 0;
-    public int OpponentTrialScore { get; private set; } = 0;
-    public int PlayerCumulativeScore { get; private set; } = 0;
-    public int OpponentCumulativeScore { get; private set; } = 0;
+    public float PlayerTrialScore { get; private set; } = 0f;
+    public float OpponentTrialScore { get; private set; } = 0f;
+    public float PlayerCumulativeScore { get; private set; } = 0f;
+    public float OpponentCumulativeScore { get; private set; } = 0f;
+    // Total ML-Agents reward each agent accumulated during the current trial
+    // (terminal wall reward plus the sum of any incremental rewards, e.g. step penalties).
+    public float PlayerTrialReward { get; private set; } = 0f;
+    public float OpponentTrialReward { get; private set; } = 0f;
     // trial events and trial number
     public event Action SliceOnset;
     public bool TrialActive { get; private set; } //  non-networked trial active boolean
@@ -561,20 +565,30 @@ public class OctagonArenaSettings : MonoBehaviour
     }
     public void ResetTrialScores()
     {
-        PlayerTrialScore = 0;
-        OpponentTrialScore = 0;
+        PlayerTrialScore = 0f;
+        OpponentTrialScore = 0f;
+        PlayerTrialReward = 0f;
+        OpponentTrialReward = 0f;
     }
 
-    public void SetTrialScores(int playerScore, int opponentScore = 0)
+    public void SetTrialScores(float playerScore, float opponentScore = 0f)
     {
         PlayerTrialScore = playerScore;
         OpponentTrialScore = opponentScore;
     }
 
-    public void SetSessionScores(int playerScore, int opponentScore = 0)
+    public void SetSessionScores(float playerScore, float opponentScore = 0f)
     {
         PlayerCumulativeScore += playerScore;
         OpponentCumulativeScore += opponentScore;
+    }
+
+    // Record the total trial reward (terminal + incremental) for each agent. Call this
+    // before EndEpisode(), which resets the agent's cumulative reward.
+    public void SetTrialRewards(float playerReward, float opponentReward = 0f)
+    {
+        PlayerTrialReward = playerReward;
+        OpponentTrialReward = opponentReward;
     }
 
     public void IncrementTrialNum()

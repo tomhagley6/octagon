@@ -88,6 +88,14 @@ public class OctagonAgent : Agent
         stepPenalty = Academy.Instance.EnvironmentParameters
         .GetWithDefault("step_penalty", 1f); // Using an extreme default to avoid silent defaulting
 
+        // Route the JSON behavioural log into the simulation output directory (--sim_out)
+        // so it lands alongside DONE.txt/stdout rather than flat in the default Data/ folder.
+        // Must run before any StartLogger() call below, which resolves the file path.
+        if (!string.IsNullOrEmpty(simOutDir) && diskLogger != null)
+        {
+            diskLogger.SetDataFolder(simOutDir);
+        }
+
         BehaviorParameters behavior = GetComponent<BehaviorParameters>();
 
         if (CompareTag("PlayerAgent") && !loggerStarted && behavior.BehaviorType == BehaviorType.HeuristicOnly)
