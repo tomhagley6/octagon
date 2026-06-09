@@ -86,7 +86,7 @@ public class OctagonAgent : Agent
 
         // get step penalty from environment parameters in yaml config
         stepPenalty = Academy.Instance.EnvironmentParameters
-        .GetWithDefault("step_penalty", 0.0001f);
+        .GetWithDefault("step_penalty", 1f); // Using an extreme default to avoid silent defaulting
 
         BehaviorParameters behavior = GetComponent<BehaviorParameters>();
 
