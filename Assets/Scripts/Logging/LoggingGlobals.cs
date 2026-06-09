@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 
 // Logging namespace for Global values associated with logging formats
@@ -47,7 +48,9 @@ namespace Globals
         
 
         // paths
-        public static string logFolder = "/home/tom/Unity/data";
+        //public static string logFolder = "/home/tom/Unity/data";
+        //public static string logFolder ="/Users/benny/Data";
+        public static string logFolder = Path.Combine(Directory.GetCurrentDirectory(), "Data");
 
         // log formatting
         public static string logEntryFormat = "[{0}]:{1}";  // [tag]:data

@@ -53,3 +53,6 @@ behaviors:
                                                                                      # from a pre-trained model
     init_path: null
     self_play: null
+
+environment_parameters:
+  step_penalty: 0.001 #configurable step penalty

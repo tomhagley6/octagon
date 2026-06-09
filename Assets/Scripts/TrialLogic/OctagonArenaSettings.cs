@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,8 +6,8 @@ using Globals;
 using KaimiraGames;
 using Unity.MLAgents;
 using UnityEngine;
-using UnityEditor;
 // using System.Numerics;
+using Random = UnityEngine.Random;
 
 public class OctagonArenaSettings : MonoBehaviour
 {
@@ -44,6 +45,19 @@ public class OctagonArenaSettings : MonoBehaviour
     // Training curriculum parameters
     private EnvironmentParameters envParams;
     private float arenaScale;
+
+    // Logging events and variables
+    // scores
+    public int PlayerTrialScore { get; private set; } = 0;
+    public int OpponentTrialScore { get; private set; } = 0;
+    public int PlayerCumulativeScore { get; private set; } = 0;
+    public int OpponentCumulativeScore { get; private set; } = 0;
+    // trial events and trial number
+    public event Action SliceOnset;
+    public bool TrialActive { get; private set; } //  non-networked trial active boolean
+    public event Action<bool,bool> TrialActiveChanged; // added to equate to OnValueChanged in Netcode
+    public ushort trialNum { get; private set; } = 0;
+    public event Action<ushort, ushort> TrialNumChanged;
 
 
     // References for the arena and identity manager of the arena walls
@@ -314,7 +328,9 @@ public class OctagonArenaSettings : MonoBehaviour
         #if UNITY_EDITOR
         Debug.Log("[ColourWalls] New trial walls are coloured.");
         #endif
-        playerAgent.LogSliceOnsetEvent(wallID1, wallID2, thisTrialType);
+        
+        // logging action event to signal slice onset and call the slice onset logging method through chain reaction
+        SliceOnset?.Invoke();
 
     }
 
@@ -344,14 +360,19 @@ public class OctagonArenaSettings : MonoBehaviour
         // Use a 2 second fixed EndTrial delay to replicate experimental setup, added 260310
         // Present in builds only from 260408 onwards
         yield return new WaitForSeconds(2f);
+        SetTrialActive(false);
 
         //Debug.Log($"Waiting for ITI: {iti}");
         yield return new WaitForSeconds(iti);
+        SetTrialActive(true);
 
         // Use a 0.5-1.5 second variable length TrialStart delay to replicate experimental setup, added 260310
         // Present in builds only from 260408 onwards
         float trialStartDelay = Random.Range(0.5f, 1.5f);
         yield return new WaitForSeconds(trialStartDelay);
+
+        // logging variables signalling trial is active and scores to be reset
+        ResetTrialScores();
 
         #if UNITY_EDITOR
         Debug.Log("Trial loop started.");
@@ -449,6 +470,7 @@ public class OctagonArenaSettings : MonoBehaviour
             Debug.Log("First episode. Walls yet to be assigned, nothing to reset.");
             #endif
         }
+
     }
 
     // Why are we changing interaction zone colour? Could this be removed
@@ -530,5 +552,35 @@ public class OctagonArenaSettings : MonoBehaviour
 
         return (reward, rewardType);
     }
+    public void SetTrialActive(bool value)
+    {
+        if (TrialActive == value) return;
+        bool prev = TrialActive;
+        TrialActive = value;
+        TrialActiveChanged?.Invoke(prev, TrialActive);
+    }
+    public void ResetTrialScores()
+    {
+        PlayerTrialScore = 0;
+        OpponentTrialScore = 0;
+    }
 
+    public void SetTrialScores(int playerScore, int opponentScore = 0)
+    {
+        PlayerTrialScore = playerScore;
+        OpponentTrialScore = opponentScore;
+    }
+
+    public void SetSessionScores(int playerScore, int opponentScore = 0)
+    {
+        PlayerCumulativeScore += playerScore;
+        OpponentCumulativeScore += opponentScore;
+    }
+
+    public void IncrementTrialNum()
+    {
+        ushort previous = trialNum;
+        trialNum++;
+        TrialNumChanged?.Invoke(previous, trialNum);
+    }
 }
