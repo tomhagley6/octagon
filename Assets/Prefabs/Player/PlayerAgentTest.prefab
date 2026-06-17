@@ -240,7 +240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 610e55864875220408db48d38f7dbc60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxRayDegrees: 66
+  maxRayDegrees: 55
   raysPerDirection: 3
   rayLength: 60
   sphereRadius: 0
