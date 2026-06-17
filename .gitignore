@@ -87,6 +87,7 @@ __pycache__/
 
 # ML-Agents results and logs
 results/
+simulations/
 summaries/
 models/
 Models/
