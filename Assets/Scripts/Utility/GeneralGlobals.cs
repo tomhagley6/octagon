@@ -25,8 +25,8 @@ namespace Globals
         public static string lowScoreRewardType = "Low";
         // public static List<string> trialTypes = new List<string>{"HighLow", "ForcedHigh", "ForcedLow"};
         public static List<string> trialTypes = new List<string>{"HighLow"};
-        //public static List<int> trialTypeProbabilities = new List<int> { 80, 10, 10 };
-        public static List<int> trialTypeProbabilities = new List<int>{50, 50};
+        public static List<int> trialTypeProbabilities = new List<int> { 80, 10, 10 };
+        // public static List<int> trialTypeProbabilities = new List<int>{50, 50};
 
         // Altered wallSeparations to match experimental settings. 50% of 90 trials are now replaced with 180 trials. Note that there 
         // currently still no forced trials. 260323
@@ -35,6 +35,8 @@ namespace Globals
         // public static List<int> wallSeparations = new List<int>{1,2};
         public static List<int> wallSeparationsProbabilities = new List<int>{50,25,25};
         // public static List<int> wallSeparationsProbabilities = new List<int>{50,50};
+        // public static List<int> wallSeparationsProbabilities = new List<int>{0,0,100};  // 100% 180 trials for testing
+
 
         public static Color wallHighColour = Color.red; // Color.blue
         public static Color wallLowColour = Color.blue;  // Color.red

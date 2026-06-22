@@ -44,7 +44,7 @@ behaviors:
         strength: 1.0
       rnd:
         gamma: 0.99
-        strength: 0.01
+        strength: 0.02
         learning_rate: 1.0e-4
 
     self_play: null
