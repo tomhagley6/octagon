@@ -41,7 +41,8 @@ public class OctagonAgent : Agent
     private int stepCount = 0;
     private int targetEps = -1;
     // customisable step penalty
-    float stepPenalty;
+    float translationCost;
+    float turningCost;
 
     // octagon arena
     private Transform arenaRoot;
@@ -84,9 +85,13 @@ public class OctagonAgent : Agent
             Debug.Log($"Simulation target episodes: {targetEps}");
         }
 
-        // get step penalty from environment parameters in yaml config
-        stepPenalty = Academy.Instance.EnvironmentParameters
-        .GetWithDefault("step_penalty", 1f); // Using an extreme default to avoid silent defaulting
+        // get penalty for translational movement cost in yaml config
+        translationCost = Academy.Instance.EnvironmentParameters
+        .GetWithDefault("translation_cost", 1f);
+        
+        // get penalty for turning movement cost in yaml config
+        turningCost = Academy.Instance.EnvironmentParameters
+        .GetWithDefault("turning_cost", 1f);
 
         // Route the JSON behavioural log into the simulation output directory (--sim_out)
         // so it lands alongside DONE.txt/stdout rather than flat in the default Data/ folder.
@@ -476,7 +481,10 @@ public class OctagonAgent : Agent
         else if (rotateAction == 2) rotateAmount = -turnSpeed;  // Rotate counterclockwise
 
         // Move and rotate agent using the values derived from actions
-        Vector3 targetDirection = transform.forward * moveAmount + transform.right * strafeAmount;
+        Vector3 targetDirection = 
+        transform.forward * moveAmount + 
+        transform.right * strafeAmount;
+
         if (targetDirection.magnitude > 1)
             targetDirection.Normalize();
 
@@ -500,23 +508,37 @@ public class OctagonAgent : Agent
         {
             // No penalty if choosing to rest. May need to create some penalty if this causes issues with training
         }
-        else
+
+        // the rule is:
+
+        // if any translational action is taken:
+            // apply translation cost
+
+        // if any rotational action is taken:
+            // apply turning cost
+
+        bool isTranslating = moveAction != 0 || strafeAction != 0;
+        bool isTurning = rotateAction != 0;
+        bool isResting = !isTranslating && !isTurning;
+
+        if (isTraining)
         {
-            // If any action is taken, apply step penalty (training only)
-            if (isTraining)
-            {
-                float stepPenalty = Academy.Instance.EnvironmentParameters.GetWithDefault("step_penalty", float.NaN);
+            translationCost = Academy.Instance.EnvironmentParameters
+            .GetWithDefault("translation_cost", float.NaN);
+            turningCost = Academy.Instance.EnvironmentParameters
+            .GetWithDefault("turning_cost", float.NaN);
 
-                if (float.IsNaN(stepPenalty))
-                {
-                    throw new System.InvalidOperationException(
-                        "step_penalty not found in environment_parameters — check the training YAML.");
-                }
-                
-                AddReward(-stepPenalty);
-            }
+            if (float.IsNaN(translationCost) || float.IsNaN(turningCost))
+                throw new InvalidOperationException("missing cost environment parameter");
+        }
 
-
+        if (!isResting)
+        {
+            if (isTranslating)
+                AddReward(-translationCost);
+            
+            if (isTurning)
+                AddReward(-turningCost);
         }
 
         if (wall1Trigger == null || wall2Trigger == null)
