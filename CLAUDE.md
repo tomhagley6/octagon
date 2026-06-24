@@ -97,3 +97,21 @@ All configs use PPO with LSTM memory (256 size, sequence length 64) and RND curi
 - To use a pre-trained model as initialisation, set `init_path` in the training YAML config
 - Checkpoints saved every 100k steps
 
+
+## Related Repos
+
+This Unity project is one of three repos in the wider Octagon project. The pipeline runs:
+**Octagon** (this repo — the environment + Unity build) → **agent_training** (train / run models)
+→ **octagon_analysis** (analyse the resulting logs). When a task touches training, inference, or
+analysis, read across all three rather than solving it in isolation here.
+
+- `/home/tom/repos/agent_training` — Python wrappers for batch training and inference (simulations)
+  of Octagon agents via `mlagents-learn`. Owns the inference orchestration (`launch_inference_sim`,
+  `run_eval`, `patch_agents_yaml`, `batch_inference`) and the `--sim_eps` / `--sim_out` / `DONE.txt`
+  launch convention. Consult/extend it before building any new model-running tooling rather than
+  reimplementing the harness in this repo.
+- `/home/tom/repos/octagon_analysis` — Python package for all behavioural and statistical analysis
+  of Octagon, plus visualisation and plotting. It ingests the simulation `.json` logs produced by
+  this repo's `DiskLogger` (one `.json` + `DONE.txt` per run folder). Treat it as the source of
+  truth for the expected log schema / output contract.
+

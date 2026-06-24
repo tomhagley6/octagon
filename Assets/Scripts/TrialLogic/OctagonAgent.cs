@@ -96,6 +96,8 @@ public class OctagonAgent : Agent
             diskLogger.SetDataFolder(simOutDir);
         }
 
+        // Note: the tournament model override (--player_model / --opp_model) is applied in Awake()
+        // by assigning BehaviorParameters.Model directly, before the policy is generated.
         BehaviorParameters behavior = GetComponent<BehaviorParameters>();
 
         if (CompareTag("PlayerAgent") && !loggerStarted && behavior.BehaviorType == BehaviorType.HeuristicOnly)
@@ -126,6 +128,44 @@ public class OctagonAgent : Agent
     // use to intialise references
     protected override void Awake()
     {
+        // Tournament inference: a Python driver pits any two entrants against each other by
+        // launching this build with --player_model <name> / --opp_model <name>. We assign the
+        // chosen model directly to BehaviorParameters.Model here in Awake, before the policy is
+        // generated in LazyInitialize() — so the agent initialises with the right model just like
+        // an inspector-assigned agent. We deliberately do NOT use Agent.SetModel(): it calls
+        // NotifyAgentDone() at runtime, which disrupts the first episode's arena setup. Names match
+        // the imported ModelAsset (the .onnx filename without its extension); with no arg the
+        // inspector-assigned model is kept.
+        var cliArgs = System.Environment.GetCommandLineArgs();
+        string modelArg = null;
+        if (CompareTag("PlayerAgent")) modelArg = GetArg(cliArgs, "--player_model");
+        else if (CompareTag("OpponentAgent")) modelArg = GetArg(cliArgs, "--opp_model");
+
+        if (!string.IsNullOrEmpty(modelArg))
+        {
+            TournamentManager tournament = TournamentManager.Instance != null
+                ? TournamentManager.Instance
+                : FindObjectOfType<TournamentManager>();
+
+            if (tournament == null)
+            {
+                Debug.LogError($"[OctagonAgent] '{modelArg}' requested for {tag} but no TournamentManager " +
+                               "is present in the scene; keeping the inspector-assigned model.");
+            }
+            else
+            {
+                var model = tournament.GetModelByName(modelArg);
+                if (model != null)
+                {
+                    var behavior = GetComponent<BehaviorParameters>();
+                    behavior.Model = model;
+                    tournament.RegisterAssignment(tag, modelArg);
+                    Debug.Log($"[OctagonAgent] Tournament model applied: {tag} " +
+                              $"(behavior '{behavior.BehaviorName}') -> {modelArg}");
+                }
+            }
+        }
+
         // Search upward to find the ArenaManager parent
         Transform current = transform;
         while (current != null)
