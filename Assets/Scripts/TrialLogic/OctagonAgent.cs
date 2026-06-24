@@ -493,10 +493,11 @@ public class OctagonAgent : Agent
         }
         animator.SetBool("isRunning", targetDirection.magnitude > 0.05f);
 
+        // // 260624 ADDED '&& false' TO REMOVE THIS CLAUSE FROM TRAINING. SEE COMMIT. REMEMBER TO CHANGE BACK AFTERWARDS.
         // step penalty
         // Too small compared to final reward? How frequent is one step, and how long is one trial?
         // Changed to -1e-3f from -1e-4f on 260219 
-        if (actionBuffers.DiscreteActions[0] == 0 && actionBuffers.DiscreteActions[1] == 0 && actionBuffers.DiscreteActions[2] == 0)
+        if (actionBuffers.DiscreteActions[0] == 0 && actionBuffers.DiscreteActions[1] == 0 && actionBuffers.DiscreteActions[2] == 0 && false)
         {
             // No penalty if choosing to rest. May need to create some penalty if this causes issues with training
         }
