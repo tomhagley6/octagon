@@ -924,11 +924,15 @@ PrefabInstance:
       objectReference: {fileID: 5022602860645237092, guid: d265bfc52891fb57fb158d84541e3a31, type: 3}
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_BehaviorName
-      value: OctagonAgentSocial
+      value: CompetitiveAgent2
       objectReference: {fileID: 0}
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_BehaviorType
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+      propertyPath: m_DeterministicInference
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
@@ -2812,11 +2816,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_BehaviorName
-      value: OctagonAgentSocial
+      value: CompetitiveAgent1
       objectReference: {fileID: 0}
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_BehaviorType
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+      propertyPath: m_DeterministicInference
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 864409754076990077, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
@@ -4501,7 +4509,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 158619455
+  GlobalObjectIdHash: 1624760387
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
