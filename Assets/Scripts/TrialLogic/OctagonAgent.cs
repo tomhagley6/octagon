@@ -77,11 +77,31 @@ public class OctagonAgent : Agent
         var args = System.Environment.GetCommandLineArgs();
         string epStr = GetArg(args, "--sim_eps");
         simOutDir = GetArg(args, "--sim_out");
+        string trialSeqPath = GetArg(args, "--trial_seq");
 
         if (!string.IsNullOrEmpty(epStr))
         {
             targetEps = int.Parse(epStr);
             Debug.Log($"Simulation target episodes: {targetEps}");
+        }
+
+        // Load a predetermined trial sequence if one was supplied. Only the
+        // PlayerAgent drives trial setup, so it owns the (global) sequence. When
+        // no path is given (or loading fails) the arena falls back to random
+        // generation. The run is capped at the sequence length so inference stops
+        // once the scripted trials are exhausted.
+        if (CompareTag("PlayerAgent"))
+        {
+            ScriptedTrialSequence.Load(trialSeqPath);
+            if (ScriptedTrialSequence.Enabled)
+            {
+                int seqCount = ScriptedTrialSequence.Count;
+                if (targetEps <= 0 || targetEps > seqCount)
+                {
+                    targetEps = seqCount;
+                    Debug.Log($"[ScriptedTrialSequence] Capping target episodes at sequence length: {targetEps}");
+                }
+            }
         }
 
         // get step penalty from environment parameters in yaml config
@@ -497,7 +517,7 @@ public class OctagonAgent : Agent
         // step penalty
         // Too small compared to final reward? How frequent is one step, and how long is one trial?
         // Changed to -1e-3f from -1e-4f on 260219 
-        if (actionBuffers.DiscreteActions[0] == 0 && actionBuffers.DiscreteActions[1] == 0 && actionBuffers.DiscreteActions[2] == 0 && false)
+        if (actionBuffers.DiscreteActions[0] == 0 && actionBuffers.DiscreteActions[1] == 0 && actionBuffers.DiscreteActions[2] == 0)
         {
             // No penalty if choosing to rest. May need to create some penalty if this causes issues with training
         }
