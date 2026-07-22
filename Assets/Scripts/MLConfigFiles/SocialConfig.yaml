@@ -1,7 +1,7 @@
 behaviors:
   OctagonAgentSocial:
     trainer_type: ppo
-    max_steps: 4e06          # Total training steps
+    max_steps: 3e06          # Total training steps (reduced to 3e06 260720)
     time_horizon: 128            # How many steps of experience per agent before updating
     summary_freq: 20000          # How often stats are written to TensorBoard
     keep_checkpoints: 40         # Keep more checkpoints since we're saving less frequently. Divisor of max_steps

@@ -13,6 +13,14 @@ public class TrialSpec
     public int anchorWallID;   // custom ID of the anchor wall (== highWallID)
     public int highWallID;     // custom ID assigned as wall1 (high / anchor)
     public int lowWallID;      // custom ID assigned as wall2 (low / dependent)
+
+    // Per-trial timing (seconds), predetermined so inference is fully reproducible.
+    // Consumed by OctagonArenaSettings.ITI() for the gap PRECEDING this trial.
+    // Older sequence files omit these keys -> JsonUtility deserialises them to 0 ->
+    // the arena falls back to its normal Random.Range draw (see ITI()), so standard
+    // behaviour is preserved for both random generation and legacy files.
+    public float iti;             // inter-trial interval (General.ITIMin..ITIMax)
+    public float trialStartDelay; // post-ITI start delay (0.5..1.5)
 }
 
 // Wrapper object so JsonUtility can deserialise the top-level file
@@ -107,6 +115,18 @@ public static class ScriptedTrialSequence
     {
         if (!Enabled || _index >= _trials.Length) return null;
         return _trials[_index++];
+    }
+
+    /// <summary>
+    /// Return the trial that the next Next() call will hand out, WITHOUT advancing
+    /// the cursor. Used to read the upcoming trial's predetermined timing during
+    /// the ITI that precedes it (ITI is drawn before SetUpArena consumes the trial).
+    /// Returns null when disabled or exhausted.
+    /// </summary>
+    public static TrialSpec Peek()
+    {
+        if (!Enabled || _index >= _trials.Length) return null;
+        return _trials[_index];
     }
 
     /// <summary>Restart the sequence from the first trial.</summary>

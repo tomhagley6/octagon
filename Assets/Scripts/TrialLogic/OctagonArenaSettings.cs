@@ -384,8 +384,19 @@ public class OctagonArenaSettings : MonoBehaviour
         #if UNITY_EDITOR
         Debug.Log($"ITI range: {General.ITIMin} to {General.ITIMax}");
         #endif
-        iti = Random.Range(General.ITIMin, General.ITIMax);
-        
+
+        // Predetermined-sequence runs read this trial's timing from the sequence
+        // file so inference is fully reproducible. Peek (don't consume) the upcoming
+        // trial: SetUpArena/Next() advances the cursor later in this coroutine, so
+        // the not-yet-consumed spec is the trial this ITI precedes. When running with
+        // random generation, or with a legacy file lacking timing (value <= 0), fall
+        // back to the original Random.Range draw so standard behaviour is unchanged.
+        TrialSpec upcoming = ScriptedTrialSequence.Enabled ? ScriptedTrialSequence.Peek() : null;
+
+        iti = (upcoming != null && upcoming.iti > 0f)
+            ? upcoming.iti
+            : Random.Range(General.ITIMin, General.ITIMax);
+
         // Use a 2 second fixed EndTrial delay to replicate experimental setup, added 260310
         // Present in builds only from 260408 onwards
         yield return new WaitForSeconds(2f);
@@ -397,7 +408,9 @@ public class OctagonArenaSettings : MonoBehaviour
 
         // Use a 0.5-1.5 second variable length TrialStart delay to replicate experimental setup, added 260310
         // Present in builds only from 260408 onwards
-        float trialStartDelay = Random.Range(0.5f, 1.5f);
+        float trialStartDelay = (upcoming != null && upcoming.trialStartDelay > 0f)
+            ? upcoming.trialStartDelay
+            : Random.Range(0.5f, 1.5f);
         yield return new WaitForSeconds(trialStartDelay);
 
         // logging variables signalling trial is active and scores to be reset
