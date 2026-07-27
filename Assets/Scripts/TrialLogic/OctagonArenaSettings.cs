@@ -25,6 +25,10 @@ public class OctagonArenaSettings : MonoBehaviour
     public GameObject wall2Trigger;
     public string thisTrialType;
     List<int> walls;
+    // Current predetermined trial (null when running with random generation).
+    // Set once per SetUpArena so wall selection and trial-type selection use the
+    // same scripted entry.
+    private TrialSpec currentScriptedTrial;
     // initial wall colour
     private Color defaultWallColour;
     private float iti;
@@ -120,6 +124,11 @@ public class OctagonArenaSettings : MonoBehaviour
         Debug.Log("[SetUpArena] arena set-up process initiated.");
         #endif
 
+        // Pull the next predetermined trial (null when running with random
+        // generation). Advancing here, once per trial, keeps wall selection and
+        // trial-type selection consistent within this trial.
+        currentScriptedTrial = ScriptedTrialSequence.Enabled ? ScriptedTrialSequence.Next() : null;
+
         AssignNewWalls();
         wallID1 = activeWalls.wall1;
         wallID2 = activeWalls.wall2;
@@ -177,7 +186,17 @@ public class OctagonArenaSettings : MonoBehaviour
         // get wall trigger IDs for a new trial
         walls = identityManager.ListCustomIDs();
 
-        // choose a random anchor wall to reference the trial to 
+        // Predetermined trial: use the scripted anchor/dependent walls directly
+        // instead of sampling. Wall IDs are resolved by the generator so no index
+        // maths is needed here.
+        if (currentScriptedTrial != null)
+        {
+            Academy.Instance.StatsRecorder.Add(
+                "WallSep/sampled", currentScriptedTrial.separation, StatAggregationMethod.Average);
+            return new List<int>(new int[] { currentScriptedTrial.highWallID, currentScriptedTrial.lowWallID });
+        }
+
+        // choose a random anchor wall to reference the trial to
         int anchorWallIndex = Random.Range(0, walls.Count);
 
         // Build weighted list of wall separations. When a curriculum YAML provides
@@ -236,7 +255,13 @@ public class OctagonArenaSettings : MonoBehaviour
 
     public string SelectTrial()
     {
-        // create weighted list of trial types to draw from 
+        // Predetermined trial: use the scripted trial type.
+        if (currentScriptedTrial != null)
+        {
+            return currentScriptedTrial.trialType;
+        }
+
+        // create weighted list of trial types to draw from
         WeightedList<string> trialTypeDist = new();
         for (int i = 0; i < General.trialTypes.Count; i++)
         {
@@ -359,8 +384,19 @@ public class OctagonArenaSettings : MonoBehaviour
         #if UNITY_EDITOR
         Debug.Log($"ITI range: {General.ITIMin} to {General.ITIMax}");
         #endif
-        iti = Random.Range(General.ITIMin, General.ITIMax);
-        
+
+        // Predetermined-sequence runs read this trial's timing from the sequence
+        // file so inference is fully reproducible. Peek (don't consume) the upcoming
+        // trial: SetUpArena/Next() advances the cursor later in this coroutine, so
+        // the not-yet-consumed spec is the trial this ITI precedes. When running with
+        // random generation, or with a legacy file lacking timing (value <= 0), fall
+        // back to the original Random.Range draw so standard behaviour is unchanged.
+        TrialSpec upcoming = ScriptedTrialSequence.Enabled ? ScriptedTrialSequence.Peek() : null;
+
+        iti = (upcoming != null && upcoming.iti > 0f)
+            ? upcoming.iti
+            : Random.Range(General.ITIMin, General.ITIMax);
+
         // Use a 2 second fixed EndTrial delay to replicate experimental setup, added 260310
         // Present in builds only from 260408 onwards
         yield return new WaitForSeconds(2f);
@@ -372,7 +408,9 @@ public class OctagonArenaSettings : MonoBehaviour
 
         // Use a 0.5-1.5 second variable length TrialStart delay to replicate experimental setup, added 260310
         // Present in builds only from 260408 onwards
-        float trialStartDelay = Random.Range(0.5f, 1.5f);
+        float trialStartDelay = (upcoming != null && upcoming.trialStartDelay > 0f)
+            ? upcoming.trialStartDelay
+            : Random.Range(0.5f, 1.5f);
         yield return new WaitForSeconds(trialStartDelay);
 
         // logging variables signalling trial is active and scores to be reset
