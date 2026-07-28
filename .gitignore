@@ -25,6 +25,7 @@
 
 # Visual Studio cache directory
 .vs/
+.vsconfig
 
 # Gradle cache directory
 .gradle/
@@ -101,6 +102,7 @@ Data/
 
 # Model files and associated Unity meta files
 Assets/Models/
+Assets/Resources/Models.meta
 *.onnx
 .fake
 
