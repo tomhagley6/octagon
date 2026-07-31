@@ -81,7 +81,7 @@ The SensorComponent that registers the sensor with ML-Agents. This component:
    ```
 
 2. **Configure SelectivePassThroughRaycast:**
-   - Max Ray Degrees: Field of view (e.g., 66° for ±66° = 132° total)
+   - Max Ray Degrees: Field of view (e.g., 66° for ±66° = 132° total). NOTE (outdated): this example value is stale. As of 2026-06-17 maxRayDegrees was changed to 55 (±55° = 110° total) to match the human player camera's horizontal FoV.
    - Rays Per Direction: Number of rays on each side of center (e.g., 3 = 7 total rays)
    - Ray Length: Maximum detection distance
    - Detection Mask: Layers to detect

@@ -191,10 +191,14 @@ public class OctagonWallTrigger : MonoBehaviour
 
             winner.AddReward(reward);
             // loser.AddReward(Globals.General.loserScore); // All negative reward for the loser is removed 250220 (end-of-day)
-            int playerScore = winner == playerAgent ? (int)reward : 0;
-            int opponentScore = winner == opponentAgent ? (int)reward : 0;
+            float playerScore = winner == playerAgent ? reward : 0f;
+            float opponentScore = winner == opponentAgent ? reward : 0f;
             octagonArenaSettings.SetTrialScores(playerScore, opponentScore);
             octagonArenaSettings.SetSessionScores(playerScore, opponentScore);
+
+            // Capture each agent's full trial reward before EndEpisode() resets it.
+            octagonArenaSettings.SetTrialRewards(
+                playerAgent.GetCumulativeReward(), opponentAgent.GetCumulativeReward());
 
             octagonArenaSettings.DisableTriggers();
             #if UNITY_EDITOR
@@ -215,8 +219,11 @@ public class OctagonWallTrigger : MonoBehaviour
             OctagonAgent winner = playerAgent;
             winner.AddReward(reward);
 
-            octagonArenaSettings.SetTrialScores((int)reward, 0);
-            octagonArenaSettings.SetSessionScores((int)reward, 0);
+            octagonArenaSettings.SetTrialScores(reward, 0f);
+            octagonArenaSettings.SetSessionScores(reward, 0f);
+
+            // Capture the agent's full trial reward before EndEpisode() resets it.
+            octagonArenaSettings.SetTrialRewards(playerAgent.GetCumulativeReward(), 0f);
 
             #if UNITY_EDITOR
             float cumulativeReward = playerAgent.GetCumulativeReward();
