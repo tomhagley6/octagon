@@ -34,6 +34,9 @@ public class OctagonAgent : Agent
     public float previousDistanceLow;
     private int episodeCount = 0;
     private int stepCount = 0;
+    private int targetEps = -1;
+    // customisable step penalty
+    float stepPenalty;
 
     // octagon arena
     private Transform arenaRoot;
@@ -59,18 +62,27 @@ public class OctagonAgent : Agent
         // if off, agent is in inference/heuristic mode
         isTraining = Academy.Instance.IsCommunicatorOn;
         isInference = GetComponent<BehaviorParameters>().BehaviorType == BehaviorType.InferenceOnly;
+        
+        // SBI: parse command line arguments to read how many episodes to run for simulation
+        var args = System.Environment.GetCommandLineArgs();
+        string epStr = GetArg(args, "--sim_eps");
+        simOutDir = GetArg(args, "--sim_out");
 
-
-        // if communicator is off
-        //if (!isTraining && isInference)
-        if (!isTraining)
+        if (!string.IsNullOrEmpty(epStr))
         {
-            // get agent tag (PlayerAgent or OpponentAgent)
-            string agentTag = this.tag;
+            targetEps = int.Parse(epStr);
+            Debug.Log($"Simulation target episodes: {targetEps}");
+        }
 
-            // define path for agent log 
-            // stores log in 'AgentLogs' folder in 'Assets' folder
-            if (!octagonArenaSettings.soloMode)
+        // get step penalty from environment parameters in yaml config
+        stepPenalty = Academy.Instance.EnvironmentParameters
+        .GetWithDefault("step_penalty", 0.0001f);
+
+        BehaviorParameters behavior = GetComponent<BehaviorParameters>();
+
+        if (CompareTag("PlayerAgent") && !loggerStarted && behavior.BehaviorType == BehaviorType.HeuristicOnly)
+        {
+            if (diskLogger == null)
             {
                 logPath = Application.dataPath + $"/SocialRaycastLogs/log_{agentTag}_{System.DateTime.Now:yyyyMMdd_HHmmss}.csv";
             }
@@ -78,10 +90,15 @@ public class OctagonAgent : Agent
             {
                 logPath = Application.dataPath + $"/SoloRaycastLogs/log_{agentTag}_{System.DateTime.Now:yyyyMMdd_HHmmss}.csv";
             }
+        }
 
-            logWriter = new StreamWriter(logPath, true); // class for writing text to files
-            logWriter.WriteLine("Episode,Step,Wall1,Wall2,Time,PosX,PosY,PosZ,RotY,Reward");
-
+        // if communicator is off
+        //if (!isTraining && isInference)
+        if (targetEps > 0 && CompareTag("PlayerAgent") && !loggerStarted)
+        {
+            loggerStarted = true;
+            // find the DiskLogger and start logger
+            diskLogger?.StartLogger();
         }
     }
 
@@ -296,6 +313,30 @@ public class OctagonAgent : Agent
         totalShapingReward = 0;
         episodeCount++;
 
+        // SBI: stop the simulation once the desired number of episodes is reached
+        if (!simFinished && CompareTag("PlayerAgent") && targetEps > 0 && episodeCount > targetEps)
+        {
+            simFinished = true;
+            Debug.Log("Simulation finished. Stopping logger then quitting.");
+            
+            diskLogger?.StopLogger();
+
+            if (!string.IsNullOrEmpty(simOutDir))
+            {
+                try
+                {
+                    File.WriteAllText(Path.Combine(simOutDir, "DONE.txt"), "ok");
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Failed to write DONE.txt: {e}");
+                }
+            }
+
+            this.enabled = false;
+            return;
+        }
+
         #if UNITY_EDITOR
         Debug.Log($"OnEpisodeBegin - trial looping: {octagonArenaSettings.isTrialLooping}");
 
@@ -460,7 +501,7 @@ public class OctagonAgent : Agent
                     throw new System.InvalidOperationException(
                         "step_penalty not found in environment_parameters — check the training YAML.");
                 }
-
+                
                 AddReward(-stepPenalty);
             }
 
