@@ -54,6 +54,7 @@ ExportedObj/
 
 # Unity3D generated file on crash reports
 sysinfo.txt
+mono_crash.*
 
 # Builds
 *.apk
@@ -86,6 +87,7 @@ __pycache__/
 
 # ML-Agents results and logs
 results/
+simulations/
 summaries/
 models/
 Models/
@@ -95,7 +97,12 @@ SoloRaycastLogs/
 SocialRaycastLogs/
 SoloVisualLogs/
 SocialVisualLogs/
+Data/
 
-# ONNX exports (unless you want to version them explicitly)
+# Model files and associated Unity meta files
+Assets/Models/
 *.onnx
 .fake
+
+#macOS
+.DS_Store

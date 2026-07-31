@@ -5,7 +5,7 @@ using System.Linq;
 public class SelectivePassThroughRaycast : MonoBehaviour
 {
     [Header("Ray Settings")]
-    [SerializeField] private float maxRayDegrees = 66f; // Field of view is 2 * maxRayDegrees
+    [SerializeField] private float maxRayDegrees = 55f; // Field of view is 2 * maxRayDegrees = 110 deg, matching the human player camera's horizontal FoV (see SetFoV.cs)
     [SerializeField] private int raysPerDirection = 3; // 2n+1 total rays
     [SerializeField] private float rayLength = 60f; // Easily long enough for Octagon arena
     [SerializeField] private float sphereRadius = 0f; // No sphere at the ray terminus 

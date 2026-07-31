@@ -48,8 +48,14 @@ public class OctagonArenaSettings : MonoBehaviour
 
     // Logging events and variables
     // scores
-    public int PlayerTrialScore { get; private set; } = 0;
-    public int OpponentTrialScore { get; private set; } = 0;
+    public float PlayerTrialScore { get; private set; } = 0f;
+    public float OpponentTrialScore { get; private set; } = 0f;
+    public float PlayerCumulativeScore { get; private set; } = 0f;
+    public float OpponentCumulativeScore { get; private set; } = 0f;
+    // Total ML-Agents reward each agent accumulated during the current trial
+    // (terminal wall reward plus the sum of any incremental rewards, e.g. step penalties).
+    public float PlayerTrialReward { get; private set; } = 0f;
+    public float OpponentTrialReward { get; private set; } = 0f;
     // trial events and trial number
     public event Action SliceOnset;
     public bool TrialActive { get; private set; } //  non-networked trial active boolean
@@ -174,15 +180,36 @@ public class OctagonArenaSettings : MonoBehaviour
         // choose a random anchor wall to reference the trial to 
         int anchorWallIndex = Random.Range(0, walls.Count);
 
-        // create weighted list of wall separation values to draw from 
+        // Build weighted list of wall separations. When a curriculum YAML provides
+        // sep_weight_{1,2,4} via EnvironmentParameters those override the static
+        // defaults in General; otherwise the defaults are used (inference, or a
+        // non-curriculum training config such as SoloConfig.yaml).
         WeightedList<int> wallSeparationsWeighted = new();
         for (int i = 0; i < General.wallSeparations.Count; i++)
         {
-            wallSeparationsWeighted.Add(General.wallSeparations[i], General.wallSeparationsProbabilities[i]);
+            int separation = General.wallSeparations[i];
+            float defaultWeight = General.wallSeparationsProbabilities[i];
+            float weight = Academy.Instance.EnvironmentParameters.GetWithDefault(
+                $"sep_weight_{separation}", defaultWeight);
+            // WeightedList takes int weights; scale to retain precision on fractional curriculum values.
+            int weightInt = Mathf.Max(0, Mathf.RoundToInt(weight * 1000f));
+            if (weightInt > 0)
+            {
+                wallSeparationsWeighted.Add(separation, weightInt);
+            }
+
+            // Surface the current per-separation weight to Tensorboard (one trace per separation).
+            Academy.Instance.StatsRecorder.Add(
+                $"WallSep/weight_{separation}", weight, StatAggregationMethod.MostRecent);
         }
 
         // query the weighted list for this trial's wall separation
         int wallSeparation = wallSeparationsWeighted.Next();
+
+        // Surface the actually-sampled separation; the summary-window mean lets you confirm
+        // the empirical distribution matches the lesson weights.
+        Academy.Instance.StatsRecorder.Add(
+            "WallSep/sampled", wallSeparation, StatAggregationMethod.Average);
 
 
         // choose a random second wall that is consistent with anchor wall for this trial type
@@ -538,14 +565,30 @@ public class OctagonArenaSettings : MonoBehaviour
     }
     public void ResetTrialScores()
     {
-        PlayerTrialScore = 0;
-        OpponentTrialScore = 0;
+        PlayerTrialScore = 0f;
+        OpponentTrialScore = 0f;
+        PlayerTrialReward = 0f;
+        OpponentTrialReward = 0f;
     }
 
-    public void SetTrialScores(int playerScore, int opponentScore = 0)
+    public void SetTrialScores(float playerScore, float opponentScore = 0f)
     {
         PlayerTrialScore = playerScore;
         OpponentTrialScore = opponentScore;
+    }
+
+    public void SetSessionScores(float playerScore, float opponentScore = 0f)
+    {
+        PlayerCumulativeScore += playerScore;
+        OpponentCumulativeScore += opponentScore;
+    }
+
+    // Record the total trial reward (terminal + incremental) for each agent. Call this
+    // before EndEpisode(), which resets the agent's cumulative reward.
+    public void SetTrialRewards(float playerReward, float opponentReward = 0f)
+    {
+        PlayerTrialReward = playerReward;
+        OpponentTrialReward = opponentReward;
     }
 
     public void IncrementTrialNum()

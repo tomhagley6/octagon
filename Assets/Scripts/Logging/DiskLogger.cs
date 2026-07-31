@@ -52,6 +52,11 @@ public class DiskLogger : Logger
 
     }
 
+    private double CurrentApplicationTime()
+    {
+        return Time.timeAsDouble;
+    }
+
 
     public override void Log(string logEntry)
     {
@@ -176,6 +181,15 @@ public class DiskLogger : Logger
     }
 
     // Public API
+
+    // Override the output directory for the JSON behavioural log. Must be called
+    // before StartLogger(), since StartLogger() resolves the file path from dataFolder.
+    // Used to route simulation logs into the --sim_out directory alongside DONE.txt.
+    public void SetDataFolder(string folder)
+    {
+        dataFolder = folder;
+    }
+
     public void StartLogger()
     {
         if (loggerReady)
@@ -237,7 +251,7 @@ public class DiskLogger : Logger
         // DEBUG
         // this just compares two methods of serialisation
         // and checks that the event description is correctly deserialised
-        StartLoggingLogEvent startLoggingLogEvent = new StartLoggingLogEvent();
+        StartLoggingLogEvent startLoggingLogEvent = new StartLoggingLogEvent(CurrentApplicationTime());
         string jsonData = JsonUtility.ToJson(startLoggingLogEvent);
         // Debug.Log("new attempt at json is "+ jsonData);
         StartLoggingLogEvent deserialized = JsonUtility.FromJson<StartLoggingLogEvent>(jsonData);
@@ -268,7 +282,7 @@ public class DiskLogger : Logger
         Debug.Log("Closing current logger: " + filename);
 
         // Write stop event directly
-        var stopEvent = new StopLoggingLogEvent();
+        var stopEvent = new StopLoggingLogEvent(CurrentApplicationTime());
         string stopJson = JsonConvert.SerializeObject(stopEvent, new JsonSerializerSettings
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore

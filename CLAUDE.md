@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## General Points
+- You are allowed to say 'I don't know'
+- Use direct quotes for factual grounding
+- Verify claims with citations
+
 ## Project Overview
 
 Octagonal arena environment for reward-based decision-making tasks (analogous to rodent behavioral experiments). Participants choose between coloured walls (Red=High reward, Blue=Low reward) at varying angular separations.
@@ -91,3 +96,4 @@ All configs use PPO with LSTM memory (256 size, sequence length 64) and RND curi
 - Checkpoint format: `.pt` (PyTorch) and `.onnx` (for Unity inference)
 - To use a pre-trained model as initialisation, set `init_path` in the training YAML config
 - Checkpoints saved every 100k steps
+

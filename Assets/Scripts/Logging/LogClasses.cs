@@ -11,8 +11,6 @@ namespace LoggingClasses
 {
 
 
-    
-
     //// Create log classes
 
     // Log event for the beginning of the log file
@@ -24,10 +22,10 @@ namespace LoggingClasses
         public string timeApplication;
         public string eventDescription;
 
-        public StartLoggingLogEvent()
+        public StartLoggingLogEvent(double applicationTime)
         {
             timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
-            timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
+            timeApplication = applicationTime.ToString("f3");
             eventDescription = Logging.beginLogging;
         }
     }
@@ -45,10 +43,10 @@ namespace LoggingClasses
         public string eventDescription;
         public Dictionary<string, object> data;
 
-        public TrialStartLogEvent(ushort trialNum, FixedString32Bytes trialType, Dictionary<string,object> playerPosDict)
+        public TrialStartLogEvent(ushort trialNum, FixedString32Bytes trialType, Dictionary<string,object> playerPosDict, double applicationTime)
         {
             timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
-            timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
+            timeApplication = applicationTime.ToString("f3");
             eventDescription = Logging.trialStart;
             data = new Dictionary<string, object>()
             {
@@ -83,10 +81,10 @@ namespace LoggingClasses
         public string eventDescription;
         public Dictionary<string, object> data;
 
-        public SliceOnsetLogEvent(int wall1, int wall2, FixedString32Bytes trialType, Dictionary<string,object> playerPosDict)
+        public SliceOnsetLogEvent(int wall1, int wall2, FixedString32Bytes trialType, Dictionary<string,object> playerPosDict, double applicationTime)
         {
             timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
-            timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
+            timeApplication = applicationTime.ToString("f3");
             eventDescription = Logging.sliceOnset;
             data = new Dictionary<string, object>()
 
@@ -115,10 +113,10 @@ namespace LoggingClasses
         public string eventDescription;
         public Dictionary<string, object> data;
 
-        public TriggerActivationLogEvent(int wall1, int wall2, int wallTriggered, ulong triggerClientId, Dictionary<string,object> playerPosDict)
+        public TriggerActivationLogEvent(int wall1, int wall2, int wallTriggered, ulong triggerClientId, Dictionary<string,object> playerPosDict, double applicationTime)
         {
             timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
-            timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
+            timeApplication = applicationTime.ToString("f3");
             eventDescription = Logging.triggerActivation;
             data = new Dictionary<string, object>()
             {
@@ -150,17 +148,19 @@ namespace LoggingClasses
         public string eventDescription;
         public Dictionary<string, object> data;
 
-        public TrialEndLogEvent(ushort trialNum, Dictionary<string, object> playerPosDict, Dictionary<string,object> playerScoresDict)
+        public TrialEndLogEvent(ushort trialNum, Dictionary<string, object> playerPosDict, Dictionary<string,object> playerScoresDict, Dictionary<string,object> trialScoresDict, Dictionary<string,object> trialRewardsDict, double applicationTime)
         {
             timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
-            timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
+            timeApplication = applicationTime.ToString("f3");
             eventDescription = Logging.trialEnd;
             data = new Dictionary<string, object>()
-            {   
+            {
                 {"trialNum", trialNum},
                 {"playerScores", playerScoresDict},
+                {"trialScores", trialScoresDict},
+                {"trialRewards", trialRewardsDict},
                 {"playerPosition", playerPosDict}
-                
+
 
             };
         }
@@ -176,17 +176,26 @@ namespace LoggingClasses
         public string timeLocal;
         public string timeApplication;
         public string eventDescription;
-        public Dictionary<string,object> data;
+        //public Dictionary<string,object> data;
+        public object data; // using object to allow for anonymous type with playerPosition dictionary
 
-        public TimeTriggeredLogEvent(Dictionary<string,object> playerPosDict)
+        //public TimeTriggeredLogEvent(Dictionary<string,object> playerPosDict)
+        //{
+        //    timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
+        //    timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
+        //    eventDescription = Logging.timeTriggered;
+        //    data = new Dictionary<string,object>()
+        //    {
+        //        {"playerPosition", playerPosDict}
+        //    };
+        //}
+
+        public TimeTriggeredLogEvent(Dictionary<string,object> playerPosDict, double applicationTime)
         {
             timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
-            timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
+            timeApplication = applicationTime.ToString("f3");
             eventDescription = Logging.timeTriggered;
-            data = new Dictionary<string,object>()
-            {
-                {"playerPosition", playerPosDict}
-            };
+            data = new { playerPosition = playerPosDict };
         }
 
    }
@@ -199,10 +208,10 @@ namespace LoggingClasses
         public string timeApplication;
         public string eventDescription;
 
-        public StopLoggingLogEvent()
+        public StopLoggingLogEvent(double applicationTime)
         {
             timeLocal = DateTime.Now.ToString(Logging.logTimeFormat);
-            timeApplication = Time.realtimeSinceStartupAsDouble.ToString("f3");
+            timeApplication = applicationTime.ToString("f3");
             eventDescription = Logging.endLogging;
         }
     }

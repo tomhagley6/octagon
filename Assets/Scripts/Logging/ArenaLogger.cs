@@ -14,9 +14,11 @@ public class ArenaLogger : MonoBehaviour
     [SerializeField] private DiskLogger diskLogger;
     [SerializeField] private bool enableTimeTriggered = true;
     [SerializeField] private bool logStartStopEvents = true;
-    private Coroutine timeCoroutine;
+    //private Coroutine timeCoroutine;
     private const ulong PlayerKey = 0UL;
     private const ulong OpponentKey = 1UL;
+    private bool timeTriggeredActive = false;
+    private double nextLogTime = 0.0;
 
     private void Awake()
     /// Ensures that necessary components are assigned,
@@ -86,10 +88,15 @@ public class ArenaLogger : MonoBehaviour
     // Logging event handlers
     // -----------------------
 
+    private double CurrentApplicationTime()
+    {
+        return Time.timeAsDouble;
+    }
+
     private void OnLoggingStarted()
     /// Logs the first line stating that logging has started
     {
-        Write(new StartLoggingLogEvent());
+        Write(new StartLoggingLogEvent(CurrentApplicationTime()));
         if (enableTimeTriggered) StartTimeTriggered();
     }
 
@@ -97,7 +104,7 @@ public class ArenaLogger : MonoBehaviour
     /// Logs the last line stating that logging has ended
     {
         StopTimeTriggered();
-        Write(new StopLoggingLogEvent());
+        Write(new StopLoggingLogEvent(CurrentApplicationTime()));
     }
 
     // ---------------------
@@ -129,7 +136,7 @@ public class ArenaLogger : MonoBehaviour
 
         var playerPosDict = BuildPlayerPosDict();
 
-        var ev = new TrialStartLogEvent(trialNum, trialType, playerPosDict);
+        var ev = new TrialStartLogEvent(trialNum, trialType, playerPosDict, CurrentApplicationTime());
         Write(ev);
     }
 
@@ -145,7 +152,7 @@ public class ArenaLogger : MonoBehaviour
         var trialType = new FixedString32Bytes(octagonArenaSettings.thisTrialType);
         var playerPosDict = BuildPlayerPosDict();
 
-        var ev = new SliceOnsetLogEvent(wall1, wall2, trialType, playerPosDict);
+        var ev = new SliceOnsetLogEvent(wall1, wall2, trialType, playerPosDict, CurrentApplicationTime());
         Write(ev);
     }
 
@@ -164,7 +171,7 @@ public class ArenaLogger : MonoBehaviour
 
         var playerPosDict = BuildPlayerPosDict();
 
-        var ev = new TriggerActivationLogEvent(wall1, wall2, wallTriggered, triggerClientId, playerPosDict)
+        var ev = new TriggerActivationLogEvent(wall1, wall2, wallTriggered, triggerClientId, playerPosDict, CurrentApplicationTime())
         {
             eventDescription = Logging.triggerActivationAuthorised
         };
@@ -185,7 +192,13 @@ public class ArenaLogger : MonoBehaviour
         // If you don't have a "score", use cumulative reward (still numeric).
         var playerScoresDict = BuildPlayerScoresDict();
 
-        var ev = new TrialEndLogEvent(trialNum, playerPosDict, playerScoresDict);
+        // Terminal outcome reward collected by each agent on the trial just ended (0 if none).
+        var trialScoresDict = BuildTrialScoresDict();
+
+        // Total reward each agent received over the trial just ended (terminal + incremental).
+        var trialRewardsDict = BuildTrialRewardsDict();
+
+        var ev = new TrialEndLogEvent(trialNum, playerPosDict, playerScoresDict, trialScoresDict, trialRewardsDict, CurrentApplicationTime());
         Write(ev);
     }
 
@@ -197,35 +210,54 @@ public class ArenaLogger : MonoBehaviour
     /// Called at the start of the logging process
     /// Initiates the player position and time logging at chosen frequency
     {
-        if (timeCoroutine != null) StopCoroutine(timeCoroutine);
-        timeCoroutine = StartCoroutine(TimeTriggeredLoop());
+        //if (timeCoroutine != null) StopCoroutine(timeCoroutine);
+        //timeCoroutine = StartCoroutine(TimeTriggeredLoop());
+        timeTriggeredActive = true;
+        nextLogTime = Time.timeAsDouble;
     }
     
     private void StopTimeTriggered()
     /// Called at the end of the logging process
     /// Concludes the frequent logging of player position and time
     {
-        if (timeCoroutine != null)
-        {
-            StopCoroutine(timeCoroutine);
-            timeCoroutine = null;
-        }
+        //if (timeCoroutine != null)
+        //{
+        //    StopCoroutine(timeCoroutine);
+        //    timeCoroutine = null;
+        //}
+        timeTriggeredActive = false;
     }
 
-    private IEnumerator TimeTriggeredLoop()
-    /// Logs player position and time at chosen frequency
+    private void FixedUpdate()
+    /// Alternative to coroutine for time-triggered logging using FixedUpdate
     {
-        while (true)
+        if (!timeTriggeredActive) return;
+        if (!IsReady()) return;
+
+        while (Time.timeAsDouble + 1e-9f >= nextLogTime)
         {
-            yield return new WaitForSeconds(Logging.loggingFrequency);
-
-            if (!IsReady()) continue;
-
             var playerPosDict = BuildPlayerPosDict();
-            var ev = new TimeTriggeredLogEvent(playerPosDict);
+            var ev = new TimeTriggeredLogEvent(playerPosDict, nextLogTime);
             Write(ev);
+
+            nextLogTime += Logging.loggingFrequency; // 0.02
         }
     }
+
+    //private IEnumerator TimeTriggeredLoop()
+    ///// Logs player position and time at chosen frequency
+    //{
+    //    while (true)
+    //    {
+    //        yield return new WaitForSeconds(Logging.loggingFrequency);
+
+    //        if (!IsReady()) continue;
+
+    //        var playerPosDict = BuildPlayerPosDict();
+    //        var ev = new TimeTriggeredLogEvent(playerPosDict);
+    //        Write(ev);
+    //    }
+    //}
     // -------------------------
     // Snapshot helpers (stable keys)
     // -------------------------
@@ -272,10 +304,42 @@ public class ArenaLogger : MonoBehaviour
         var dict = new Dictionary<string, object>();
 
         // Must match your analysis expectations: keys "0" and "1"
+        //dict["0"] = octagonArenaSettings.PlayerTrialScore;
+        dict["0"] = octagonArenaSettings.PlayerCumulativeScore;
+
+        if (!octagonArenaSettings.soloMode)
+            //dict["1"] = octagonArenaSettings.OpponentTrialScore;
+            dict["1"] = octagonArenaSettings.OpponentCumulativeScore;
+
+        return dict;
+    }
+
+    private Dictionary<string, object> BuildTrialScoresDict()
+    /// Dictionary of the terminal outcome reward player and opponent collected on the trial
+    /// just ended (the wall reward for the trial; 0 for an agent that collected none).
+    {
+        var dict = new Dictionary<string, object>();
+
+        // Keys "0" (player) and "1" (opponent), matching playerScores.
         dict["0"] = octagonArenaSettings.PlayerTrialScore;
 
         if (!octagonArenaSettings.soloMode)
             dict["1"] = octagonArenaSettings.OpponentTrialScore;
+
+        return dict;
+    }
+
+    private Dictionary<string, object> BuildTrialRewardsDict()
+    /// Dictionary of the total reward player and opponent received over the trial just ended
+    /// (terminal reward plus the sum of any incremental rewards during the trial).
+    {
+        var dict = new Dictionary<string, object>();
+
+        // Keys "0" (player) and "1" (opponent), matching playerScores.
+        dict["0"] = octagonArenaSettings.PlayerTrialReward;
+
+        if (!octagonArenaSettings.soloMode)
+            dict["1"] = octagonArenaSettings.OpponentTrialReward;
 
         return dict;
     }
