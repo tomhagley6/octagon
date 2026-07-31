@@ -87,6 +87,7 @@ __pycache__/
 
 # ML-Agents results and logs
 results/
+simulations/
 summaries/
 models/
 Models/
@@ -98,7 +99,8 @@ SoloVisualLogs/
 SocialVisualLogs/
 Data/
 
-# ONNX exports (unless you want to version them explicitly)
+# Model files and associated Unity meta files
+Assets/Models/
 *.onnx
 .fake
 

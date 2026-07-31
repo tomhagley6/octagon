@@ -192,7 +192,13 @@ public class ArenaLogger : MonoBehaviour
         // If you don't have a "score", use cumulative reward (still numeric).
         var playerScoresDict = BuildPlayerScoresDict();
 
-        var ev = new TrialEndLogEvent(trialNum, playerPosDict, playerScoresDict, CurrentApplicationTime());
+        // Terminal outcome reward collected by each agent on the trial just ended (0 if none).
+        var trialScoresDict = BuildTrialScoresDict();
+
+        // Total reward each agent received over the trial just ended (terminal + incremental).
+        var trialRewardsDict = BuildTrialRewardsDict();
+
+        var ev = new TrialEndLogEvent(trialNum, playerPosDict, playerScoresDict, trialScoresDict, trialRewardsDict, CurrentApplicationTime());
         Write(ev);
     }
 
@@ -304,6 +310,36 @@ public class ArenaLogger : MonoBehaviour
         if (!octagonArenaSettings.soloMode)
             //dict["1"] = octagonArenaSettings.OpponentTrialScore;
             dict["1"] = octagonArenaSettings.OpponentCumulativeScore;
+
+        return dict;
+    }
+
+    private Dictionary<string, object> BuildTrialScoresDict()
+    /// Dictionary of the terminal outcome reward player and opponent collected on the trial
+    /// just ended (the wall reward for the trial; 0 for an agent that collected none).
+    {
+        var dict = new Dictionary<string, object>();
+
+        // Keys "0" (player) and "1" (opponent), matching playerScores.
+        dict["0"] = octagonArenaSettings.PlayerTrialScore;
+
+        if (!octagonArenaSettings.soloMode)
+            dict["1"] = octagonArenaSettings.OpponentTrialScore;
+
+        return dict;
+    }
+
+    private Dictionary<string, object> BuildTrialRewardsDict()
+    /// Dictionary of the total reward player and opponent received over the trial just ended
+    /// (terminal reward plus the sum of any incremental rewards during the trial).
+    {
+        var dict = new Dictionary<string, object>();
+
+        // Keys "0" (player) and "1" (opponent), matching playerScores.
+        dict["0"] = octagonArenaSettings.PlayerTrialReward;
+
+        if (!octagonArenaSettings.soloMode)
+            dict["1"] = octagonArenaSettings.OpponentTrialReward;
 
         return dict;
     }
