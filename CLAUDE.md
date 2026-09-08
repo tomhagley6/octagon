@@ -39,13 +39,44 @@ mlagents-learn <config.yaml> --run-id=<run-id> --resume
 tensorboard --logdir results
 ```
 
-After running `mlagents-learn`, open the corresponding Unity scene (Solo or Social) in the Unity Editor and press Play to connect the simulation to the trainer.
+After running `mlagents-learn`, open **SoloOctagonStage** in the Unity Editor and press Play to
+connect the simulation to the trainer. This is the training scene for both Solo and Social runs
+-- see Scenes below for the three settings that switch between the two modes. Make sure the
+agent's `m_BehaviorName` matches the behavior ID in the config you launched, or the handshake
+will not find the behaviour.
 
 ## Architecture
 
 ### Scenes
-- **SoloOctagonStage** -- single agent training/inference
-- **SocialOctagonStage** -- two-agent competitive training with self-play
+
+- **SoloOctagonStage** -- THE training scene, for **both** Solo and Social runs. Despite the
+  name it is not solo-only; it has two agents in it and you switch modes in the Editor by:
+  1. de/re-activating the second agent GameObject (`PlayerAgent2`, tag `OpponentAgent`),
+  2. setting `m_BehaviorName` on the agent(s) to `OctagonAgentSolo` or `OctagonAgentSocial`
+     to match the behavior ID in the config you are launching,
+  3. ticking/unticking `soloMode` on `OctagonArenaSettings` (`OctagonArenaSettings.cs:17`).
+  Also used for in-Editor visualisation of a trained model: leave `m_BehaviorType` on
+  Default and assign an `.onnx` to `m_Model` -- Default falls back to the assigned model
+  when no `mlagents-learn` trainer is attached. NOTE: assigning a model dirties the scene
+  file; revert it before committing so the training scene stays model-free.
+- **TournamentOctagonStage** -- inference only, never trained. Duplicated from
+  SoloOctagonStage in `c32fbb7`. Exists solely because a cross-model tournament needs two
+  DISTINCT behavior names so ML-Agents can key two different policies:
+  - `CompetitiveAgent1` -- tag `PlayerAgent`, log key `"0"`
+  - `CompetitiveAgent2` -- tag `OpponentAgent`, log key `"1"`
+  Both are BehaviorType Default so the policies can run in Python. The driver is
+  `agent_training/tournament/tournament_func.py`, which stages
+  `results/<tournament_id>/<behaviour>/checkpoint.pt` per matchup; the names there are
+  hardcoded and must match this scene exactly. These names appear in NO training YAML.
+- **SocialOctagonStage** -- UNUSED. Superseded by SoloOctagonStage in social mode (see
+  `dc01ebd`). Kept for reference only; do not add to it.
+
+**Keeping the scenes in sync:** SoloOctagonStage and TournamentOctagonStage are near-identical
+twins -- same `PlayerAgent.prefab`, same 432 property overrides, differing at HEAD only in
+`m_Model`, `m_BehaviorName` and `m_Name`. Make behavioural changes in
+`Assets/Prefabs/Player/PlayerAgent.prefab` so they propagate to both automatically. If a
+change genuinely must be a scene-level override, apply it to both scenes in the same commit.
+No C# branches on scene name, so the scenes are otherwise interchangeable.
 
 ### Scene Hierarchy
 `ArenaManager > Agents > [PlayerAgent, OpponentAgent]` -- agents are auto-discovered at runtime by `OctagonAgent` component + Unity tags (`PlayerAgent`, `OpponentAgent`), not by GameObject name. See `AGENT_REFERENCE_GUIDELINES.md` for the full pattern.
@@ -86,6 +117,10 @@ All configs use PPO with LSTM memory (256 size, sequence length 64) and RND curi
 | `SoloConfig.yaml` | OctagonAgentSolo | 3M | 10240 | No |
 | `SocialConfig.yaml` | OctagonAgentSocial | 4M | 20480 | Yes (window=8, save/swap=150k) |
 | `CurriculumSoloConfig.yaml` | OctagonAgentSolo | varies | varies | No (5 progressive lessons) |
+
+The Behavior ID column must match `m_BehaviorName` on the agent in SoloOctagonStage before you
+press Play. `CompetitiveAgent1`/`CompetitiveAgent2` deliberately appear in no config here --
+they are inference-only names belonging to TournamentOctagonStage.
 
 ### Key Unity Tags
 `PlayerAgent`, `OpponentAgent`, `Wall`, `WallTrigger`, `HighWall`, `LowWall`, `HighWallTrigger`, `LowWallTrigger`
