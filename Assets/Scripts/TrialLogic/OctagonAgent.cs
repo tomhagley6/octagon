@@ -518,6 +518,8 @@ public class OctagonAgent : Agent
         // Too small compared to final reward? How frequent is one step, and how long is one trial?
         // Changed to -1e-3f from -1e-4f on 260219 
         if (actionBuffers.DiscreteActions[0] == 0 && actionBuffers.DiscreteActions[1] == 0 && actionBuffers.DiscreteActions[2] == 0 && false)
+        // if (actionBuffers.DiscreteActions[0] == 0 && actionBuffers.DiscreteActions[1] == 0 && actionBuffers.DiscreteActions[2] == 0)
+
         {
             throw new System.InvalidOperationException("Agent is resting (no action taken). This should not happen during training. Check the action space and policy.");
             // No penalty if choosing to rest. May need to create some penalty if this causes issues with training
