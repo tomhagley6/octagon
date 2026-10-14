@@ -4,6 +4,8 @@ using System.Linq;
 
 public class SelectivePassThroughRaycast : MonoBehaviour
 {
+    [SerializeField] private bool debug = false; // Enable debug logging for raycast hits
+
     [Header("Ray Settings")]
     [SerializeField] private float maxRayDegrees = 55f; // Field of view is 2 * maxRayDegrees = 110 deg, matching the human player camera's horizontal FoV (see SetFoV.cs)
     [SerializeField] private int raysPerDirection = 3; // 2n+1 total rays
@@ -14,7 +16,12 @@ public class SelectivePassThroughRaycast : MonoBehaviour
     [SerializeField] private LayerMask detectionMask; // All layers to detect
     
     [Header("Pass-Through Settings")]
-    [SerializeField] private string passThroughTag = "OpponentAgent"; // Rays pass through this tag
+    [SerializeField] private List<string> passThroughTags = new List<string>  
+    {
+        "OpponentAgent",
+        "PlayerAgent"
+    }; // Rays pass through these tags
+
     [SerializeField] private bool detectPassThroughObjects = true; // Observe passed-through objects
     
     [Header("Detection Tags")]
@@ -97,24 +104,36 @@ public class SelectivePassThroughRaycast : MonoBehaviour
             issues with FirstOrDefault returning default(RaycastHit) which is not nullable,
             and so instead returns a RaycastHit with all fields defaulted (including distance 0) */
             RaycastHit? wallHit = sortedHits
-                                    .Where(h => !h.collider.CompareTag(passThroughTag))
+                                    .Where(h => !IsPassThrough(h.collider))
                                     .Cast<RaycastHit?>()
                                     .FirstOrDefault();
-            
+
+            // Nearest solid obstacle (walls, alcove geometry). Agents and trigger volumes
+            // (interaction zones) are excluded so an opponent standing inside a zone is not
+            // hidden by that zone's own collider
+            float occluderDistance = sortedHits
+                                        .Where(h => !IsPassThrough(h.collider) && !h.collider.isTrigger)
+                                        .Select(h => h.distance)
+                                        .DefaultIfEmpty(float.PositiveInfinity)
+                                        .First();
+
+            // Opponents are only observed if nothing solid sits between them and this agent.
+            // Walls are not blocked by opponents (wallHit above ignores pass-through tags)
             RaycastHit? opponentHit = detectPassThroughObjects
              ? sortedHits
-                .Where(h => h.collider.CompareTag(passThroughTag))
+                .Where(h => IsPassThrough(h.collider) && h.distance < occluderDistance)
                 .Cast<RaycastHit?>()
                 .FirstOrDefault()
              : null; // Keeping pass-through detection flexible here
                         
              // Debugging
-             if (opponentHit.HasValue && wallHit.HasValue)
+             if (debug)
             {
-                bool isPassingThrough = opponentHit.Value.distance < wallHit.Value.distance; // This logic is sensible assuming from the same ray
-                Debug.Log($"Ray {i}: Opponent at {opponentHit.Value.distance:F2}m, " +
-                $"Wall at {wallHit.Value.distance:F2}m - " + 
-                $"Passing through: {isPassingThrough}");
+                string opp = opponentHit.HasValue ? $"{opponentHit.Value.distance:F2}m" : "none";
+                string wall = wallHit.HasValue
+                    ? $"{wallHit.Value.distance:F2}m ({wallHit.Value.collider.tag})"
+                    : "none";
+                Debug.Log($"[{name}] Ray {i}: Opponent {opp}, Wall {wall}");
             }
                         
             rayDataList.Add(new RayData
@@ -137,7 +156,7 @@ public class SelectivePassThroughRaycast : MonoBehaviour
         // Observation per ray:
         // - 1 float: primary hit distance (normalized, 0 if no hit)
         // - N floats: one-hot encoding for primary hit tag
-        // - 1 float: closest pass-through object distance (0 if none)
+        // - 1 float: closest pass-through object proximity (1 - normalized distance, 0 if none)
         /* Currently no one-hot encoding vector for pass-through objects 
         because only OpponentAgent is included. If this changes, an encoding
         vector can be added. */
@@ -168,15 +187,19 @@ public class SelectivePassThroughRaycast : MonoBehaviour
             }
             // else all zeros (no primary hit)
             
-            // Opponent (pass-through) hit distance
+            // Opponent (pass-through) hit proximity
+            /* 261014 Changed from distance (d / rayLength) to proximity (1 - d / rayLength).
+            With distance, an adjacent opponent (~0.01) was almost indistinguishable from
+            'no opponent' (0). With proximity, 'no opponent' sits at the far end of the scale:
+            the value rises monotonically as the opponent approaches, and real observations
+            fall in ~0.34-0.99 (arena max ~39 m, rayLength 60 m), well clear of 0.
+            Equivalent to 1 - HitFraction in ML-Agents' RayPerceptionSensor, minus its no-hit flag.
+            Models trained before this change read this channel the other way round */
             int opponentIdx = baseIdx + 1 + detectionTags.Count;
             if (ray.opponentHit.HasValue)
             {
-                // pass-through object (opponent) distance
-                observations[opponentIdx] = ray.opponentHit.Value.distance / rayLength;
+                observations[opponentIdx] = 1f - ray.opponentHit.Value.distance / rayLength;
             }
-            // Else distance is reported as 0 (no pass-through object)
-            // Can double check to see if this is a good way to implement for the network!
             else
             {
                 observations[opponentIdx] = 0f; // This value means 'no opponent agent'
@@ -184,6 +207,14 @@ public class SelectivePassThroughRaycast : MonoBehaviour
         }
         
         return observations;
+    }
+
+    private bool IsPassThrough(Collider c)
+    {
+        foreach (var t in passThroughTags)
+            if (c.CompareTag(t)) return true;
+        return false;
+
     }
     
     void OnDrawGizmos()

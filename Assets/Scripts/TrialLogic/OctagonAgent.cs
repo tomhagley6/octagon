@@ -56,6 +56,10 @@ public class OctagonAgent : Agent
     public bool isTraining = false;
     // flag to check whether behaviour is set to inferene
     public bool isInference = false;
+    // console logging toggles (applied in Initialize; shared by all agents, last one to initialise wins)
+    [Header("Console Logging")]
+    [SerializeField] private bool silenceLogs = true;      // drop Debug.Log output (saves RAM during training)
+    [SerializeField] private bool silenceWarnings = true;  // drop warnings, incl. ML-Agents' per-step observation padding warning
     // flag to check whether logger has started
     private static bool loggerStarted = false;
     // path to log file where agent data will be saved
@@ -68,15 +72,10 @@ public class OctagonAgent : Agent
 
     public override void Initialize()
     {
-        
         // Keep debug statements from MLAgents silenced
-        // This is for saving RAM during training, but can be reverted for debugging of builds
-        Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
-        Application.SetStackTraceLogType(LogType.Warning, StackTraceLogType.None);
-        Debug.unityLogger.filterLogType = LogType.Error;
-        
-        
-        
+        // This is for saving RAM during training; toggle silenceLogs/silenceWarnings in the Inspector for debugging
+        ConfigureConsoleLogging();
+
         // checks whether communicator (which allows interaction with python process) is on
         // if off, agent is in inference/heuristic mode
         isTraining = Academy.Instance.IsCommunicatorOn;
@@ -579,6 +578,46 @@ public class OctagonAgent : Agent
             Solo to social */
         // // Observe mode (solo vs social)
         // sensor.AddObservation(octagonArenaSettings.soloMode ? 1 : 2);
+    }
+
+    // Wrap Unity's log handler (once) so Logs and Warnings can be dropped independently.
+    // filterLogType can't do this: it keeps a severity and everything above it, so it
+    // cannot keep Debug.Log while dropping warnings
+    private void ConfigureConsoleLogging()
+    {
+        Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
+        Application.SetStackTraceLogType(LogType.Warning, StackTraceLogType.None);
+        Debug.unityLogger.filterLogType = LogType.Log; // undo any earlier Error-only filter
+
+        if (!(Debug.unityLogger.logHandler is FilteredLogHandler))
+        {
+            Debug.unityLogger.logHandler = new FilteredLogHandler(Debug.unityLogger.logHandler);
+        }
+        var handler = (FilteredLogHandler)Debug.unityLogger.logHandler;
+        handler.dropLogs = silenceLogs;
+        handler.dropWarnings = silenceWarnings;
+    }
+
+    // Passes everything to Unity's default handler except the log types switched off
+    private class FilteredLogHandler : ILogHandler
+    {
+        private readonly ILogHandler inner;
+        public bool dropLogs;
+        public bool dropWarnings;
+
+        public FilteredLogHandler(ILogHandler inner) { this.inner = inner; }
+
+        public void LogFormat(LogType logType, UnityEngine.Object context, string format, params object[] args)
+        {
+            if (dropLogs && logType == LogType.Log) return;
+            if (dropWarnings && logType == LogType.Warning) return;
+            inner.LogFormat(logType, context, format, args);
+        }
+
+        public void LogException(Exception exception, UnityEngine.Object context)
+        {
+            inner.LogException(exception, context);
+        }
     }
 
     // Manual agent control for testing

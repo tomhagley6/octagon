@@ -2851,6 +2851,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 31837504}
     - target: {fileID: 3883084382528183162, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
+      propertyPath: silenceLogs
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3883084382528183162, guid: 8eb0e05f68183d640aed757a09f60bd4, type: 3}
       propertyPath: raycastSensor
       value: 
       objectReference: {fileID: 1629962719}
@@ -3796,6 +3800,8 @@ MonoBehaviour:
   totalShapingReward: 0
   isTraining: 0
   isInference: 0
+  silenceLogs: 1
+  silenceWarnings: 1
 --- !u!114 &1557811722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4178,7 +4184,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4845276930943762971, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -0.000030517578
       objectReference: {fileID: 0}
     - target: {fileID: 4845637959249703711, guid: 2da3dcc22749e7f4280737786d898334, type: 3}
       propertyPath: m_AnchorMax.y
