@@ -68,6 +68,15 @@ public class OctagonAgent : Agent
 
     public override void Initialize()
     {
+        
+        // Keep debug statements from MLAgents silenced
+        // This is for saving RAM during training, but can be reverted for debugging of builds
+        Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
+        Application.SetStackTraceLogType(LogType.Warning, StackTraceLogType.None);
+        Debug.unityLogger.filterLogType = LogType.Error;
+        
+        
+        
         // checks whether communicator (which allows interaction with python process) is on
         // if off, agent is in inference/heuristic mode
         isTraining = Academy.Instance.IsCommunicatorOn;
