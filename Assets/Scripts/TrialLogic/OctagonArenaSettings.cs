@@ -378,6 +378,21 @@ public class OctagonArenaSettings : MonoBehaviour
         StartCoroutine(ITI());
     }
 
+    // Wait for a duration of game time on the physics clock (Fixed Timestep, 0.02 s).
+    // WaitForSeconds resumes only on rendered frames, and in a sped-up run each frame covers up to
+    // Maximum Allowed Timestep (0.333 s) of game time, so every wait overran by up to 1/3 s
+    // (agent logs: 7.09 s per trial outside the race, against 6.5 s set and 6.55 s for humans).
+    private IEnumerator WaitForFixedSeconds(float duration)
+    {
+        float end = Time.fixedTime + duration;
+        var step = new WaitForFixedUpdate();
+        // the small margin stops float error adding one extra physics step
+        while (Time.fixedTime < end - 1e-4f)
+        {
+            yield return step;
+        }
+    }
+
     // Inititate the ITI and lead into Start Trial logic
     public IEnumerator ITI()
     {
@@ -399,11 +414,11 @@ public class OctagonArenaSettings : MonoBehaviour
 
         // Use a 2 second fixed EndTrial delay to replicate experimental setup, added 260310
         // Present in builds only from 260408 onwards
-        yield return new WaitForSeconds(2f);
+        yield return StartCoroutine(WaitForFixedSeconds(2f));
         SetTrialActive(false);
 
         //Debug.Log($"Waiting for ITI: {iti}");
-        yield return new WaitForSeconds(iti);
+        yield return StartCoroutine(WaitForFixedSeconds(iti));
         SetTrialActive(true);
 
         // Use a 0.5-1.5 second variable length TrialStart delay to replicate experimental setup, added 260310
@@ -411,7 +426,7 @@ public class OctagonArenaSettings : MonoBehaviour
         float trialStartDelay = (upcoming != null && upcoming.trialStartDelay > 0f)
             ? upcoming.trialStartDelay
             : Random.Range(0.5f, 1.5f);
-        yield return new WaitForSeconds(trialStartDelay);
+        yield return StartCoroutine(WaitForFixedSeconds(trialStartDelay));
 
         // logging variables signalling trial is active and scores to be reset
         ResetTrialScores();
