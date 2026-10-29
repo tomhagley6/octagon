@@ -521,34 +521,25 @@ public class OctagonAgent : Agent
         }
         animator.SetBool("isRunning", targetDirection.magnitude > 0.05f);
 
-        // // 260624 (then again 260723) ADDED '&& false' TO REMOVE THIS CLAUSE FROM TRAINING. SEE COMMIT. REMEMBER TO CHANGE BACK AFTERWARDS.
-        // step penalty
-        // Too small compared to final reward? How frequent is one step, and how long is one trial?
-        // Changed to -1e-3f from -1e-4f on 260219 
-        if (actionBuffers.DiscreteActions[0] == 0 && actionBuffers.DiscreteActions[1] == 0 && actionBuffers.DiscreteActions[2] == 0 && false)
-        // if (actionBuffers.DiscreteActions[0] == 0 && actionBuffers.DiscreteActions[1] == 0 && actionBuffers.DiscreteActions[2] == 0)
-
+        // Split costs (training only), added 261027. Three separate penalties per step:
+        //   step_penalty     - time cost, charged on every step including rests
+        //   translation_cost - charged once if moving and/or strafing (direction is normalised, so
+        //                      forward + strafe is one translation step of 0.2 units)
+        //   rotation_cost    - charged if rotating (one step is 7.2 deg)
+        // Resting pays only the time cost. Costs are charged on the chosen action, not on the
+        // achieved displacement, so pushing against a wall still costs effort.
+        // Parameters are read every step so they can be driven by an ML-Agents curriculum.
+        if (isTraining)
         {
-            throw new System.InvalidOperationException("Agent is resting (no action taken). This should not happen during training. Check the action space and policy.");
-            // No penalty if choosing to rest. May need to create some penalty if this causes issues with training
-        }
-        else
-        {
-            // If any action is taken, apply step penalty (training only)
-            if (isTraining)
-            {
-                float stepPenalty = Academy.Instance.EnvironmentParameters.GetWithDefault("step_penalty", float.NaN);
+            float stepPenalty = GetRequiredEnvironmentParameter("step_penalty");
+            float translationCost = GetRequiredEnvironmentParameter("translation_cost");
+            float rotationCost = GetRequiredEnvironmentParameter("rotation_cost");
 
-                if (float.IsNaN(stepPenalty))
-                {
-                    throw new System.InvalidOperationException(
-                        "step_penalty not found in environment_parameters — check the training YAML.");
-                }
-                
-                AddReward(-stepPenalty);
-            }
+            float penalty = stepPenalty;
+            if (moveAction != 0 || strafeAction != 0) penalty += translationCost;
+            if (rotateAction != 0) penalty += rotationCost;
 
-
+            AddReward(-penalty);
         }
 
         if (wall1Trigger == null || wall2Trigger == null)
@@ -657,6 +648,18 @@ public class OctagonAgent : Agent
             discreteActionsOut[2] = 2;
         }
 
+    }
+
+    // Read a cost from environment_parameters, throwing rather than silently defaulting
+    private float GetRequiredEnvironmentParameter(string key)
+    {
+        float value = Academy.Instance.EnvironmentParameters.GetWithDefault(key, float.NaN);
+        if (float.IsNaN(value))
+        {
+            throw new System.InvalidOperationException(
+                $"{key} not found in environment_parameters — check the training YAML.");
+        }
+        return value;
     }
 
     // SBI: help function to search for the specified argument name and, if found, return the element immediately following it (its value).
